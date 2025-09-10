@@ -1,0 +1,45 @@
+{
+	"name": "DS_Azure_SQL",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Azure_Sql_Server",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "anime_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "genre",
+				"type": "nvarchar"
+			},
+			{
+				"name": "type",
+				"type": "nvarchar"
+			},
+			{
+				"name": "episodes",
+				"type": "nvarchar"
+			},
+			{
+				"name": "rating",
+				"type": "nvarchar"
+			},
+			{
+				"name": "members",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "anime1"
+		}
+	}
+}
