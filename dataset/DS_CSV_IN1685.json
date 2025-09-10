@@ -1,0 +1,44 @@
+{
+	"name": "DS_CSV_IN1685",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Azure_Blob_Storage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Param_Container": {
+				"type": "string"
+			},
+			"Param_Folder": {
+				"type": "string"
+			},
+			"Param_FileName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().Param_FileName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().Param_Folder",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().Param_Container",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
