@@ -21,7 +21,7 @@
 						"parameters": {
 							"ContainerName": "boootcamp25",
 							"FolderName": "IN1675",
-							"FileName": "employee_data.csv"
+							"FileName": "*"
 						}
 					},
 					"fieldList": [
