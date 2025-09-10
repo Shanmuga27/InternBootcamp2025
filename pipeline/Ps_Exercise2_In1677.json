@@ -59,7 +59,7 @@
 						"type": "Expression"
 					},
 					"condition": {
-						"value": "@contains(item().name,'name')",
+						"value": "@contains(item().name,'patients.csv')",
 						"type": "Expression"
 					}
 				}
