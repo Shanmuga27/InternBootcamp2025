@@ -105,7 +105,7 @@
 		],
 		"variables": {
 			"filename": {
-				"type": "Array"
+				"type": "String"
 			},
 			"filecount": {
 				"type": "Integer",
