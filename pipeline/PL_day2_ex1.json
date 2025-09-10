@@ -41,14 +41,7 @@
 				"type": "SetVariable",
 				"state": "Inactive",
 				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "Get Metadata1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"secureOutput": false,
 					"secureInput": false
@@ -65,14 +58,9 @@
 			{
 				"name": "Set variable FileName",
 				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Get Metadata1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
 				"policy": {
 					"secureOutput": false,
 					"secureInput": false
@@ -82,6 +70,29 @@
 					"variableName": "PL_Var_FileName",
 					"value": {
 						"value": "@activity('Get Metadata1').output.itemName",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Filter1",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@contains(item(), 'Customers.csv')",
 						"type": "Expression"
 					}
 				}
