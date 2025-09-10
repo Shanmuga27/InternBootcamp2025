@@ -1,0 +1,159 @@
+{
+	"name": "PL_blob_IN1680",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get_metadata_activity",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680",
+							"file": "*"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "Filtering_file",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "Get_metadata_activity",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get_metadata_activity').output.childItems",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@endswith(item().name,'.csv')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "for_eah_over_the_filename",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Filtering_file",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Filtering_file').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Append_to_filesname",
+							"type": "AppendVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "FileNames",
+								"value": {
+									"value": "@item().name",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "FileIncrementer",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Append_to_filesname",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "FileCount",
+								"value": {
+									"value": "@length(variables('FileNames'))",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "read_array",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "FileIncrementer",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "File_array",
+								"value": {
+									"value": "@variables('FileNames')",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"FileNames": {
+				"type": "Array"
+			},
+			"FileCount": {
+				"type": "Integer"
+			},
+			"File_array": {
+				"type": "Array"
+			}
+		},
+		"annotations": []
+	}
+}
