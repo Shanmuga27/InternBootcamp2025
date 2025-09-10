@@ -56,7 +56,7 @@
 				}
 			},
 			{
-				"name": "Loops",
+				"name": "ForEach1",
 				"type": "ForEach",
 				"dependsOn": [
 					{
@@ -75,7 +75,7 @@
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "File Name",
+							"name": "Set variable1",
 							"type": "SetVariable",
 							"dependsOn": [],
 							"policy": {
@@ -92,11 +92,11 @@
 							}
 						},
 						{
-							"name": "Count",
+							"name": "Set variable2",
 							"type": "SetVariable",
 							"dependsOn": [
 								{
-									"activity": "File Name",
+									"activity": "Set variable1",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -110,7 +110,7 @@
 							"typeProperties": {
 								"variableName": "Count",
 								"value": {
-									"value": "@length(array(item()))",
+									"value": "@length(array(variables('File Name')))",
 									"type": "Expression"
 								}
 							}
@@ -124,6 +124,9 @@
 				"type": "String"
 			},
 			"Count": {
+				"type": "Integer"
+			},
+			"count 2": {
 				"type": "Integer"
 			}
 		},
