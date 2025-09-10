@@ -37,7 +37,7 @@
 				}
 			},
 			{
-				"name": "Set variable1",
+				"name": "Set variable INT",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
@@ -53,9 +53,33 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "refVar",
+					"variableName": "PL_Var_RefVar",
 					"value": {
 						"value": "@add(variables('PL_Var_Num'), 1)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set variable FileName",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "PL_Var_FileName",
+					"value": {
+						"value": "@activity('Get Metadata1').output.itemName",
 						"type": "Expression"
 					}
 				}
@@ -66,8 +90,11 @@
 				"type": "Integer",
 				"defaultValue": 7
 			},
-			"refVar": {
+			"PL_Var_RefVar": {
 				"type": "Integer"
+			},
+			"PL_Var_FileName": {
+				"type": "String"
 			}
 		},
 		"annotations": []
