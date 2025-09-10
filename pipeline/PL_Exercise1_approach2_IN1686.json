@@ -61,7 +61,7 @@
 				}
 			},
 			{
-				"name": "ForEach1",
+				"name": "ForEach1_copy1",
 				"type": "ForEach",
 				"dependsOn": [
 					{
@@ -80,7 +80,7 @@
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "FileName",
+							"name": "FileName_copy1",
 							"type": "SetVariable",
 							"dependsOn": [],
 							"policy": {
@@ -97,11 +97,11 @@
 							}
 						},
 						{
-							"name": "TempCount",
+							"name": "TempCount_copy1",
 							"type": "SetVariable",
 							"dependsOn": [
 								{
-									"activity": "FileName",
+									"activity": "FileName_copy1",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -116,30 +116,6 @@
 								"variableName": "FileCount",
 								"value": {
 									"value": "@add(variables('Temp'), 1)",
-									"type": "Expression"
-								}
-							}
-						},
-						{
-							"name": "FileCount",
-							"type": "SetVariable",
-							"dependsOn": [
-								{
-									"activity": "TempCount",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "FileCount",
-								"value": {
-									"value": "@variables('Temp')",
 									"type": "Expression"
 								}
 							}
