@@ -59,7 +59,7 @@
 						"type": "Expression"
 					},
 					"condition": {
-						"value": "@contains(item(), 'name')",
+						"value": "@contains(item(), 'foo')",
 						"type": "Expression"
 					}
 				}
