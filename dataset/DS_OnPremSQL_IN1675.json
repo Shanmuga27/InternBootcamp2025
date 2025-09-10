@@ -1,0 +1,16 @@
+{
+	"name": "DS_OnPremSQL_IN1675",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_OnPremSQL_IN1675",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "DMuthuku",
+			"table": "a"
+		}
+	}
+}
