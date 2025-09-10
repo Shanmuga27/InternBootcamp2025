@@ -55,7 +55,7 @@
 				"typeProperties": {
 					"variableName": "PL_Var_RefVar",
 					"value": {
-						"value": "@add(variables('PL_Var_Num'), 1)",
+						"value": "@sub(variables('PL_Var_Num'), 2)",
 						"type": "Expression"
 					}
 				}
@@ -63,6 +63,8 @@
 			{
 				"name": "Set variable FileName",
 				"type": "SetVariable",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Get Metadata1",
