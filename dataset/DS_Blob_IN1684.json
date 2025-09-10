@@ -10,7 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"folderPath": "IN1684",
 				"container": "boootcamp25"
 			},
 			"columnDelimiter": ",",
