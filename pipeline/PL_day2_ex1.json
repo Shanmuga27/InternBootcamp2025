@@ -54,7 +54,7 @@
 						"type": "Expression"
 					},
 					"condition": {
-						"value": "@contains(activity('Get Metadata1').output.childItems, 'prodcsv.csv')",
+						"value": "@contains(activity('Get Metadata1').output.itemName, 'prodcsv.csv')",
 						"type": "Expression"
 					}
 				}
