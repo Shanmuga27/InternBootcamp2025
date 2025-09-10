@@ -19,7 +19,7 @@
 						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference",
 						"parameters": {
-							"Param_Container": "boootcamp_25",
+							"Param_Container": "boootcamp25",
 							"Param_Folder": "IN1685",
 							"Param_FileName": "*"
 						}
