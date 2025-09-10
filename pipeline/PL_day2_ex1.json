@@ -37,8 +37,8 @@
 				}
 			},
 			{
-				"name": "Filter1",
-				"type": "Filter",
+				"name": "Set variable1",
+				"type": "SetVariable",
 				"dependsOn": [
 					{
 						"activity": "Get Metadata1",
@@ -47,19 +47,29 @@
 						]
 					}
 				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
 				"userProperties": [],
 				"typeProperties": {
-					"items": {
-						"value": "@activity('Get Metadata1').output.childItems",
-						"type": "Expression"
-					},
-					"condition": {
-						"value": "@contains(item().name, 'Customers')",
+					"variableName": "refVar",
+					"value": {
+						"value": "@add(variables('PL_Var_Num'), 1)",
 						"type": "Expression"
 					}
 				}
 			}
 		],
+		"variables": {
+			"PL_Var_Num": {
+				"type": "Integer",
+				"defaultValue": 7
+			},
+			"refVar": {
+				"type": "Integer"
+			}
+		},
 		"annotations": []
 	}
 }
