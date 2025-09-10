@@ -17,7 +17,12 @@
 				"typeProperties": {
 					"dataset": {
 						"referenceName": "DS_CSV_IN1675",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"ContainerName": "boootcamp25",
+							"FolderName": "IN1675",
+							"FileName": "employee_data.csv"
+						}
 					},
 					"fieldList": [
 						"childItems"
