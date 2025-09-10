@@ -35,9 +35,14 @@
 			{
 				"name": "Filter",
 				"type": "Filter",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Child Items",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
@@ -49,8 +54,81 @@
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "Loop",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Filter",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Filter').output",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "File Name",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "File Name",
+								"value": {
+									"value": "@item().Name",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Count",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "File Name",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Count",
+								"value": {
+									"value": "@item().count",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
 			}
 		],
+		"variables": {
+			"File Name": {
+				"type": "String"
+			},
+			"Count": {
+				"type": "String"
+			},
+			"value count": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
