@@ -56,7 +56,7 @@
 				}
 			},
 			{
-				"name": "ForEach1",
+				"name": "Loop",
 				"type": "ForEach",
 				"dependsOn": [
 					{
@@ -75,28 +75,11 @@
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "Set variable1",
-							"type": "SetVariable",
-							"dependsOn": [],
-							"policy": {
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "File Name",
-								"value": {
-									"value": "@item().Name",
-									"type": "Expression"
-								}
-							}
-						},
-						{
-							"name": "Set variable2",
+							"name": "Count",
 							"type": "SetVariable",
 							"dependsOn": [
 								{
-									"activity": "Set variable1",
+									"activity": "Append variable",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -110,7 +93,44 @@
 							"typeProperties": {
 								"variableName": "Count",
 								"value": {
-									"value": "@length(array(variables('File Name')))",
+									"value": "@length(variables('Array'))",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Append variable",
+							"type": "AppendVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Array",
+								"value": {
+									"value": "@item().Name",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "File Name",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Count",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "File Name",
+								"value": {
+									"value": "@item().Name",
 									"type": "Expression"
 								}
 							}
@@ -126,8 +146,8 @@
 			"Count": {
 				"type": "Integer"
 			},
-			"count 2": {
-				"type": "Integer"
+			"Array": {
+				"type": "Array"
 			}
 		},
 		"annotations": []
