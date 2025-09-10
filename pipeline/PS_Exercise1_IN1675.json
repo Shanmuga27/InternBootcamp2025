@@ -1,5 +1,5 @@
 {
-	"name": "PL_demo",
+	"name": "PS_Exercise1_IN1675",
 	"properties": {
 		"activities": [
 			{
@@ -16,12 +16,19 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "DS_Azure_SQL",
+						"referenceName": "DS_CSV_IN1675",
 						"type": "DatasetReference"
 					},
 					"fieldList": [
-						"columnCount"
-					]
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
 				}
 			}
 		],
