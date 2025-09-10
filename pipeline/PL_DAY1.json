@@ -35,14 +35,9 @@
 			{
 				"name": "Filter",
 				"type": "Filter",
-				"dependsOn": [
-					{
-						"activity": "Child Items",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
