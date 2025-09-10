@@ -60,6 +60,16 @@
 				}
 			}
 		],
+		"variables": {
+			"FileName": {
+				"type": "String",
+				"defaultValue": "\"\""
+			},
+			"FileCount": {
+				"type": "Integer",
+				"defaultValue": 0
+			}
+		},
 		"annotations": []
 	}
 }
