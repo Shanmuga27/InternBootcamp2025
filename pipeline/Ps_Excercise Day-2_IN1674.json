@@ -73,7 +73,31 @@
 				"typeProperties": {
 					"variableName": "filename",
 					"value": {
-						"value": "@activity('Childitem').output.childItems",
+						"value": "@activity('Filter1').output.name",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set variable2",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "filecount",
+					"value": {
+						"value": "@length(activity('Filter1').output)",
 						"type": "Expression"
 					}
 				}
