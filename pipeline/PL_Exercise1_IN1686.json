@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Get Metadata1",
+				"name": "IN1686_ChildItems",
 				"type": "GetMetadata",
 				"dependsOn": [],
 				"policy": {
@@ -37,11 +37,11 @@
 				}
 			},
 			{
-				"name": "Filter1",
+				"name": "Filter_employee_csv",
 				"type": "Filter",
 				"dependsOn": [
 					{
-						"activity": "Get Metadata1",
+						"activity": "IN1686_ChildItems",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -50,11 +50,11 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Get Metadata1').output.childItems",
+						"value": "@activity('IN1686_ChildItems').output.childItems",
 						"type": "Expression"
 					},
 					"condition": {
-						"value": "@contains(item().name,'employees.csv')",
+						"value": "@contains(item().name,'.csv')",
 						"type": "Expression"
 					}
 				}
@@ -64,7 +64,7 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Filter1",
+						"activity": "Filter_employee_csv",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -73,19 +73,14 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Filter1').output.value",
+						"value": "@activity('Filter_employee_csv').output.value",
 						"type": "Expression"
 					},
-					"isSequential": true,
 					"activities": [
 						{
-							"name": "Set variable1",
-							"type": "SetVariable",
+							"name": "FileName",
+							"type": "AppendVariable",
 							"dependsOn": [],
-							"policy": {
-								"secureOutput": false,
-								"secureInput": false
-							},
 							"userProperties": [],
 							"typeProperties": {
 								"variableName": "FileName",
@@ -96,11 +91,11 @@
 							}
 						},
 						{
-							"name": "Set variable2",
+							"name": "FileCount",
 							"type": "SetVariable",
 							"dependsOn": [
 								{
-									"activity": "Set variable1",
+									"activity": "FileName",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -114,7 +109,7 @@
 							"typeProperties": {
 								"variableName": "FileCount",
 								"value": {
-									"value": "@length(array(item()))",
+									"value": "@length(variables('FileName'))",
 									"type": "Expression"
 								}
 							}
@@ -125,10 +120,14 @@
 		],
 		"variables": {
 			"FileName": {
-				"type": "String",
-				"defaultValue": "\"\""
+				"type": "Array",
+				"defaultValue": []
 			},
 			"FileCount": {
+				"type": "Integer",
+				"defaultValue": 0
+			},
+			"Temp": {
 				"type": "Integer",
 				"defaultValue": 0
 			}
