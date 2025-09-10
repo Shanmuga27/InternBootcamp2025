@@ -21,11 +21,11 @@
 						"parameters": {
 							"Param_Container": "boootcamp25",
 							"Param_Folder": "IN1685",
-							"Param_FileName": "Customers.csv"
+							"Param_FileName": "*"
 						}
 					},
 					"fieldList": [
-						"itemName"
+						"childItems"
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
@@ -88,7 +88,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Get Metadata1').output.itemName",
+						"value": "@activity('Get Metadata1').output.childItemsactivity('Get Metadata1').output.itemName",
 						"type": "Expression"
 					},
 					"condition": {
