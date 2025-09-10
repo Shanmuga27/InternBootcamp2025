@@ -1,0 +1,9 @@
+{
+	"name": "internadfbootcamp2025",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "d0fc9d05-31e8-474c-8c81-0842ee1c3c4a",
+		"tenantId": "17dcec91-66ec-4c4b-a988-473694df546c"
+	}
+}

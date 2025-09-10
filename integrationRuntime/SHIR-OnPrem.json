@@ -1,0 +1,7 @@
+{
+	"name": "SHIR-OnPrem",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "SSIC-SQL-01 - On Prem SQL server"
+	}
+}
