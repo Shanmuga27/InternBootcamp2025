@@ -55,8 +55,8 @@
 				}
 			},
 			{
-				"name": "Set variable1",
-				"type": "SetVariable",
+				"name": "ForEach1",
+				"type": "ForEach",
 				"dependsOn": [
 					{
 						"activity": "Filter1",
@@ -65,47 +65,62 @@
 						]
 					}
 				],
-				"policy": {
-					"secureOutput": false,
-					"secureInput": false
-				},
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "filename",
-					"value": {
-						"value": "@activity('Filter1').output.Value[0]",
+					"items": {
+						"value": "@activity('Filter1').output.value",
 						"type": "Expression"
-					}
-				}
-			},
-			{
-				"name": "Set variable2",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Set variable1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "filecount",
-					"value": {
-						"value": "@length(activity('Filter1').output)",
-						"type": "Expression"
-					}
+					},
+					"activities": [
+						{
+							"name": "Set variable1",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "filename",
+								"value": {
+									"value": "@item().name",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set variable2",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Set variable1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "filecount",
+								"value": {
+									"value": "@length(item())",
+									"type": "Expression"
+								}
+							}
+						}
+					]
 				}
 			}
 		],
 		"variables": {
 			"filename": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "\"\""
 			},
 			"filecount": {
 				"type": "Integer",
