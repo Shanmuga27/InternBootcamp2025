@@ -54,7 +54,7 @@
 						"type": "Expression"
 					},
 					"condition": {
-						"value": "@startswith(activity('Get Metadata1').output.childItems, 'prodcsv')",
+						"value": "@startswith(item().name, 'Customers')",
 						"type": "Expression"
 					}
 				}
