@@ -108,7 +108,7 @@
 							"typeProperties": {
 								"variableName": "filecount",
 								"value": {
-									"value": "@length(item())",
+									"value": "@length(array(item()))",
 									"type": "Expression"
 								}
 							}
