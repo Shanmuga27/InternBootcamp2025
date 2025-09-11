@@ -59,69 +59,6 @@
 						"type": "Expression"
 					}
 				}
-			},
-			{
-				"name": "ForEach1_copy1",
-				"type": "ForEach",
-				"dependsOn": [
-					{
-						"activity": "Filter_employee_csv",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"items": {
-						"value": "@activity('Filter_employee_csv').output.value",
-						"type": "Expression"
-					},
-					"isSequential": true,
-					"activities": [
-						{
-							"name": "FileName_copy1",
-							"type": "SetVariable",
-							"dependsOn": [],
-							"policy": {
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "FileName",
-								"value": {
-									"value": "@item().name",
-									"type": "Expression"
-								}
-							}
-						},
-						{
-							"name": "TempCount_copy1",
-							"type": "SetVariable",
-							"dependsOn": [
-								{
-									"activity": "FileName_copy1",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "FileCount",
-								"value": {
-									"value": "@add(variables('Temp'), 1)",
-									"type": "Expression"
-								}
-							}
-						}
-					]
-				}
 			}
 		],
 		"variables": {
