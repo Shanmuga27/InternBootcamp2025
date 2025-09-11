@@ -1,5 +1,5 @@
 {
-	"name": "Excel1",
+	"name": "DS_Excel",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_Azure_Blob_Storage",
@@ -8,12 +8,14 @@
 		"annotations": [],
 		"type": "Excel",
 		"typeProperties": {
+			"sheetName": "Sheet1",
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": "std.xlsx",
 				"folderPath": "IN1677",
 				"container": "boootcamp25"
-			}
+			},
+			"firstRowAsHeader": true
 		},
 		"schema": []
 	}
