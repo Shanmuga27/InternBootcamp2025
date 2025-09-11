@@ -61,32 +61,11 @@
 				}
 			},
 			{
-				"name": "TempCount",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Filter_employee_csv",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "Temp",
-					"value": 0
-				}
-			},
-			{
 				"name": "ForEach1",
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "TempCount",
+						"activity": "Filter_employee_csv",
 						"dependencyConditions": [
 							"Succeeded"
 						]
