@@ -1,0 +1,54 @@
+{
+	"name": "DF_Blob_to_Blob",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "orders08"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "sink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          order_id as short,",
+				"          car_id as string,",
+				"          customer_id as string,",
+				"          order_start_dt as date,",
+				"          order_close_dt as date,",
+				"          status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> orders08",
+				"orders08 derive(order_start_dt = toString(order_start_dt, 'dd-MMMM-yyyy'),",
+				"          order_close_dt = toString(order_close_dt, 'dd-MMMM-yyyy'),",
+				"          status = initCap(status)) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['orders.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     partitionBy('hash', 1)) ~> sink"
+			]
+		}
+	}
+}
