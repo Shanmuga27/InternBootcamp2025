@@ -5,8 +5,6 @@
 			{
 				"name": "Copy Folder-Folder",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -56,7 +54,7 @@
 						"parameters": {
 							"Param_Container": "boootcamp25",
 							"Param_Folder": "IN1685",
-							"Param_FileName": "Customers.csv"
+							"Param_FileName": "csvfile.csv"
 						}
 					}
 				],
@@ -67,7 +65,7 @@
 						"parameters": {
 							"Param_Container": "boootcamp25",
 							"Param_Folder": "IN1685/sub_IN1685",
-							"Param_FileName": "Customers_sub.csv"
+							"Param_FileName": "csvfile_sub.csv"
 						}
 					}
 				]
@@ -75,7 +73,14 @@
 			{
 				"name": "CopyBlob-OnPrem",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Copy Folder-Folder",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -144,8 +149,11 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Param_Container": "boootcamp25",
-							"Param_Folder": "IN1685",
-							"Param_FileName": "prodcsv.csv"
+							"Param_Folder": "IN1685/sub_IN1685",
+							"Param_FileName": {
+								"value": "@activity('Copy Folder-Folder').output.value",
+								"type": "Expression"
+							}
 						}
 					}
 				],
@@ -155,7 +163,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Par_SchemaName": "RRamesh",
-							"Par_TableName": "prod_tb"
+							"Par_TableName": "TB_sample"
 						}
 					}
 				]
