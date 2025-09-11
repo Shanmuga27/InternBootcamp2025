@@ -173,34 +173,6 @@
 				]
 			},
 			{
-				"name": "Script Truncate",
-				"type": "Script",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"linkedServiceName": {
-					"referenceName": "LS_SQLServer_IN1685",
-					"type": "LinkedServiceReference"
-				},
-				"typeProperties": {
-					"scripts": [
-						{
-							"type": "Query",
-							"text": "truncate table prod_tb;"
-						}
-					],
-					"scriptBlockExecutionTimeout": "02:00:00"
-				}
-			},
-			{
 				"name": "Copy LoadData",
 				"type": "Copy",
 				"dependsOn": [],
@@ -247,7 +219,7 @@
 						"parameters": {
 							"Param_Container": "boootcamp25",
 							"Param_Folder": "IN1685",
-							"Param_FileName": "csvfile.csv"
+							"Param_FileName": "sample_file.csv"
 						}
 					}
 				],
