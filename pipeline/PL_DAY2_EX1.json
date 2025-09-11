@@ -1,5 +1,5 @@
 {
-	"name": "PL_DAY2_Q1",
+	"name": "PL_DAY2_EX1",
 	"properties": {
 		"activities": [
 			{
@@ -210,7 +210,7 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "id",
+									"name": "id ",
 									"type": "String",
 									"physicalType": "String"
 								},
