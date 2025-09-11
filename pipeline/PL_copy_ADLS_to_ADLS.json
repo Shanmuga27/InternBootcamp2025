@@ -1,0 +1,76 @@
+{
+	"name": "PL_copy_ADLS_to_ADLS",
+	"properties": {
+		"activities": [
+			{
+				"name": "copy_data_from_ADLS_to_ADLS",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680",
+							"file": "ratings.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680",
+							"file": "copy_of_ratings.csv"
+						}
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}
