@@ -154,7 +154,7 @@
 						"referenceName": "DS_OnPrem_SQLServer",
 						"type": "DatasetReference",
 						"parameters": {
-							"Par_SchemaName": "sch",
+							"Par_SchemaName": "RRamesh",
 							"Par_TableName": "prod_tb"
 						}
 					}
