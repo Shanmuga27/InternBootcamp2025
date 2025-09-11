@@ -166,30 +166,6 @@
 						}
 					]
 				}
-			},
-			{
-				"name": "read_count",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "for_eah_over_the_filename",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "addreader",
-					"value": {
-						"value": "@variables('adder')",
-						"type": "Expression"
-					}
-				}
 			}
 		],
 		"variables": {
@@ -205,9 +181,6 @@
 			"adder": {
 				"type": "Integer",
 				"defaultValue": 0
-			},
-			"addreader": {
-				"type": "Integer"
 			}
 		},
 		"annotations": []
