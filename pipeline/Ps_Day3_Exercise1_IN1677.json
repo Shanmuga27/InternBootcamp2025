@@ -126,7 +126,7 @@
 						"referenceName": "DS_SqlServer",
 						"type": "DatasetReference",
 						"parameters": {
-							"schema": "ADF_Training",
+							"schema": "JSivakum",
 							"table": "anime1"
 						}
 					}
