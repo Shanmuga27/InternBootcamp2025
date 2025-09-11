@@ -1,0 +1,24 @@
+{
+	"name": "DS_SQL_Server_IN1684",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQLServer_IN1684",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"PR_Tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "PMahendi",
+			"table": {
+				"value": "@dataset().PR_Tablename",
+				"type": "Expression"
+			}
+		}
+	}
+}
