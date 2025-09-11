@@ -5,6 +5,8 @@
 			{
 				"name": "Copy Data from ADLS to SQL Server",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -152,6 +154,8 @@
 			{
 				"name": "Copy data from ADLS to ADLS",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -350,7 +354,7 @@
 						"parameters": {
 							"ContainerName": "boootcamp25",
 							"FolderName": "IN1675",
-							"FileName": "employee_data.csv"
+							"FileName": "employees.csv"
 						}
 					}
 				],
