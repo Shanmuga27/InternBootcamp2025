@@ -5,12 +5,27 @@
 			"referenceName": "LS_Azure_Blob_Storage",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"PR_Directory": {
+				"type": "string"
+			},
+			"PR_Filename": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"folderPath": "IN1684",
+				"fileName": {
+					"value": "@dataset().PR_Filename",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().PR_Directory",
+					"type": "Expression"
+				},
 				"container": "boootcamp25"
 			},
 			"columnDelimiter": ",",
