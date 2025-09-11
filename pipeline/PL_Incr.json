@@ -3,22 +3,6 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data2",
-				"type": "Copy",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"enableStaging": false
-				}
-			},
-			{
 				"name": "Get Metadata1",
 				"type": "GetMetadata",
 				"dependsOn": [],
@@ -40,7 +24,9 @@
 							"File": "*"
 						}
 					},
-					"fieldList": [],
+					"fieldList": [
+						"itemName"
+					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
 						"enablePartitionDiscovery": false
@@ -114,7 +100,11 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"Container": "boootcamp25",
-										"Folder": "IN1686/Orders"
+										"Folder": "IN1686/Orders",
+										"File": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
 									}
 								}
 							],
@@ -127,46 +117,69 @@
 									}
 								}
 							]
+						},
+						{
+							"name": "StgSQLToTgtSQL",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Blob to SQL_copy1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "SqlServerSource",
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "SqlServerSink",
+									"preCopyScript": "select * from stg_orders where order_start_dt >(select max(order_start_dt) from tgt_orders)",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_SQL_IN1686",
+									"type": "DatasetReference",
+									"parameters": {
+										"Tablename": "stg_orders"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_SQL_IN1686",
+									"type": "DatasetReference",
+									"parameters": {
+										"Tablename": "tgt_orders"
+									}
+								}
+							]
 						}
 					]
 				}
-			},
-			{
-				"name": "Blob to SQL",
-				"type": "Copy",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
-					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "DS_CSV_IN1686",
-						"type": "DatasetReference",
-						"parameters": {
-							"Container": "boootcamp25",
-							"Folder": "IN1686/Orders"
-						}
-					}
-				]
 			}
 		],
 		"annotations": []
