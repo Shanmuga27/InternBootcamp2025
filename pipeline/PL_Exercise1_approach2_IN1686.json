@@ -78,10 +78,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"variableName": "Temp",
-					"value": {
-						"value": "@variables('FileCount')",
-						"type": "Expression"
-					}
+					"value": 0
 				}
 			},
 			{
@@ -140,6 +137,30 @@
 								"variableName": "FileCount",
 								"value": {
 									"value": "@add(variables('Temp'),1)",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "FinalCount",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "FileCount",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Temp",
+								"value": {
+									"value": "@variables('FileCount')",
 									"type": "Expression"
 								}
 							}
