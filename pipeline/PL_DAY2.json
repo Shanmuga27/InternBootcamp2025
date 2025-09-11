@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Child Items",
+				"name": "File Exists",
 				"type": "GetMetadata",
 				"dependsOn": [],
 				"policy": {
@@ -40,7 +40,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Child Items",
+						"activity": "File Exists",
 						"dependencyConditions": [
 							"Succeeded"
 						]
