@@ -1,0 +1,21 @@
+{
+	"name": "LS_SQL_Server_Trainer_Pubs_Src",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"server": "SSIC-SQL-01",
+			"database": "pubs",
+			"encrypt": "mandatory",
+			"trustServerCertificate": true,
+			"authenticationType": "SQL",
+			"userName": "Trainer",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI4NTJmNDQ3Yi1iNWFhLTQ2ZWYtYjNlOS1kOGQwMTA2MjZiMTUiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "SHIR-OnPrem",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
