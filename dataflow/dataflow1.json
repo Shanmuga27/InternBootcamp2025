@@ -1,0 +1,75 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText1",
+						"type": "DatasetReference"
+					},
+					"name": "srcanime"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText1",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          anime_id as string,",
+				"          name as string,",
+				"          genre as string,",
+				"          type as string,",
+				"          episodes as string,",
+				"          rating as string,",
+				"          members as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcanime",
+				"srcanime derive(new_name = upper(name)) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          anime_id,",
+				"          name = new_name,",
+				"          genre,",
+				"          type,",
+				"          episodes,",
+				"          rating,",
+				"          members",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          anime_id as string,",
+				"          name as string,",
+				"          genre as string,",
+				"          type as string,",
+				"          episodes as string,",
+				"          rating as string,",
+				"          members as string",
+				"     ),",
+				"     partitionFileNames:['animeratinggreater8.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
