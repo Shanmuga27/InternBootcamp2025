@@ -19,7 +19,15 @@
 					"name": "sourceSEPT"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_OnPrem_SQLServer",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "join1",
@@ -31,9 +39,6 @@
 				},
 				{
 					"name": "selectSrcSEPT"
-				},
-				{
-					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -75,12 +80,16 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectSrcSEPT",
-				"alterRow1 select(mapColumn(",
-				"          order_id,",
-				"          s_order_id",
-				"     ),",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1"
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1) ~> sink1"
 			]
 		}
 	}
