@@ -1,0 +1,12 @@
+{
+	"name": "PUBS_Src_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_Server_Trainer_Pubs_Src",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	}
+}

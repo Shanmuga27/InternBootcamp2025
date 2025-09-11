@@ -1,0 +1,26 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "PUBS_Src_DS",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select \\nstor_id,\\nord_num,\\nord_date,\\nqty, \\npayterms,\\ntitle_id\\nfrom dbo.sales\\nwhere ord_date>=\\'1990-01-01\\'',",
+				"     format: 'query') ~> source1"
+			]
+		}
+	}
+}
