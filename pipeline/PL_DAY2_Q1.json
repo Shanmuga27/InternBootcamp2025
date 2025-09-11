@@ -1,5 +1,5 @@
 {
-	"name": "PL_DAY2",
+	"name": "PL_DAY2_Q1",
 	"properties": {
 		"activities": [
 			{
@@ -36,7 +36,7 @@
 				}
 			},
 			{
-				"name": "CP_File",
+				"name": "CP_Books_Copy",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -104,6 +104,66 @@
 						"parameters": {
 							"PR_Directory": "IN1684/Copy",
 							"PR_Filename": "Copy1.csv"
+						}
+					}
+				]
+			},
+			{
+				"name": "CP_Blob_SQLServer",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684",
+							"PR_Filename": "Customers.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_Server_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Tablename": "Customers"
 						}
 					}
 				]
