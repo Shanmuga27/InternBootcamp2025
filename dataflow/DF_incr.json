@@ -12,6 +12,10 @@
 					"name": "sourceAUG"
 				},
 				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
 					"name": "sourceSEPT"
 				}
 			],
@@ -22,7 +26,8 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourceAUG",
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> sourceSEPT"
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceSEPT"
 			]
 		}
 	}
