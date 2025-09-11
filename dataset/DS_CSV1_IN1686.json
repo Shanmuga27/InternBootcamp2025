@@ -1,5 +1,5 @@
 {
-	"name": "DS_CSV_IN1686",
+	"name": "DS_CSV1_IN1686",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_Azure_Blob_Storage",
