@@ -5,9 +5,14 @@
 			{
 				"name": "DF_Incremental_method",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Set variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -92,7 +97,7 @@
 				"typeProperties": {
 					"variableName": "Max_id",
 					"value": {
-						"value": "@activity('Lookup1').output.firstRow",
+						"value": "@activity('Lookup1').output.firstRow['']",
 						"type": "Expression"
 					}
 				}
