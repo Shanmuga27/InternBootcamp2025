@@ -148,19 +148,16 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "DelimitedTextSource",
+						"type": "ExcelSource",
 						"storeSettings": {
 							"type": "AzureBlobStorageReadSettings",
 							"recursive": true,
 							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
 						}
 					},
 					"sink": {
 						"type": "SqlServerSink",
-						"preCopyScript": "truncate table anime1;",
+						"preCopyScript": "truncate table std;",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false
 					},
@@ -176,13 +173,8 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_Blob_IN1677_Tgt",
-						"type": "DatasetReference",
-						"parameters": {
-							"container": "boootcamp25",
-							"directory": "IN1677\\tgt_anime",
-							"file": "anime_tgt_1"
-						}
+						"referenceName": "Excel1",
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
@@ -191,7 +183,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"schema": "JSivakum",
-							"table": "anime1"
+							"table": "std"
 						}
 					}
 				]
