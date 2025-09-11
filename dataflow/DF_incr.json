@@ -9,7 +9,10 @@
 						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "sourceAUG"
+				},
+				{
+					"name": "sourceSEPT"
 				}
 			],
 			"sinks": [],
@@ -17,7 +20,9 @@
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1"
+				"     ignoreNoFilesFound: false) ~> sourceAUG",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> sourceSEPT"
 			]
 		}
 	}
