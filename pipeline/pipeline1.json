@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
-				"type": "Copy",
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -15,45 +15,28 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "RestSource",
-						"httpRequestTimeout": "00:01:40",
-						"requestInterval": "00.00:00:00.010",
-						"requestMethod": "GET",
-						"paginationRules": {
-							"supportRFC5988": "true"
+					"dataflow": {
+						"referenceName": "DF_CDC",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"source1": {
+								"Container": "boootcamp25",
+								"File": "orders_11082025.csv",
+								"directory": "IN1677/src_orders"
+							},
+							"sink1": {
+								"container": "boootcamp25",
+								"directory": "IN1677/tgt_orders",
+								"file": "tgt_orders"
+							}
 						}
 					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
 					},
-					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "RestResource1",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "DS_Blob_IN1677_Tgt",
-						"type": "DatasetReference",
-						"parameters": {
-							"container": "boootcamp25",
-							"directory": "IN1677",
-							"file": "api_Test"
-						}
-					}
-				]
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"annotations": []

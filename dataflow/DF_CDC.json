@@ -9,7 +9,7 @@
 						"referenceName": "DS_Blob_IN1677_Src",
 						"type": "DatasetReference"
 					},
-					"name": "SRC1"
+					"name": "source1"
 				}
 			],
 			"sinks": [
@@ -21,14 +21,7 @@
 					"name": "sink1"
 				}
 			],
-			"transformations": [
-				{
-					"name": "Transorders"
-				},
-				{
-					"name": "alterRow1"
-				}
-			],
+			"transformations": [],
 			"scriptLines": [
 				"source(output(",
 				"          order_id as short,",
@@ -40,12 +33,8 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> SRC1",
-				"SRC1 derive(order_start_dt = toString(order_start_dt,'d MMMM yyyy'),",
-				"          order_close_dt = toString(order_close_dt, 'd MMMM yyyy'),",
-				"          status = initCap(status)) ~> Transorders",
-				"Transorders alterRow(insertIf(isNull(order_id))) ~> alterRow1",
-				"alterRow1 sink(allowSchemaDrift: true,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> sink1"
