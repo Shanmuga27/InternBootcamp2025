@@ -12,10 +12,18 @@
 					"name": "SRC1"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
+					"name": "Transorders"
 				},
 				{
 					"name": "alterRow1"
@@ -35,8 +43,12 @@
 				"     ignoreNoFilesFound: false) ~> SRC1",
 				"SRC1 derive(order_start_dt = toString(order_start_dt,'d MMMM yyyy'),",
 				"          order_close_dt = toString(order_close_dt, 'd MMMM yyyy'),",
-				"          status = initCap(status)) ~> derivedColumn1",
-				"derivedColumn1 alterRow() ~> alterRow1"
+				"          status = initCap(status)) ~> Transorders",
+				"Transorders alterRow(insertIf(isNull(order_id))) ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
