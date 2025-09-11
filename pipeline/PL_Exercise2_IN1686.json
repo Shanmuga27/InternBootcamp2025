@@ -6,8 +6,6 @@
 				"name": "ADLS_to_ADLS",
 				"description": "Copy one file from one folder to another folder in ADLS",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -76,8 +74,6 @@
 			{
 				"name": "ADLS_to_On_Prem_SQL",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "ADLS_to_ADLS",
@@ -143,7 +139,8 @@
 				]
 			},
 			{
-				"name": "Copy data1",
+				"name": "Trunc_ADLS_To_SQL",
+				"description": "Truncate and load a table in SQL Server using file in ADLS as source",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -166,7 +163,21 @@
 							"type": "DelimitedTextReadSettings"
 						}
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "SqlServerSink",
+						"preCopyScript": "TRUNCATE TABLE Orders",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
 				"inputs": [
 					{
@@ -174,7 +185,17 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Container": "boootcamp25",
-							"Folder": "IN1686"
+							"Folder": "IN1686",
+							"File": "orders.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Tablename": "Orders"
 						}
 					}
 				]
