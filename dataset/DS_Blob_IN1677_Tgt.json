@@ -1,15 +1,18 @@
 {
-	"name": "DS_Blob_IN1677_Src",
+	"name": "DS_Blob_IN1677_Tgt",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_Azure_Blob_Storage",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"Container": {
+			"container": {
 				"type": "string"
 			},
-			"File": {
+			"directory": {
+				"type": "string"
+			},
+			"file": {
 				"type": "string"
 			}
 		},
@@ -19,11 +22,15 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "@dataset().File",
+					"value": "@dataset().file",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().directory",
 					"type": "Expression"
 				},
 				"container": {
-					"value": "@dataset().Container",
+					"value": "@dataset().container",
 					"type": "Expression"
 				}
 			},

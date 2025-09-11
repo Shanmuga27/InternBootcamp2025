@@ -1,5 +1,5 @@
 {
-	"name": "Ps_Exercise3_IN1677",
+	"name": "Ps_Day3_Exercise1_IN1677",
 	"properties": {
 		"activities": [
 			{
@@ -49,23 +49,22 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_Blob_IN1677",
+						"referenceName": "DS_Blob_IN1677_Src",
 						"type": "DatasetReference",
 						"parameters": {
 							"Container": "boootcamp25",
-							"Directory": "*",
 							"File": "anime 1.csv"
 						}
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "DS_Blob_IN1677",
+						"referenceName": "DS_Blob_IN1677_Tgt",
 						"type": "DatasetReference",
 						"parameters": {
-							"Container": "boootcamp25",
-							"Directory": "IN1677",
-							"File": "anime_Tgt.csv"
+							"container": "boootcamp25",
+							"directory": "IN1677\\tgt_anime",
+							"file": "anime_tgt_1"
 						}
 					}
 				]
