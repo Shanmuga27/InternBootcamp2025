@@ -5,6 +5,12 @@
 			"referenceName": "LS_Azure_Blob_Storage",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"filename": {
+				"type": "string",
+				"defaultValue": "\"\""
+			}
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
