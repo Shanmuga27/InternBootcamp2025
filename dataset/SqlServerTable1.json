@@ -1,0 +1,16 @@
+{
+	"name": "SqlServerTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Onprem_SQLSERVER__IN1689",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "VSri",
+			"table": "cat_Testing"
+		}
+	}
+}
