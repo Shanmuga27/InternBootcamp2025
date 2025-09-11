@@ -1,0 +1,29 @@
+{
+	"name": "DS_SQL_IN1686",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_On_Prem_IN1686",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "name",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "SKomala",
+			"table": {
+				"value": "@dataset().Tablename",
+				"type": "Expression"
+			}
+		}
+	}
+}
