@@ -53,6 +53,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Container": "boootcamp25",
+							"Directory": "*",
 							"File": "anime 1.csv"
 						}
 					}
