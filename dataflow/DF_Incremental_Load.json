@@ -19,7 +19,15 @@
 					"name": "Src2"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "filter1"
@@ -35,9 +43,6 @@
 				}
 			],
 			"scriptLines": [
-				"parameters{",
-				"     parameter1 as string",
-				"}",
 				"source(output(",
 				"          order_id as short,",
 				"          car_id as string,",
@@ -76,7 +81,15 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 derive() ~> derivedColumn1"
+				"select1 derive(each(match(type=='string'), $$ = iifNull($$, 'Unk', $$)),",
+				"          each(match(type=='date'), $$ = iifNull($$, toDate('1900-01-01'), $$)),",
+				"          each(match(type=='short'), $$ = iifNull($$,1, $$))) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['current_orders.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}
