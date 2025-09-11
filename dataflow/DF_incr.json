@@ -30,8 +30,9 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourceAUG",
-				"sourceAUG derive(order_start_dt = toString(order_start_dt, 'dd-MMM-yyyy'),",
-				"          status = initCap(status)) ~> derivedColumn1"
+				"sourceAUG derive(order_start_dt = toString(order_start_dt, 'dd-MMMM-yyyy'),",
+				"          status = initCap(status),",
+				"          order_close_dt = toString(order_start_dt, 'dd-MMMM-yyyy')) ~> derivedColumn1"
 			]
 		}
 	}
