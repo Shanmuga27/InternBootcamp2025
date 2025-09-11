@@ -135,7 +135,7 @@
 				]
 			},
 			{
-				"name": "CD_SQL_To_ADLS",
+				"name": "CD_ADLS_To_SQL",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
