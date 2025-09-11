@@ -29,6 +29,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -110,7 +111,7 @@
 							"typeProperties": {
 								"variableName": "FileCount",
 								"value": {
-									"value": "@length(variables('FileNames'))",
+									"value": "@add(variables('adder'),1 )",
 									"type": "Expression"
 								}
 							}
@@ -138,8 +139,56 @@
 									"type": "Expression"
 								}
 							}
+						},
+						{
+							"name": "set_adder",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "read_array",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "adder",
+								"value": {
+									"value": "@variables('FileCount')",
+									"type": "Expression"
+								}
+							}
 						}
 					]
+				}
+			},
+			{
+				"name": "read_count",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "for_eah_over_the_filename",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "addreader",
+					"value": {
+						"value": "@variables('adder')",
+						"type": "Expression"
+					}
 				}
 			}
 		],
@@ -152,6 +201,13 @@
 			},
 			"File_array": {
 				"type": "Array"
+			},
+			"adder": {
+				"type": "Integer",
+				"defaultValue": 0
+			},
+			"addreader": {
+				"type": "Integer"
 			}
 		},
 		"annotations": []
