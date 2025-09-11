@@ -5,6 +5,8 @@
 			{
 				"name": "DF_incr",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -23,16 +25,6 @@
 								"Param_Container": "boootcamp25",
 								"Param_Folder": "Src files",
 								"Param_FileName": "orders_11082025.csv"
-							},
-							"sourceSEPT": {
-								"Param_Container": "boootcamp25",
-								"Param_Folder": "Src files",
-								"Param_FileName": "orders_11092025.csv"
-							},
-							"sink1": {
-								"Param_Container": "boootcamp25",
-								"Param_Folder": "IN1685/sub_incr_load",
-								"Param_FileName": "incr_load.csv"
 							}
 						}
 					},
@@ -42,8 +34,62 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@equals(activity('Get Metadata1').output.lastModified, )",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Get Metadata1",
+							"type": "GetMetadata",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "DS_CSV_IN1685",
+									"type": "DatasetReference",
+									"parameters": {
+										"Param_Container": "boootcamp25",
+										"Param_Folder": "Src files",
+										"Param_FileName": "*"
+									}
+								},
+								"fieldList": [
+									"lastModified"
+								],
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							}
+						}
+					]
+				}
 			}
 		],
+		"variables": {
+			"var": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
