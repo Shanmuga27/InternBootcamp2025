@@ -11,24 +11,17 @@
 					},
 					"name": "srcOrdersData",
 					"description": "Initial dataset"
-				},
+				}
+			],
+			"sinks": [
 				{
 					"dataset": {
 						"referenceName": "DS_Blob_1680",
 						"type": "DatasetReference"
 					},
-					"name": "srcOrdersDataSecond",
-					"description": "second set"
-				},
-				{
-					"dataset": {
-						"referenceName": "DS_SQL_Server_IN1680",
-						"type": "DatasetReference"
-					},
-					"name": "source1"
+					"name": "sink1"
 				}
 			],
-			"sinks": [],
 			"transformations": [
 				{
 					"name": "derivedcols"
@@ -46,24 +39,20 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> srcOrdersData",
-				"source(output(",
-				"          order_id as short,",
-				"          car_id as string,",
-				"          customer_id as string,",
-				"          order_start_dt as date,",
-				"          order_close_dt as date,",
-				"          status as string",
+				"srcOrdersData derive() ~> derivedcols",
+				"derivedcols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          anime_id as string,",
+				"          name as string,",
+				"          genre as string,",
+				"          type as string,",
+				"          episodes as string,",
+				"          rating as string,",
+				"          members as string",
 				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> srcOrdersDataSecond",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source1",
-				"srcOrdersData derive(status_init = upper(left(status,1))+lower(right(status,length(status)-1)),",
-				"          formatted_order_start_dt = toString(order_start_dt, 'd MMMM yyyy'),",
-				"          formatted_order_close_dt = toString(order_close_dt, 'd MMMM yyyy')) ~> derivedcols"
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
