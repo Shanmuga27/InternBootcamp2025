@@ -1,0 +1,108 @@
+{
+	"name": "PL_incremental_method",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Incremental_method",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Incremental_method",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"srcOrdersData": {
+								"container": "boootcamp2025",
+								"folder": "Src files",
+								"file": "orders_11082025.csv"
+							},
+							"srcOrdersDataSecond": {
+								"container": "boootcamp2025",
+								"folder": "Src files",
+								"file": "orders_11092025.csv"
+							},
+							"source1": {
+								"SchemaName": "KRavi",
+								"TableName": "controltable"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "select max(id)\nfrom controltable;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_SQL_Server_IN1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "KRavi",
+							"TableName": "controltable"
+						}
+					}
+				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Max_id",
+					"value": {
+						"value": "@activity('Lookup1').output.firstRow",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"Max_id": {
+				"type": "Integer"
+			}
+		},
+		"annotations": []
+	}
+}

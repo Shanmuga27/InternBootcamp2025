@@ -1,0 +1,70 @@
+{
+	"name": "DF_Incremental_method",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "srcOrdersData",
+					"description": "Initial dataset"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "srcOrdersDataSecond",
+					"description": "second set"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_Server_IN1680",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "derivedcols"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          order_id as short,",
+				"          car_id as string,",
+				"          customer_id as string,",
+				"          order_start_dt as date,",
+				"          order_close_dt as date,",
+				"          status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcOrdersData",
+				"source(output(",
+				"          order_id as short,",
+				"          car_id as string,",
+				"          customer_id as string,",
+				"          order_start_dt as date,",
+				"          order_close_dt as date,",
+				"          status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcOrdersDataSecond",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"srcOrdersData derive(status_init = upper(left(status,1))+lower(right(status,length(status)-1)),",
+				"          formatted_order_start_dt = toString(order_start_dt, 'd MMMM yyyy'),",
+				"          formatted_order_close_dt = toString(order_close_dt, 'd MMMM yyyy')) ~> derivedcols"
+			]
+		}
+	}
+}
