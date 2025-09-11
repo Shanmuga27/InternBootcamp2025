@@ -20,14 +20,63 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "join1",
+					"description": " 'sourceAUG' \nRight join \n'sourceSEPT'"
+				},
+				{
+					"name": "alterRow1",
+					"description": "Insert only new rows"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "selectSrcSEPT"
+				}
+			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          order_id as short,",
+				"          car_id as string,",
+				"          customer_id as string,",
+				"          order_start_dt as date,",
+				"          order_close_dt as date,",
+				"          status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourceAUG",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          order_id as short,",
+				"          car_id as string,",
+				"          customer_id as string,",
+				"          order_start_dt as date,",
+				"          order_close_dt as date,",
+				"          status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> sourceSEPT"
+				"     ignoreNoFilesFound: false) ~> sourceSEPT",
+				"sourceAUG, selectSrcSEPT join(order_id == n_order_id,",
+				"     joinType:'right',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 alterRow(insertIf(isNull(order_id))) ~> alterRow1",
+				"alterRow1 derive(order_id = order_id,",
+				"          n_order_id = n_order_id) ~> derivedColumn1",
+				"sourceSEPT select(mapColumn(",
+				"          n_order_id = order_id,",
+				"          n_car_id = car_id,",
+				"          n_customer_id = customer_id,",
+				"          n_order_start_dt = order_start_dt,",
+				"          n_order_close_dt = order_close_dt,",
+				"          n_status = status",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSrcSEPT"
 			]
 		}
 	}
