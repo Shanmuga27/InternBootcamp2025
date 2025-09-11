@@ -10,29 +10,33 @@
 						"type": "DatasetReference"
 					},
 					"name": "SRC1"
-				},
-				{
-					"dataset": {
-						"referenceName": "DS_Blob_IN1677_Tgt",
-						"type": "DatasetReference"
-					},
-					"name": "SRC2"
 				}
 			],
 			"sinks": [],
 			"transformations": [
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "alterRow1"
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          order_id as short,",
+				"          car_id as string,",
+				"          customer_id as string,",
+				"          order_start_dt as date,",
+				"          order_close_dt as date,",
+				"          status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SRC1",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> SRC2",
-				"SRC1 derive() ~> derivedColumn1"
+				"SRC1 derive(order_start_dt = toString(order_start_dt,'d MMMM yyyy'),",
+				"          order_close_dt = toString(order_close_dt, 'd MMMM yyyy'),",
+				"          status = initCap(status)) ~> derivedColumn1",
+				"derivedColumn1 alterRow() ~> alterRow1"
 			]
 		}
 	}
