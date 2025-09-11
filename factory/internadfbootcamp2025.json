@@ -1,5 +1,13 @@
 {
 	"name": "internadfbootcamp2025",
+	"properties": {
+		"globalParameters": {
+			"GP_environment": {
+				"type": "string",
+				"value": "DEV"
+			}
+		}
+	},
 	"location": "centralindia",
 	"identity": {
 		"type": "SystemAssigned",
