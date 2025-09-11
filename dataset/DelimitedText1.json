@@ -1,0 +1,80 @@
+{
+	"name": "DelimitedText1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Azure_Blob_Storage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "IN1689",
+				"container": "boootcamp25"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "SOURCE_SYSTEM_CODE",
+				"type": "String"
+			},
+			{
+				"name": "AIRFLOW_RUN_ID",
+				"type": "String"
+			},
+			{
+				"name": "ETL_AUDIT_CREATE_USER",
+				"type": "String"
+			},
+			{
+				"name": "ETL_AUDIT_CREATE_TS",
+				"type": "String"
+			},
+			{
+				"name": "ETL_AUDIT_UPDATE_USER",
+				"type": "String"
+			},
+			{
+				"name": "ETL_AUDIT_UPDATE_TS",
+				"type": "String"
+			},
+			{
+				"name": "CATEGORY_ID",
+				"type": "String"
+			},
+			{
+				"name": "DEPT_ID",
+				"type": "String"
+			},
+			{
+				"name": "CLASS_ID",
+				"type": "String"
+			},
+			{
+				"name": "LINE_ID",
+				"type": "String"
+			},
+			{
+				"name": "DEPT_NAME",
+				"type": "String"
+			},
+			{
+				"name": "CLASS_NAME",
+				"type": "String"
+			},
+			{
+				"name": "LINE_NAME",
+				"type": "String"
+			},
+			{
+				"name": "CREATION_DT",
+				"type": "String"
+			}
+		]
+	}
+}
