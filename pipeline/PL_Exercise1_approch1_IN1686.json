@@ -1,5 +1,5 @@
 {
-	"name": "PL_Exercise1_IN1686",
+	"name": "PL_Exercise1_approch1_IN1686",
 	"properties": {
 		"activities": [
 			{
@@ -29,6 +29,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
