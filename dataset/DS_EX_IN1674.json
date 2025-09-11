@@ -1,0 +1,24 @@
+{
+	"name": "DS_EX_IN1674",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Ls_SQL Server_IN1674",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"schemaname": {
+				"type": "string"
+			},
+			"tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "CKumaram",
+			"table": "Demo"
+		}
+	}
+}
