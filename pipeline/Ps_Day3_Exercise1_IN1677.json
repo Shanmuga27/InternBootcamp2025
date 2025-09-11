@@ -63,8 +63,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "boootcamp25",
-							"directory": "IN1677\\tgt_anime",
-							"file": "anime_tgt_1"
+							"directory": "IN1677\\tgt_anime"
 						}
 					}
 				]
