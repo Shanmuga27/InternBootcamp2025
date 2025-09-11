@@ -16,11 +16,10 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "DS_Blob_IN1677",
+						"referenceName": "DS_Blob_IN1677_Src",
 						"type": "DatasetReference",
 						"parameters": {
-							"Container": "boootcamp25",
-							"Directory": "IN1677"
+							"Container": "boootcamp25"
 						}
 					},
 					"fieldList": [

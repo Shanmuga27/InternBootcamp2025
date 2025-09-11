@@ -126,7 +126,7 @@
 						"referenceName": "DS_SqlServer",
 						"type": "DatasetReference",
 						"parameters": {
-							"schema": "Intern_2025",
+							"schema": "ADF_Training",
 							"table": "anime1"
 						}
 					}

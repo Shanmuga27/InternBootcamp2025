@@ -1,5 +1,5 @@
 {
-	"name": "Ps_Exercise2_In1677",
+	"name": "Ps_Day2_Exercise1_In1677",
 	"properties": {
 		"activities": [
 			{
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "DS_Blob_IN1677",
+						"referenceName": "DS_Blob_IN1677_Src",
 						"type": "DatasetReference",
 						"parameters": {
 							"Container": {
