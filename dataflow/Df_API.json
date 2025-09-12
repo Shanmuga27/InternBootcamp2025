@@ -5,10 +5,6 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"dataset": {
-						"referenceName": "Ds_HTTP_Users",
-						"type": "DatasetReference"
-					},
 					"name": "API"
 				}
 			],
@@ -16,9 +12,7 @@
 			"transformations": [],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
-				"     documentForm: 'documentPerLine') ~> API"
+				"     validateSchema: false) ~> API"
 			]
 		}
 	}
