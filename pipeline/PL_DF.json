@@ -75,7 +75,7 @@
 						"parameters": {
 							"container": "boootcamp25",
 							"directory": "IN1677/tgt_orders",
-							"file": "tgt_orders_data.csv"
+							"file": "tgt_orders_data"
 						}
 					},
 					"firstRowOnly": false
