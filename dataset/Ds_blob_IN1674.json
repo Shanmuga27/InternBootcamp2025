@@ -16,7 +16,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "customers-100.csv",
 				"folderPath": "IN1674",
 				"container": "boootcamp25"
 			},
