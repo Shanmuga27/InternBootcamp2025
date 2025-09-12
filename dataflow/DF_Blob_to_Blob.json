@@ -30,10 +30,10 @@
 			],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
+					"name": "join"
 				},
 				{
-					"name": "join"
+					"name": "split1"
 				}
 			],
 			"scriptLines": [
@@ -59,28 +59,19 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> tgt",
-				"join derive(order_start_dt = toString(source@order_start_dt, 'dd-MMMM-yyyy'),",
-				"          order_close_dt = toString(source@order_close_dt, 'dd-MMMM-yyyy'),",
-				"          status = initCap(source@status)) ~> derivedColumn1",
 				"source, tgt join(source@order_id == tgt@order_id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"join split(isNull(tgt@order_id),",
+				"     disjoint: true) ~> split1@(insert)",
+				"split1@insert sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['orders.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     saveOrder: 1,",
-				"     mapColumn(",
-				"          order_id = source@order_id,",
-				"          car_id = source@car_id,",
-				"          customer_id = source@customer_id,",
-				"          order_start_dt,",
-				"          order_close_dt,",
-				"          status",
-				"     ),",
 				"     partitionBy('hash', 1)) ~> sink"
 			]
 		}

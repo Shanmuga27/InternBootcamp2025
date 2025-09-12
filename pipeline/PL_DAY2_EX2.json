@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
+				"name": "CP_Incermental_Load",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -35,7 +35,6 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
-						"preCopyScript": "truncate table orders;",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false
 					},
@@ -70,68 +69,6 @@
 				]
 			},
 			{
-				"name": "CP_Blob_SQLServer",
-				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
-					"sink": {
-						"type": "SqlServerSink",
-						"preCopyScript": "truncate table orders;",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "DS_Blob_IN1684",
-						"type": "DatasetReference",
-						"parameters": {
-							"PR_Directory": "IN1684/orders",
-							"PR_Filename": "orders_11082025.csv"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "DS_SQL_Server_IN1684",
-						"type": "DatasetReference",
-						"parameters": {
-							"PR_Tablename": "orders"
-						}
-					}
-				]
-			},
-			{
 				"name": "Data flow1",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
@@ -149,7 +86,7 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"source": {
-								"PR_Directory": "IN1684/orders",
+								"PR_Directory": "Src files",
 								"PR_Filename": "orders_11092025.csv"
 							},
 							"tgt": {
@@ -170,10 +107,8 @@
 				}
 			},
 			{
-				"name": "Copy data2",
+				"name": "CP_FULL_LOAD",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -221,7 +156,7 @@
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference",
 						"parameters": {
-							"PR_Directory": "IN1684/orders",
+							"PR_Directory": "Src files",
 							"PR_Filename": "orders_11082025.csv"
 						}
 					}

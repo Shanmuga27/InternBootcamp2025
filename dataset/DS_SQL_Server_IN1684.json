@@ -3,10 +3,22 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_SQLServer_IN1684",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DataBase": {
+					"value": "@dataset().PR_Database",
+					"type": "Expression"
+				}
+			}
 		},
 		"parameters": {
 			"PR_Tablename": {
+				"type": "string"
+			},
+			"PR_Schema": {
+				"type": "string"
+			},
+			"PR_Database": {
 				"type": "string"
 			}
 		},
@@ -14,7 +26,10 @@
 		"type": "SqlServerTable",
 		"schema": [],
 		"typeProperties": {
-			"schema": "PMahendi",
+			"schema": {
+				"value": "@dataset().PR_Schema",
+				"type": "Expression"
+			},
 			"table": {
 				"value": "@dataset().PR_Tablename",
 				"type": "Expression"
