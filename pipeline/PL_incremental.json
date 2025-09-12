@@ -3,57 +3,6 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "ForEach1",
-				"type": "ForEach",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [],
-				"userProperties": [],
-				"typeProperties": {
-					"items": {
-						"value": "@max(array(activity('Get Metadata1').output.lastModified))",
-						"type": "Expression"
-					},
-					"isSequential": true,
-					"activities": [
-						{
-							"name": "Get Metadata1",
-							"type": "GetMetadata",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"dataset": {
-									"referenceName": "DS_CSV_IN1685",
-									"type": "DatasetReference",
-									"parameters": {
-										"Param_Container": "boootcamp25",
-										"Param_Folder": "Src files",
-										"Param_FileName": "*"
-									}
-								},
-								"fieldList": [
-									"lastModified"
-								],
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							}
-						}
-					]
-				}
-			},
-			{
 				"name": "Get Metadata2",
 				"type": "GetMetadata",
 				"dependsOn": [],
@@ -80,14 +29,82 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
 						"type": "DelimitedTextReadSettings"
 					}
 				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata2').output.lastModified",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Append variable1",
+							"type": "AppendVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "last_modified_Var",
+								"value": {
+									"value": "@max(item())",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set variable1",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Append variable1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "max_var",
+								"value": {
+									"value": "@variables('last_modified_Var')",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
 			}
 		],
+		"variables": {
+			"last_modified_Var": {
+				"type": "Array"
+			},
+			"max_var": {
+				"type": "Array"
+			}
+		},
 		"annotations": []
 	}
 }
