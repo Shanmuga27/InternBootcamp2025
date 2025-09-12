@@ -5,6 +5,8 @@
 			{
 				"name": "Data flow1",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -46,8 +48,6 @@
 			{
 				"name": "Lookup1",
 				"type": "Lookup",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -75,7 +75,7 @@
 						"parameters": {
 							"container": "boootcamp25",
 							"directory": "IN1677/tgt_orders",
-							"file": "tgt_orders_data"
+							"file": "tgt_orders_data.csv"
 						}
 					},
 					"firstRowOnly": false
