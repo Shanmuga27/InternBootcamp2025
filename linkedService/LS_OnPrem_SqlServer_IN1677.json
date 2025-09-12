@@ -12,11 +12,11 @@
 		"typeProperties": {
 			"server": "SSIC-SQL-01",
 			"database": "@{linkedService().db}",
-			"encrypt": "mandatory",
+			"encrypt": "optional",
 			"trustServerCertificate": true,
 			"authenticationType": "SQL",
 			"userName": "I2025_JSivakum",
-			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIwNDc1NDFiMi04NGRlLTRkMDgtYWNlMy1hOGUyMjgwNzBhNjQiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJkYTEyZmRjYS1jZGVjLTQ5MjYtYjNmNS05MGFjNWFlZmM3M2EiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
 		},
 		"connectVia": {
 			"referenceName": "SHIR-OnPrem",
