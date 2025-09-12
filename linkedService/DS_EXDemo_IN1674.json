@@ -1,0 +1,12 @@
+{
+	"name": "DS_EXDemo_IN1674",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://api.restful-api.dev/objects",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
