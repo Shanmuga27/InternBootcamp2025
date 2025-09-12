@@ -1,0 +1,12 @@
+{
+	"name": "api_posts",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_API",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	}
+}

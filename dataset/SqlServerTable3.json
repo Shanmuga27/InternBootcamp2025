@@ -1,0 +1,35 @@
+{
+	"name": "SqlServerTable3",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Onprem_SQLSERVER__IN1689",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "userId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "title",
+				"type": "nvarchar"
+			},
+			{
+				"name": "body",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "VSri",
+			"table": "tgt_api_IN1689"
+		}
+	}
+}
