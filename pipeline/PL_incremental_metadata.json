@@ -74,8 +74,6 @@
 			{
 				"name": "read_untill_array_is_empty",
 				"type": "Until",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "append_array_names_into_array",

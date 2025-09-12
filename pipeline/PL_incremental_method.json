@@ -3,55 +3,74 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_Incremental_method",
-				"type": "ExecuteDataFlow",
+				"name": "for_each_read",
+				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Set variable1",
+						"activity": "get_all_the_files",
 						"dependencyConditions": [
 							"Succeeded"
 						]
 					}
 				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataflow": {
-						"referenceName": "DF_Incremental_method",
-						"type": "DataFlowReference",
-						"datasetParameters": {
-							"srcOrdersData": {
-								"container": "boootcamp2025",
-								"folder": "Src files",
-								"file": "orders_11082025.csv"
+					"items": {
+						"value": "@activity('get_all_the_files').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "DF_Incremental_method",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
 							},
-							"srcOrdersDataSecond": {
-								"container": "boootcamp2025",
-								"folder": "Src files",
-								"file": "orders_11092025.csv"
-							},
-							"source1": {
-								"SchemaName": "KRavi",
-								"TableName": "controltable"
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "DF_Incremental_method",
+									"type": "DataFlowReference",
+									"datasetParameters": {
+										"srcOrdersData": {
+											"container": "boootcamp25",
+											"folder": "Src files",
+											"file": {
+												"value": "@item().name",
+												"type": "Expression"
+											}
+										},
+										"tgt": {
+											"container": "boootcamp25",
+											"folder": "IN1680",
+											"file": "tgt_incr.csv"
+										},
+										"sink1": {
+											"container": "boootcamp25",
+											"folder": "IN1680",
+											"file": "tgt_incr.csv"
+										}
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
 							}
 						}
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
+					]
 				}
 			},
 			{
-				"name": "Lookup1",
-				"type": "Lookup",
+				"name": "get_all_the_files",
+				"type": "GetMetadata",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -62,43 +81,24 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "SqlServerSource",
-						"sqlReaderQuery": "select max(max_date)\nfrom controltable_date;",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
 					"dataset": {
-						"referenceName": "DS_SQL_Server_IN1680",
+						"referenceName": "DS_Blob_1680",
 						"type": "DatasetReference",
 						"parameters": {
-							"SchemaName": "KRavi",
-							"TableName": "controltable_date"
+							"container": "boootcamp25",
+							"folder": "Src files",
+							"file": "*"
 						}
-					}
-				}
-			},
-			{
-				"name": "Set variable1",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "Lookup1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "Max_id",
-					"value": {
-						"value": "@activity('Lookup1').output.firstRow['']",
-						"type": "Expression"
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
 					}
 				}
 			}
