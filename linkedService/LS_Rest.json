@@ -4,7 +4,7 @@
 		"annotations": [],
 		"type": "RestService",
 		"typeProperties": {
-			"url": "http://universities.hipolabs.com",
+			"url": "https://official-joke-api.appspot.com/",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Anonymous"
 		}
