@@ -1,0 +1,39 @@
+{
+	"name": "ds_sql_customer",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Onprem_SQLSERVER__IN1689",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "Id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "email",
+				"type": "nvarchar"
+			},
+			{
+				"name": "created_date",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "pipeline_run_id",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "VSri",
+			"table": "tgt_customer_IN1689"
+		}
+	}
+}
