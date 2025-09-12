@@ -102,35 +102,6 @@
 				}
 			},
 			{
-				"name": "Filter1",
-				"type": "Filter",
-				"dependsOn": [
-					{
-						"activity": "LookupSRC",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "LookupTGT",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"items": {
-						"value": "@array(activity('LookupSRC').output.value[4])",
-						"type": "Expression"
-					},
-					"condition": {
-						"value": "@greater(item(), activity('LookupTGT').output.firstRow)\n",
-						"type": "Expression"
-					}
-				}
-			},
-			{
 				"name": "LookupTGT",
 				"type": "Lookup",
 				"dependsOn": [],
@@ -197,8 +168,25 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
 								"enableStaging": false
-							}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_CSV_IN1685",
+									"type": "DatasetReference"
+								}
+							]
 						}
 					]
 				}
