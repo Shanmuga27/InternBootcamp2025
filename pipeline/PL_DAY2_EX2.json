@@ -54,11 +54,8 @@
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference",
 						"parameters": {
-							"PR_Directory": "''",
-							"PR_Filename": {
-								"value": "@activity('Data flow1').output",
-								"type": "Expression"
-							}
+							"PR_Directory": "IN1684/tgt",
+							"PR_Filename": "orders.csv"
 						}
 					}
 				],
@@ -153,7 +150,7 @@
 						"datasetParameters": {
 							"source": {
 								"PR_Directory": "IN1684/orders",
-								"PR_Filename": "orders_11082025.csv"
+								"PR_Filename": "orders_11092025.csv"
 							},
 							"tgt": {
 								"PR_Directory": "IN1684/tgt",

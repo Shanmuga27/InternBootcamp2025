@@ -73,6 +73,14 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     saveOrder: 1,",
+				"     mapColumn(",
+				"          order_id = source@order_id,",
+				"          car_id = source@car_id,",
+				"          customer_id = source@customer_id,",
+				"          order_start_dt,",
+				"          order_close_dt,",
+				"          status",
+				"     ),",
 				"     partitionBy('hash', 1)) ~> sink"
 			]
 		}
