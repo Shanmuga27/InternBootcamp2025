@@ -1,0 +1,41 @@
+{
+	"name": "DS_Excel",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Azure_Blob_Storage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"directory": {
+				"type": "string"
+			},
+			"Filename": {
+				"type": "string"
+			},
+			"sheet": {
+				"type": "int"
+			}
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().Filename",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().directory",
+					"type": "Expression"
+				},
+				"container": "boootcamp25"
+			},
+			"sheetIndex": {
+				"value": "@dataset().sheet",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	}
+}

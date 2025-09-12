@@ -186,6 +186,8 @@
 			{
 				"name": "CP_Server_Blob",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -239,10 +241,238 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"PR_Directory": "IN1684/Day4",
-							"PR_Filename": "tgt_"
+							"PR_Filename": "tgt_sales_details_IN1684.csv"
 						}
 					}
 				]
+			},
+			{
+				"name": "Retrieve excel files",
+				"type": "GetMetadata",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_Excel",
+						"type": "DatasetReference",
+						"parameters": {
+							"directory": "IN1684/Books",
+							"Filename": "*",
+							"sheet": 0
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "Loop and Load",
+				"type": "ForEach",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "Retrieve excel files",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Retrieve excel files').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "CP_Multi_excel_to_SQLServer",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "ExcelSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									}
+								},
+								"sink": {
+									"type": "SqlServerSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"tableOption": "autoCreate"
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_Excel",
+									"type": "DatasetReference",
+									"parameters": {
+										"directory": "IN1684/Books",
+										"Filename": {
+											"value": "@item().name",
+											"type": "Expression"
+										},
+										"sheet": 0
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_SQL_Server_IN1684",
+									"type": "DatasetReference",
+									"parameters": {
+										"PR_Tablename": "tgt_multipleexcel_IN1684",
+										"PR_Schema": "PMahendi",
+										"PR_Database": "ADF_Training"
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "CP_Blob_Blob",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Copy",
+							"PR_Filename": "*"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Src files",
+							"PR_Filename": "*"
+						}
+					}
+				]
+			},
+			{
+				"name": "Delete_Source",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "CP_Blob_Blob",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Copy",
+							"PR_Filename": "*"
+						}
+					},
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "LS_Azure_Blob_Storage",
+							"type": "LinkedServiceReference"
+						}
+					},
+					"enableLogging": true,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					}
+				}
 			}
 		],
 		"folder": {
