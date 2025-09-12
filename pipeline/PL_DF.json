@@ -73,7 +73,7 @@
 						"referenceName": "DS_Blob_IN1677_Tgt",
 						"type": "DatasetReference",
 						"parameters": {
-							"container": "boootcamp",
+							"container": "boootcamp25",
 							"directory": "IN1677/tgt_orders",
 							"file": "tgt_orders_data"
 						}
