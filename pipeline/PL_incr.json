@@ -17,7 +17,12 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "DF_incr",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"sourceAUG": {
+								"Param_Container": "boootcamp25"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
