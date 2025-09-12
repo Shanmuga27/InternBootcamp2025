@@ -1,0 +1,12 @@
+{
+	"name": "LS_Rest_API_IN1684",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://icanhazdadjoke.com/",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
