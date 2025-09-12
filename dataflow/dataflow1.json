@@ -19,18 +19,13 @@
 					"name": "deltaorders"
 				}
 			],
-			"sinks": [
-				{
-					"dataset": {
-						"referenceName": "updated_baseline",
-						"type": "DatasetReference"
-					},
-					"name": "sink1"
-				}
-			],
+			"sinks": [],
 			"transformations": [
 				{
-					"name": "unionallorders"
+					"name": "union1"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -48,11 +43,8 @@
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> deltaorders",
-				"baselineorders, deltaorders union(byName: true)~> unionallorders",
-				"unionallorders sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"baselineorders, deltaorders union(byName: true)~> union1",
+				"union1 filter(ERROR_FUNCTION('')) ~> filter1"
 			]
 		}
 	}
