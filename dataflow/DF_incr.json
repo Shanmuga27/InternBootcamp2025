@@ -30,11 +30,14 @@
 			],
 			"transformations": [
 				{
-					"name": "filter1"
-				},
-				{
 					"name": "join1",
 					"description": " 'sourceAUG' \nRight join\n'tgt'"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -60,13 +63,23 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> tgt",
-				"join1 filter(sourceAUG@order_start_dt > toDate(tgt@order_start_dt)) ~> filter1",
 				"sourceAUG, tgt join(sourceAUG@order_id == toInteger(tgt@order_id),",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"filter1 sink(allowSchemaDrift: true,",
+				"join1 alterRow(insertIf(sourceAUG@order_start_dt>toDate(tgt@order_start_dt))) ~> alterRow1",
+				"alterRow1 select(mapColumn(",
+				"          order_id = sourceAUG@order_id,",
+				"          car_id = sourceAUG@car_id,",
+				"          customer_id = sourceAUG@customer_id,",
+				"          order_start_dt = sourceAUG@order_start_dt,",
+				"          order_close_dt = sourceAUG@order_close_dt,",
+				"          status = sourceAUG@status",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> sink1"
