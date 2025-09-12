@@ -5,15 +5,41 @@
 			"referenceName": "LS_Azure_Blob_Storage",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"container": {
+				"type": "string"
+			},
+			"directory": {
+				"type": "string"
+			},
+			"file": {
+				"type": "string"
+			},
+			"sheet_no": {
+				"type": "int"
+			}
+		},
 		"annotations": [],
 		"type": "Excel",
 		"typeProperties": {
-			"sheetName": "Sheet1",
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "std.xlsx",
-				"folderPath": "IN1677",
-				"container": "boootcamp25"
+				"fileName": {
+					"value": "@dataset().file",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().directory",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().container",
+					"type": "Expression"
+				}
+			},
+			"sheetIndex": {
+				"value": "@dataset().sheet_no",
+				"type": "Expression"
 			},
 			"firstRowAsHeader": true
 		},
