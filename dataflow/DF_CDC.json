@@ -17,9 +17,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "TgtOrders"
-				},
-				{
-					"name": "source1"
 				}
 			],
 			"sinks": [
@@ -65,8 +62,6 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> TgtOrders",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source1",
 				"IncomingSrcOrders, TgtOrders join(IncomingSrcOrders@order_id == TgtOrders@order_id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
