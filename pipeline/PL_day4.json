@@ -30,6 +30,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					}
 				}
@@ -111,7 +112,10 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"Par_SchemaName": "RRamesh",
-										"Par_TableName": "tgt_multipleexcel_IN1685"
+										"Par_TableName": {
+											"value": "@replace(item().name, '.xlsx', '')",
+											"type": "Expression"
+										}
 									}
 								}
 							]
