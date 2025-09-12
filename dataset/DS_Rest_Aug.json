@@ -1,10 +1,6 @@
 {
 	"name": "DS_Rest_Aug",
 	"properties": {
-		"linkedServiceName": {
-			"referenceName": "LS_Rest",
-			"type": "LinkedServiceReference"
-		},
 		"annotations": [],
 		"type": "RestResource",
 		"schema": []

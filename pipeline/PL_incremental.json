@@ -104,8 +104,6 @@
 			{
 				"name": "Filter1",
 				"type": "Filter",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "LookupSRC",
@@ -123,11 +121,11 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('LookupSRC').output.value['4']",
+						"value": "@array(activity('LookupSRC').output.value[4])",
 						"type": "Expression"
 					},
 					"condition": {
-						"value": "@greater(item(), activity('LookupTGT').output.firstRow)",
+						"value": "@greater(item(), activity('LookupTGT').output.firstRow)\n",
 						"type": "Expression"
 					}
 				}
@@ -160,6 +158,49 @@
 						}
 					},
 					"firstRowOnly": true
+				}
+			},
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "LookupSRC",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "LookupTGT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@greater(activity('LookupSRC').output.value[4], activity('LookupTGT').output.firstRow)",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Copy data2",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"enableStaging": false
+							}
+						}
+					]
 				}
 			}
 		],
