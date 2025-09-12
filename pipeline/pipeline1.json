@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "select trans_id , sales_amount, order_date\nfrom trans\nwhere order_date>='2000-01-05'",
+						"sqlReaderQuery": "select *\nfrom LOAD_CONTROL\nwhere JOB_START_DATETIME>=",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
