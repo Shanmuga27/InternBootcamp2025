@@ -27,7 +27,19 @@
 				"fileName": {
 					"value": "@dataset().Param_File",
 					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().Param_Folder",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().Param_Container",
+					"type": "Expression"
 				}
+			},
+			"sheetIndex": {
+				"value": "@dataset().Param_Sheet_Index",
+				"type": "Expression"
 			},
 			"firstRowAsHeader": true
 		},
