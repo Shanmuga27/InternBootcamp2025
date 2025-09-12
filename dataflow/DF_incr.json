@@ -10,12 +10,31 @@
 						"type": "DatasetReference"
 					},
 					"name": "sourceAUG"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "tgt"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
+					"name": "filter1"
+				},
+				{
+					"name": "join1",
+					"description": " 'sourceAUG' \nRight join\n'tgt'"
 				}
 			],
 			"scriptLines": [
@@ -30,9 +49,27 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourceAUG",
-				"sourceAUG derive(order_start_dt = toString(order_start_dt, 'dd-MMMM-yyyy'),",
-				"          status = initCap(status),",
-				"          order_close_dt = toString(order_start_dt, 'dd-MMMM-yyyy')) ~> derivedColumn1"
+				"source(output(",
+				"          order_id as string,",
+				"          car_id as string,",
+				"          customer_id as string,",
+				"          order_start_dt as string,",
+				"          order_close_dt as string,",
+				"          status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> tgt",
+				"join1 filter(sourceAUG@order_start_dt > toDate(tgt@order_start_dt)) ~> filter1",
+				"sourceAUG, tgt join(sourceAUG@order_id == toInteger(tgt@order_id),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
