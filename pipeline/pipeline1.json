@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Get Metadata1",
+				"name": "FIle list",
 				"type": "GetMetadata",
 				"dependsOn": [],
 				"policy": {
@@ -24,18 +24,219 @@
 						}
 					},
 					"fieldList": [
-						"lastModified"
+						"childItems"
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
 						"type": "DelimitedTextReadSettings"
 					}
 				}
+			},
+			{
+				"name": "iterate",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "FIle list",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('FIle list').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "last modified",
+							"type": "GetMetadata",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataset": {
+									"referenceName": "DS_Blob_IN1684",
+									"type": "DatasetReference",
+									"parameters": {
+										"PR_Directory": "IN1684/orders",
+										"PR_Filename": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								},
+								"fieldList": [
+									"lastModified"
+								],
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							}
+						},
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Latest file",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "SqlServerSink",
+									"preCopyScript": "truncate table orders;",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_Blob_IN1684",
+									"type": "DatasetReference",
+									"parameters": {
+										"PR_Directory": "IN1684/orders",
+										"PR_Filename": {
+											"value": "@variables('LatestFileName')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_SQL_Server_IN1684",
+									"type": "DatasetReference",
+									"parameters": {
+										"PR_Tablename": "orders"
+									}
+								}
+							]
+						},
+						{
+							"name": "Latest file",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "last modified",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@or(equals(variables('LatestModified'), ''),\n    greater(activity('last modified').output.lastModified, variables('LatestModified')))",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "Latest Modified",
+										"type": "SetVariable",
+										"dependsOn": [],
+										"policy": {
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "LatestModified",
+											"value": {
+												"value": "@activity('last modified').output.lastModified",
+												"type": "Expression"
+											}
+										}
+									},
+									{
+										"name": "lastest file name",
+										"type": "SetVariable",
+										"dependsOn": [
+											{
+												"activity": "Latest Modified",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "LatestFileName",
+											"value": {
+												"value": "@item().Name",
+												"type": "Expression"
+											}
+										}
+									}
+								]
+							}
+						}
+					]
+				}
 			}
 		],
+		"variables": {
+			"LatestFileName": {
+				"type": "String",
+				"defaultValue": "''"
+			},
+			"LatestModified": {
+				"type": "String",
+				"defaultValue": "''"
+			}
+		},
 		"annotations": []
 	}
 }
