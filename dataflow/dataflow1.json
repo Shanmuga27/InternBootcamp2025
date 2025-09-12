@@ -6,19 +6,31 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "DelimitedText3",
+						"referenceName": "file1",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "baselineorders"
 				},
 				{
-					"name": "source2"
+					"dataset": {
+						"referenceName": "DelimitedText5",
+						"type": "DatasetReference"
+					},
+					"name": "deltaorders"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "updated_baseline",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
+					"name": "unionallorders"
 				}
 			],
 			"scriptLines": [
@@ -32,10 +44,15 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
+				"     ignoreNoFilesFound: false) ~> baselineorders",
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source2",
-				"source1 derive() ~> derivedColumn1"
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> deltaorders",
+				"baselineorders, deltaorders union(byName: true)~> unionallorders",
+				"unionallorders sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
