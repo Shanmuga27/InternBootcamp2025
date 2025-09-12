@@ -1,10 +1,10 @@
 {
-	"name": "pipeline1",
+	"name": "PL_incre",
 	"properties": {
 		"activities": [
 			{
-				"name": "Data flow1",
-				"type": "ExecuteDataFlow",
+				"name": "Get Metadata1",
+				"type": "GetMetadata",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -15,30 +15,64 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataflow": {
-						"referenceName": "DF_CDC",
-						"type": "DataFlowReference",
-						"datasetParameters": {
-							"source1": {
-								"Container": "boootcamp25",
-								"File": "orders_11082025.csv",
-								"directory": "IN1677/src_orders"
-							},
-							"sink1": {
-								"container": "boootcamp25",
-								"directory": "IN1677/tgt_orders",
-								"file": "tgt_orders"
-							}
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "boootcamp25",
+							"directory": "IN1677/src_orders"
 						}
 					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
+					"fieldList": [
+						"lastModified"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
 					},
-					"traceLevel": "Fine"
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.lastModified",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Append variable1",
+							"type": "AppendVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "lastest",
+								"value": ""
+							}
+						}
+					]
 				}
 			}
 		],
+		"variables": {
+			"lastest": {
+				"type": "Array"
+			}
+		},
 		"annotations": []
 	}
 }
