@@ -23,7 +23,7 @@
 								"value": "@pipeline().parameters.container",
 								"type": "Expression"
 							},
-							"Directory": {
+							"directory": {
 								"value": "@pipeline().parameters.directory",
 								"type": "Expression"
 							}
