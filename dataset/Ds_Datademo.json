@@ -1,0 +1,12 @@
+{
+	"name": "Ds_Datademo",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DS_EXDemo_IN1674",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	}
+}
