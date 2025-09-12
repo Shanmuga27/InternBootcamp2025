@@ -55,8 +55,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Param_Container": "boootcamp25",
-							"Param_Folder": "IN1685",
-							"Param_FileName": "csvfile.csv"
+							"Param_Folder": "IN1685"
 						}
 					}
 				],
@@ -66,8 +65,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Param_Container": "boootcamp25",
-							"Param_Folder": "IN1685/sub_IN1685",
-							"Param_FileName": "csvfile_sub.csv"
+							"Param_Folder": "IN1685/sub_IN1685"
 						}
 					}
 				]
@@ -153,11 +151,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Param_Container": "boootcamp25",
-							"Param_Folder": "IN1685/sub_IN1685",
-							"Param_FileName": {
-								"value": "@activity('Copy Folder-Folder').output",
-								"type": "Expression"
-							}
+							"Param_Folder": "IN1685/sub_IN1685"
 						}
 					}
 				],
@@ -175,6 +169,8 @@
 			{
 				"name": "Copy LoadData",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -218,8 +214,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Param_Container": "boootcamp25",
-							"Param_Folder": "IN1685",
-							"Param_FileName": "sample_file.csv"
+							"Param_Folder": "IN1685"
 						}
 					}
 				],
