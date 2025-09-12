@@ -3,8 +3,10 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
+				"name": "Copy_from_API_to_SQL_Server",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -44,10 +46,325 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"TableName": "API_Table",
-							"SchemaName": "DMuthuku"
+							"SchemaName": "DMuthuku",
+							"DatabaseName": "ADF_Training"
 						}
 					}
 				]
+			},
+			{
+				"name": "copy_from_sql_server_to_sql_server",
+				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"additionalColumns": [
+							{
+								"name": "Pipeline_RunID",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Created_Date",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							}
+						],
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "CustomerID",
+									"type": "String",
+									"physicalType": "nchar"
+								},
+								"sink": {
+									"name": "ID",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CompanyName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "Name",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ContactName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "Email",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Pipeline_RunID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Pipeline_RunID",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Created_Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Created_Date",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_OnPremSQL_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": "Customers",
+							"SchemaName": "dbo",
+							"DatabaseName": "Northwind"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_OnPremSQL_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": "tgt_customer_IN1675",
+							"SchemaName": "DMuthuku",
+							"DatabaseName": "ADF_Training"
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy_SQl_Server_to_ADLS",
+				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_OnPremSQL_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": "Healthcare",
+							"SchemaName": "DMuthuku",
+							"DatabaseName": "ADF_Training"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"ContainerName": "boootcamp25",
+							"FolderName": "IN1675",
+							"FileName": "Healthcare.csv"
+						}
+					}
+				]
+			},
+			{
+				"name": "Get Metadata1",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_Excel_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"SheetName": "0",
+							"FileName": "*",
+							"FolderName": "IN1675/Northwind",
+							"ContainerName": "boootcamp25"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "ExcelSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									}
+								},
+								"sink": {
+									"type": "SqlServerSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"tableOption": "autoCreate"
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_Excel_IN1675",
+									"type": "DatasetReference",
+									"parameters": {
+										"SheetName": "0",
+										"FileName": {
+											"value": "@item().name",
+											"type": "Expression"
+										},
+										"FolderName": "IN1675/Northwind",
+										"ContainerName": "boootcamp25"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_OnPremSQL_IN1675",
+									"type": "DatasetReference",
+									"parameters": {
+										"TableName": "tgt_multiplefiles_IN1675",
+										"SchemaName": "DMuthuku",
+										"DatabaseName": "ADF_Training"
+									}
+								}
+							]
+						}
+					]
+				}
 			}
 		],
 		"annotations": []
