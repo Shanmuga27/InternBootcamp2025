@@ -3,13 +3,22 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_OnPrem_SqlServer_IN1677",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"db": {
+					"value": "@dataset().db",
+					"type": "Expression"
+				}
+			}
 		},
 		"parameters": {
 			"schema": {
 				"type": "string"
 			},
 			"table": {
+				"type": "string"
+			},
+			"db": {
 				"type": "string"
 			}
 		},
