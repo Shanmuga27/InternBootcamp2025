@@ -20,8 +20,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Param_Container": "boootcamp25",
-							"Param_Folder": "Src files",
-							"Param_FileName": "*"
+							"Param_Folder": "Src files"
 						}
 					},
 					"fieldList": [
