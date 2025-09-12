@@ -5,13 +5,18 @@
 			{
 				"name": "ForEach1",
 				"type": "ForEach",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Get Metadata2').output.lastModified",
+						"value": "@activity('Get Metadata1').output.lastModified",
 						"type": "Expression"
 					},
 					"isSequential": true,
@@ -74,8 +79,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Param_Container": "boootcamp25",
-							"Param_Folder": "Src files",
-							"Param_Filename": "*"
+							"Param_Folder": "Src files"
 						}
 					},
 					"fieldList": [

@@ -11,9 +11,6 @@
 			},
 			"Param_Folder": {
 				"type": "string"
-			},
-			"Param_Filename": {
-				"type": "string"
 			}
 		},
 		"annotations": [],
