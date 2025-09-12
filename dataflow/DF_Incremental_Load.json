@@ -39,7 +39,7 @@
 					"name": "derivedColumn1"
 				},
 				{
-					"name": "alterRow1"
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -70,7 +70,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"alterRow1 select(mapColumn(",
+				"filter1 select(mapColumn(",
 				"          order_id = Src2@order_id,",
 				"          car_id = Src2@car_id,",
 				"          customer_id = Src2@customer_id,",
@@ -83,7 +83,7 @@
 				"select1 derive(each(match(type=='string'), $$ = iifNull($$, 'Unk', $$)),",
 				"          each(match(type=='date'), $$ = iifNull($$, toDate('1900-01-01'), $$)),",
 				"          each(match(type=='short'), $$ = iifNull($$,1, $$))) ~> derivedColumn1",
-				"join1 alterRow(insertIf(isNull(Src2@order_id))) ~> alterRow1",
+				"join1 filter(isNull(Src1@order_id)) ~> filter1",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['current_orders.csv'],",
