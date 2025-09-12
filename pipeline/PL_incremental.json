@@ -3,10 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
-				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
+				"name": "Get Metadata1",
+				"type": "GetMetadata",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -17,132 +15,33 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
-					"sink": {
-						"type": "SqlServerSink",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "DS_CSV_IN1685",
-						"type": "DatasetReference",
-						"parameters": {
-							"Param_Container": "boootcamp25",
-							"Param_Folder": "Src files",
-							"Param_File": "orders_11082025.csv"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "DS_OnPrem_SQLServer",
-						"type": "DatasetReference",
-						"parameters": {
-							"Par_SchemaName": "RRamesh",
-							"Par_TableName": "tgt"
-						}
-					}
-				]
-			},
-			{
-				"name": "LookupSRC",
-				"type": "Lookup",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
 					"dataset": {
 						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference",
 						"parameters": {
 							"Param_Container": "boootcamp25",
 							"Param_Folder": "Src files",
-							"Param_File": "orders_11082025.csv"
+							"Param_File": "*"
 						}
 					},
-					"firstRowOnly": false
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
 				}
 			},
 			{
-				"name": "LookupTGT",
-				"type": "Lookup",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "SqlServerSource",
-						"sqlReaderQuery": "select max(order_start_dt)\nfrom RRamesh.tgt;",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "DS_OnPrem_SQLServer",
-						"type": "DatasetReference",
-						"parameters": {
-							"Par_SchemaName": "RRamesh",
-							"Par_TableName": "tgt"
-						}
-					},
-					"firstRowOnly": true
-				}
-			},
-			{
-				"name": "If Condition1",
-				"type": "IfCondition",
+				"name": "ForEach1",
+				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "LookupSRC",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "LookupTGT",
+						"activity": "Get Metadata1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -150,14 +49,15 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"expression": {
-						"value": "@greater(activity('LookupSRC').output.value[4], activity('LookupTGT').output.firstRow)",
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
 						"type": "Expression"
 					},
-					"ifTrueActivities": [
+					"isSequential": true,
+					"activities": [
 						{
-							"name": "Copy data2",
-							"type": "Copy",
+							"name": "DF_incr",
+							"type": "ExecuteDataFlow",
 							"dependsOn": [],
 							"policy": {
 								"timeout": "0.12:00:00",
@@ -168,25 +68,36 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"source": {
-									"type": "DelimitedTextSource",
-									"storeSettings": {
-										"type": "AzureBlobStorageReadSettings",
-										"recursive": true,
-										"enablePartitionDiscovery": false
-									},
-									"formatSettings": {
-										"type": "DelimitedTextReadSettings"
+								"dataflow": {
+									"referenceName": "DF_incr",
+									"type": "DataFlowReference",
+									"datasetParameters": {
+										"source": {
+											"Param_Container": "boootcamp25",
+											"Param_Folder": "Src files",
+											"Param_File": {
+												"value": "@item().name",
+												"type": "Expression"
+											}
+										},
+										"tgt": {
+											"Param_Container": "boootcamp25",
+											"Param_Folder": "IN1685/sub_incr",
+											"Param_File": "tgt.csv"
+										},
+										"sink1": {
+											"Param_Container": "boootcamp25",
+											"Param_Folder": "IN1685/sub_incr",
+											"Param_File": "tgt.csv"
+										}
 									}
 								},
-								"enableStaging": false
-							},
-							"inputs": [
-								{
-									"referenceName": "DS_CSV_IN1685",
-									"type": "DatasetReference"
-								}
-							]
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
 						}
 					]
 				}

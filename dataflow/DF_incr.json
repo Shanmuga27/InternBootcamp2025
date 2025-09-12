@@ -9,7 +9,7 @@
 						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference"
 					},
-					"name": "sourceAUG"
+					"name": "source"
 				},
 				{
 					"dataset": {
@@ -31,13 +31,13 @@
 			"transformations": [
 				{
 					"name": "join1",
-					"description": " 'sourceAUG' \nRight join\n'tgt'"
-				},
-				{
-					"name": "alterRow1"
+					"description": " 'source' \nleft join\n'tgt'"
 				},
 				{
 					"name": "select1"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -51,37 +51,37 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> sourceAUG",
+				"     ignoreNoFilesFound: false) ~> source",
 				"source(output(",
-				"          order_id as string,",
+				"          order_id as short,",
 				"          car_id as string,",
 				"          customer_id as string,",
-				"          order_start_dt as string,",
-				"          order_close_dt as string,",
+				"          order_start_dt as date,",
+				"          order_close_dt as date,",
 				"          status as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> tgt",
-				"sourceAUG, tgt join(sourceAUG@order_id == toInteger(tgt@order_id),",
+				"source, tgt join(source@order_id == tgt@order_id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1 alterRow(insertIf(sourceAUG@order_start_dt>toDate(tgt@order_start_dt))) ~> alterRow1",
-				"alterRow1 select(mapColumn(",
-				"          order_id = sourceAUG@order_id,",
-				"          car_id = sourceAUG@car_id,",
-				"          customer_id = sourceAUG@customer_id,",
-				"          order_start_dt = sourceAUG@order_start_dt,",
-				"          order_close_dt = sourceAUG@order_close_dt,",
-				"          status = sourceAUG@status",
+				"filter1 select(mapColumn(",
+				"          order_id = source@order_id,",
+				"          car_id = source@car_id,",
+				"          customer_id = source@customer_id,",
+				"          order_start_dt = source@order_start_dt,",
+				"          order_close_dt = source@order_close_dt,",
+				"          status = source@status",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
+				"join1 filter(isNull(tgt@order_id)) ~> filter1",
 				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:[''],",
+				"     partitionFileNames:['tgt.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sink1"
