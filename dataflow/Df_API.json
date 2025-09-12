@@ -1,0 +1,25 @@
+{
+	"name": "Df_API",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Ds_HTTP_Users",
+						"type": "DatasetReference"
+					},
+					"name": "API"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> API"
+			]
+		}
+	}
+}

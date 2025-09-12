@@ -1,0 +1,17 @@
+{
+	"name": "Ds_HTTP_Users",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Ls_HTTP_Test_API",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation"
+			}
+		},
+		"schema": {}
+	}
+}
