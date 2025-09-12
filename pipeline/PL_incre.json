@@ -61,15 +61,45 @@
 							"userProperties": [],
 							"typeProperties": {
 								"variableName": "lastest",
-								"value": ""
+								"value": {
+									"value": "@activity('Get Metadata1').output.lastModified[0]",
+									"type": "Expression"
+								}
 							}
 						}
 					]
+				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "ForEach1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "var",
+					"value": {
+						"value": "@variables('lastest')",
+						"type": "Expression"
+					}
 				}
 			}
 		],
 		"variables": {
 			"lastest": {
+				"type": "Array"
+			},
+			"var": {
 				"type": "Array"
 			}
 		},
