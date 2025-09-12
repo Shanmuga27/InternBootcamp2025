@@ -9,7 +9,14 @@
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "orders08"
+					"name": "source"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "tgt"
 				}
 			],
 			"sinks": [
@@ -24,6 +31,9 @@
 			"transformations": [
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "join"
 				}
 			],
 			"scriptLines": [
@@ -37,10 +47,18 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> orders08",
-				"orders08 derive(order_start_dt = toString(order_start_dt, 'dd-MMMM-yyyy'),",
+				"     ignoreNoFilesFound: false) ~> source",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> tgt",
+				"join derive(order_start_dt = toString(order_start_dt, 'dd-MMMM-yyyy'),",
 				"          order_close_dt = toString(order_close_dt, 'dd-MMMM-yyyy'),",
 				"          status = initCap(status)) ~> derivedColumn1",
+				"source, tgt join(order_id == ERROR_FUNCTION(''),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['orders.csv'],",

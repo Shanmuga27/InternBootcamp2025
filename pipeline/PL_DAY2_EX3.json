@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "PL_DAY2_EX3",
 	"properties": {
 		"activities": [
 			{
@@ -84,6 +84,7 @@
 								],
 								"storeSettings": {
 									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
 									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
@@ -236,6 +237,9 @@
 				"type": "String",
 				"defaultValue": "''"
 			}
+		},
+		"folder": {
+			"name": "Day3"
 		},
 		"annotations": []
 	}
