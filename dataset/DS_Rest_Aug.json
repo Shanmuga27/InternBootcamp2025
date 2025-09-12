@@ -1,8 +1,23 @@
 {
 	"name": "DS_Rest_Aug",
 	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Rest",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Param_RelativeURL": {
+				"type": "String"
+			}
+		},
 		"annotations": [],
 		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@dataset().Param_RelativeURL",
+				"type": "Expression"
+			}
+		},
 		"schema": []
 	}
 }
