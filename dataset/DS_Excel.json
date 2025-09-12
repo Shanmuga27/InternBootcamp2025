@@ -1,0 +1,36 @@
+{
+	"name": "DS_Excel",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Azure_Blob_Storage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Param_Container": {
+				"type": "string"
+			},
+			"Param_Folder": {
+				"type": "string"
+			},
+			"Param_File": {
+				"type": "string"
+			},
+			"Param_Sheet_Index": {
+				"type": "int"
+			}
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().Param_File",
+					"type": "Expression"
+				}
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	}
+}
