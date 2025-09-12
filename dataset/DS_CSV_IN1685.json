@@ -12,7 +12,7 @@
 			"Param_Folder": {
 				"type": "string"
 			},
-			"Param_FIleName": {
+			"Param_File": {
 				"type": "string"
 			}
 		},
@@ -22,7 +22,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "@dataset().Param_FIleName",
+					"value": "@dataset().Param_File",
 					"type": "Expression"
 				},
 				"folderPath": {
