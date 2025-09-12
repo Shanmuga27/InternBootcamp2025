@@ -5,8 +5,6 @@
 			{
 				"name": "Data flow1",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -22,17 +20,17 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"IncomingSrcOrders": {
-								"Container": "boootcamp",
+								"Container": "boootcamp25",
 								"directory": "IN1677/src_orders",
 								"file": "orders_11092025.csv"
 							},
 							"TgtOrders": {
-								"container": "boootcamp",
+								"container": "boootcamp25",
 								"directory": "IN1677/tgt_orders",
 								"file": "tgt_orders_data"
 							},
 							"sink1": {
-								"container": "boootcamp",
+								"container": "boootcamp25",
 								"directory": "IN1677/tgt_orders",
 								"file": "tgt_orders_data"
 							}
@@ -48,6 +46,8 @@
 			{
 				"name": "Lookup1",
 				"type": "Lookup",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
