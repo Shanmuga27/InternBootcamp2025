@@ -11,6 +11,13 @@
 					},
 					"name": "srcOrdersData",
 					"description": "Initial dataset"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "tgt"
 				}
 			],
 			"sinks": [
@@ -25,11 +32,20 @@
 			"transformations": [
 				{
 					"name": "derivedcols"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
 				"source(output(",
-				"          order_id as short,",
+				"          order_id as integer,",
 				"          car_id as string,",
 				"          customer_id as string,",
 				"          order_start_dt as date,",
@@ -39,8 +55,37 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> srcOrdersData",
-				"srcOrdersData derive() ~> derivedcols",
-				"derivedcols sink(allowSchemaDrift: true,",
+				"source(output(",
+				"          order_id as integer,",
+				"          car_id as string,",
+				"          customer_id as string,",
+				"          order_start_dt as date,",
+				"          order_close_dt as date,",
+				"          status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> tgt",
+				"filter1 derive(status_init = initCap(srcOrdersData@status),",
+				"          format_order_start_dt = toString(srcOrdersData@order_start_dt,'dd MMMM yyyy'),",
+				"          format_order_close_dt = toString(srcOrdersData@order_close_dt,'dd MMMM yyyy')) ~> derivedcols",
+				"derivedcols select(mapColumn(",
+				"          order_id = srcOrdersData@order_id,",
+				"          car_id = srcOrdersData@car_id,",
+				"          customer_id = srcOrdersData@customer_id,",
+				"          status = status_init,",
+				"          order_close_dt = format_order_close_dt,",
+				"          order_start_dt = format_order_start_dt",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"srcOrdersData, tgt join(srcOrdersData@order_id == tgt@order_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 filter(isNull(tgt@order_id)) ~> filter1",
+				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          anime_id as string,",
@@ -51,8 +96,11 @@
 				"          rating as string,",
 				"          members as string",
 				"     ),",
+				"     partitionFileNames:['tgt_incr.csv'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}
