@@ -1,12 +1,23 @@
 {
-	"name": "RestResource1",
+	"name": "DS_Rest_Api",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "RestService1",
+			"referenceName": "LS_RestService_Api",
 			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"R_URL": {
+				"type": "string"
+			}
 		},
 		"annotations": [],
 		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@dataset().R_URL",
+				"type": "Expression"
+			}
+		},
 		"schema": []
 	}
 }
