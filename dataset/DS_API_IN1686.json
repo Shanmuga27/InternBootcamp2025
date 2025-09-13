@@ -2,7 +2,7 @@
 	"name": "DS_API_IN1686",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "DS_API_IN1686",
+			"referenceName": "LS_Azure_API_Storage",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
