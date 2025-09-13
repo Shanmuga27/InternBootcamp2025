@@ -30,6 +30,10 @@
 					"type": "Expression"
 				},
 				"container": "boootcamp25"
+			},
+			"sheetIndex": {
+				"value": "@dataset().sheet",
+				"type": "Expression"
 			}
 		},
 		"schema": []
