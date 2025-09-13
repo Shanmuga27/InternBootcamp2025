@@ -108,7 +108,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"TableName": "main_table",
-							"SchemaName": "DMuthuku"
+							"SchemaName": "DMuthuku",
+							"DatabaseName": "ADF_Training"
 						}
 					}
 				]
