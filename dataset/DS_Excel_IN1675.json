@@ -6,9 +6,6 @@
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"SheetName": {
-				"type": "string"
-			},
 			"FileName": {
 				"type": "string"
 			},
@@ -16,6 +13,9 @@
 				"type": "string"
 			},
 			"ContainerName": {
+				"type": "string"
+			},
+			"SheetName": {
 				"type": "string"
 			}
 		},
