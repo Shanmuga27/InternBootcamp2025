@@ -52,6 +52,8 @@
 			{
 				"name": "SqlToSql",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -64,6 +66,22 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
+						"additionalColumns": [
+							{
+								"name": "created_date",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "pipeline_runid",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							}
+						],
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -114,7 +132,24 @@
 							},
 							{
 								"source": {
-									"name": "created_date"
+									"name": "created_date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "created_date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "pipeline_runid",
+									"type": "String"
+								},
+								"sink": {
+									"name": "pipeline_runid",
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							}
 						],
@@ -143,6 +178,22 @@
 						}
 					}
 				]
+			},
+			{
+				"name": "MultipleExcelFileToSql",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"enableStaging": false
+				}
 			}
 		],
 		"annotations": []
