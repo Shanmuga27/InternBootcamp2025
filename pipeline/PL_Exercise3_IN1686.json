@@ -811,6 +811,80 @@
 								"enableStaging": false,
 								"translator": {
 									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"name": "order_id",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "order_id",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "car_id",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "car_id",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "customer_id",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "customer_id",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "order_start_dt",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "order_start_dt",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "order_close_dt",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "order_close_dt",
+												"type": "String",
+												"physicalType": "String"
+											}
+										},
+										{
+											"source": {
+												"name": "status",
+												"type": "String",
+												"physicalType": "String"
+											},
+											"sink": {
+												"name": "status",
+												"type": "String",
+												"physicalType": "String"
+											}
+										}
+									],
 									"typeConversion": true,
 									"typeConversionSettings": {
 										"allowDataTruncation": true,
@@ -879,14 +953,7 @@
 							"File": "*"
 						}
 					},
-					"logStorageSettings": {
-						"linkedServiceName": {
-							"referenceName": "LS_Azure_Blob_Storage",
-							"type": "LinkedServiceReference"
-						},
-						"path": "boootcamp25/IN1686/Orders"
-					},
-					"enableLogging": true,
+					"enableLogging": false,
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
 						"recursive": true,
