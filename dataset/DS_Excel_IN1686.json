@@ -1,0 +1,21 @@
+{
+	"name": "DS_Excel_IN1686",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Azure_Blob_Storage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "northwind.xlsx",
+				"folderPath": "IN1686",
+				"container": "boootcamp25"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	}
+}
