@@ -1,0 +1,15 @@
+{
+	"name": "DS_API_IN1686",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DS_API_IN1686",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": ""
+		},
+		"schema": []
+	}
+}
