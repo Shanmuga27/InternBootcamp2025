@@ -23,7 +23,7 @@
 				"folderPath": "IN1686",
 				"container": "boootcamp25"
 			},
-			"firstRowAsHeader": true
+			"firstRowAsHeader": false
 		},
 		"schema": []
 	}
