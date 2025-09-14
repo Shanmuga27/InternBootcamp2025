@@ -29,6 +29,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -110,6 +111,9 @@
 			"max_var": {
 				"type": "Array"
 			}
+		},
+		"folder": {
+			"name": "Incremental"
 		},
 		"annotations": []
 	}

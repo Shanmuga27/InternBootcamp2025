@@ -1,5 +1,5 @@
 {
-	"name": "PL_incr",
+	"name": "PL_incr_DF",
 	"properties": {
 		"activities": [
 			{
@@ -44,6 +44,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "Incremental"
+		},
 		"annotations": []
 	}
 }
