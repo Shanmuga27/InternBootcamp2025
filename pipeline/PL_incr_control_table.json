@@ -43,14 +43,6 @@
 							},
 							"type": "NonQuery",
 							"text": "insert into control_table (start_time) values\n(@start_time);"
-						},
-						{
-							"parameters": {
-								"value": "@pipeline().parameters.end_time",
-								"type": "Expression"
-							},
-							"type": "NonQuery",
-							"text": "insert into control_table (end_time) values\n(@end_time);"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
