@@ -21,21 +21,56 @@
 				"typeProperties": {
 					"scripts": [
 						{
-							"parameters": [
-								{
-									"name": "job_id",
-									"type": "Int64",
-									"value": ""
-								}
-							],
+							"parameters": {
+								"value": "@pipeline().parameters.run_id",
+								"type": "Expression"
+							},
 							"type": "NonQuery",
-							"text": "insert into control_table values\n();"
+							"text": "insert into control_table (run_id) values\n(@run_id);"
+						},
+						{
+							"parameters": {
+								"value": "@pipeline().parameters.job_name",
+								"type": "Expression"
+							},
+							"type": "NonQuery",
+							"text": "insert into control_table (job_name) values (@job_name);"
+						},
+						{
+							"parameters": {
+								"value": "@pipeline().parameters.start_time",
+								"type": "Expression"
+							},
+							"type": "NonQuery",
+							"text": "insert into control_table (start_time) values\n(@start_time);"
+						},
+						{
+							"parameters": {
+								"value": "@pipeline().parameters.end_time",
+								"type": "Expression"
+							},
+							"type": "NonQuery",
+							"text": "insert into control_table (end_time) values\n(@end_time);"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
 				}
 			}
 		],
+		"parameters": {
+			"run_id": {
+				"type": "object"
+			},
+			"job_name": {
+				"type": "object"
+			},
+			"start_time": {
+				"type": "object"
+			},
+			"end_time": {
+				"type": "object"
+			}
+		},
 		"folder": {
 			"name": "Incremental"
 		},
