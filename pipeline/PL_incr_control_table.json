@@ -1,6 +1,41 @@
 {
 	"name": "PL_incr_control_table",
 	"properties": {
+		"activities": [
+			{
+				"name": "ScriptPRE",
+				"type": "Script",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "LS_SQLServer_IN1685",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"parameters": [
+								{
+									"name": "job_id",
+									"type": "Int64",
+									"value": ""
+								}
+							],
+							"type": "NonQuery",
+							"text": "insert into control_table values\n();"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			}
+		],
 		"folder": {
 			"name": "Incremental"
 		},
