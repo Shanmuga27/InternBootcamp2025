@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "DF_Orders",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -29,26 +29,59 @@
 					"name": "union1"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "OrderType"
 				},
 				{
-					"name": "select1"
+					"name": "select2"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "window1"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          OrderID as string,",
+				"          CustomerID as string,",
+				"          ProductID as string,",
+				"          OrderDate as date,",
+				"          Amount as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SrcOrders",
-				"SrcOrders split(addMonths(currentDate(),-12),",
+				"SrcOrders split(OrderDate>addMonths(currentDate(),-12),",
 				"     disjoint: false) ~> OrdersSplit@(RecentOrders, OldOrders)",
-				"OrdersSplit@RecentOrders, OrdersSplit@OldOrders union(byName: true)~> union1",
-				"union1 derive(Order_type = ERROR_FUNCTION('')) ~> derivedColumn1",
-				"derivedColumn1 select(mapColumn(",
-				"          Order_type",
+				"select2, select3 union(byName: true)~> union1",
+				"union1 derive(Order_type = iif(OrderDate>addMonths(currentDate(), -12),'Recent','Old')) ~> OrderType",
+				"OrdersSplit@RecentOrders select(mapColumn(",
+				"          OrderID,",
+				"          CustomerID,",
+				"          ProductID,",
+				"          OrderDate,",
+				"          Amount",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"OrdersSplit@OldOrders select(mapColumn(",
+				"          OrderID,",
+				"          CustomerID,",
+				"          ProductID,",
+				"          OrderDate,",
+				"          Amount",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"OrderType window(over(OrderID),",
+				"     desc(OrderDate, true),",
+				"     ROW_NUMBER = rowNumber()) ~> window1",
+				"window1 filter(ROW_NUMBER ==1) ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> sink1"
