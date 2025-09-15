@@ -1,0 +1,44 @@
+{
+	"name": "OrdersUnionDF",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ORDERS_TABLE",
+						"type": "DatasetReference"
+					},
+					"name": "ORDERS"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "Recentorders"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "OldOrders"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          OrderID as string,",
+				"          CustomerID as string,",
+				"          ProductID as string,",
+				"          OrderDate as string,",
+				"          Amount as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ORDERS",
+				"ORDERS filter(OrderDate>=addMonths(currentDate(), -12)) ~> Recentorders",
+				"Recentorders derive() ~> derivedColumn1",
+				"derivedColumn1 filter(ERROR_FUNCTION('')) ~> OldOrders"
+			]
+		}
+	}
+}
