@@ -40,38 +40,8 @@
 							"fileExtension": ".txt"
 						}
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "DS_CSV_IN1686",
-						"type": "DatasetReference",
-						"parameters": {
-							"Container": "boootcamp25",
-							"Folder": "IN1686",
-							"File": "employees.csv"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "DS_CSV_IN1686",
-						"type": "DatasetReference",
-						"parameters": {
-							"Container": "boootcamp25",
-							"Folder": "IN1686/Tgt_Exercise2",
-							"File": "employees.csv"
-						}
-					}
-				]
+					"enableStaging": false
+				}
 			},
 			{
 				"name": "ADLS_to_On_Prem_SQL",
@@ -111,27 +81,8 @@
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
+					"enableStaging": false
 				},
-				"inputs": [
-					{
-						"referenceName": "DS_CSV_IN1686",
-						"type": "DatasetReference",
-						"parameters": {
-							"Container": "boootcamp25",
-							"Folder": "IN1686/Tgt_Exercise2",
-							"File": "employees.csv"
-						}
-					}
-				],
 				"outputs": [
 					{
 						"referenceName": "DS_SQL_IN1686",
@@ -175,27 +126,8 @@
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
+					"enableStaging": false
 				},
-				"inputs": [
-					{
-						"referenceName": "DS_CSV_IN1686",
-						"type": "DatasetReference",
-						"parameters": {
-							"Container": "boootcamp25",
-							"Folder": "IN1686",
-							"File": "orders.csv"
-						}
-					}
-				],
 				"outputs": [
 					{
 						"referenceName": "DS_SQL_IN1686",
@@ -231,13 +163,7 @@
 						}
 					},
 					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "DS_CSV_IN1686",
-						"type": "DatasetReference"
-					}
-				]
+				}
 			}
 		],
 		"annotations": []
