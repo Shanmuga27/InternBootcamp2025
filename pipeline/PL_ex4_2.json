@@ -17,7 +17,19 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "DF_ex4_2",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"sourceORDERS": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "Exercise 4 src files",
+								"Param_File": "Orders.csv"
+							},
+							"sinkBLOB": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/ex4_tgt",
+								"Param_File": "AllOrders_Unioned_IN1685.csv"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
@@ -46,8 +58,55 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"enableStaging": false
-				}
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"Param_Container": "boootcamp25",
+							"Param_Folder": "IN1685/ex4_tgt",
+							"Param_File": "AllOrders_Unioned_IN1685.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_OnPrem_SQLServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"Par_SchemaName": "RRamesh",
+							"Par_TableName": "AllOrders_Unioned_IN1685",
+							"Param_DB_name": "ADF_Training"
+						}
+					}
+				]
 			}
 		],
 		"annotations": []
