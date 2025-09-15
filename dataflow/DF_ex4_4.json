@@ -27,9 +27,21 @@
 				},
 				{
 					"name": "split1"
+				},
+				{
+					"name": "filterAPAC"
+				},
+				{
+					"name": "filterEMEA"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
+				"parameters{",
+				"     param_Region as string",
+				"}",
 				"source(output(",
 				"          CustomerID as string,",
 				"          Name as string,",
@@ -54,10 +66,13 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1 split(ERROR_FUNCTION(''),",
-				"     ERROR_FUNCTION(''),",
-				"     ERROR_FUNCTION(''),",
-				"     disjoint: true) ~> split1@(APAC, , )"
+				"join1 split($param_Region == 'APAC',",
+				"     $param_Region == 'EMEA',",
+				"     $param_Region == 'AMER',",
+				"     disjoint: true) ~> split1@(APAC, EMEA, AMER)",
+				"split1@APAC filter(( Country == 'India' || Country == 'Australia' ) && startsWith(Name, 'A')) ~> filterAPAC",
+				"split1@EMEA filter(( Country == 'UK' ) && Amount > 2000) ~> filterEMEA",
+				"split1@AMER filter(( Country == 'USA' || Country == 'Canada' ) && contains(Name, 'Inc.')) ~> filter1"
 			]
 		}
 	}

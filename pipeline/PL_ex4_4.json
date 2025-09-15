@@ -18,6 +18,12 @@
 					"dataflow": {
 						"referenceName": "DF_ex4_4",
 						"type": "DataFlowReference",
+						"parameters": {
+							"param_Region": {
+								"value": "'@{pipeline().globalParameters.Region}'",
+								"type": "Expression"
+							}
+						},
 						"datasetParameters": {
 							"sourceCUST": {
 								"Param_Container": "boootcamp25",
