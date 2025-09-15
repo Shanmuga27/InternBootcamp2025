@@ -32,10 +32,7 @@
 					"value": "@dataset().directory",
 					"type": "Expression"
 				},
-				"container": {
-					"value": "@dataset().container",
-					"type": "Expression"
-				}
+				"container": "boootcamp25"
 			},
 			"sheetIndex": {
 				"value": "@dataset().sheetno",
