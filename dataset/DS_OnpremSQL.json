@@ -1,0 +1,19 @@
+{
+	"name": "DS_OnpremSQL",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_OnPremSQL_IN1675",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"database": "ADF_Training"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "DMuthuku",
+			"table": "ETL_Control"
+		}
+	}
+}
