@@ -52,6 +52,9 @@
 				}
 			],
 			"scriptLines": [
+				"parameters{",
+				"     Filename as string",
+				"}",
 				"source(output(",
 				"          OrderID as string,",
 				"          CustomerID as string,",
@@ -94,8 +97,10 @@
 				"          rating as string,",
 				"          members as string",
 				"     ),",
+				"     partitionFileNames:[($Filename)],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink"
 			]
 		}
 	}
