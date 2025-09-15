@@ -102,7 +102,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "boootcamp25",
-							"folder": "IN1680",
+							"folder": "IN1680/ex4",
 							"file": {
 								"value": "@pipeline().parameters.filename",
 								"type": "Expression"
@@ -116,7 +116,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "KRavi",
-							"TableName": "Orders",
+							"TableName": "Orders_result",
 							"DatabaseName": "ADF_Training"
 						}
 					}
