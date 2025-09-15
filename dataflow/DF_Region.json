@@ -35,7 +35,7 @@
 					"name": "join2"
 				},
 				{
-					"name": "split1"
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -77,8 +77,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join2",
-				"join2 split(ERROR_FUNCTION(''),",
-				"     disjoint: false) ~> split1@(, )"
+				"join2 aggregate() ~> aggregate1"
 			]
 		}
 	}
