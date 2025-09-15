@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "DF_Region",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -10,22 +10,75 @@
 						"type": "DatasetReference"
 					},
 					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "source3"
 				}
 			],
 			"sinks": [],
 			"transformations": [
 				{
+					"name": "join1"
+				},
+				{
+					"name": "join2"
+				},
+				{
 					"name": "split1"
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          CustomerID as string,",
+				"          Name as string,",
+				"          Country as string,",
+				"          Age as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 split(ERROR_FUNCTION('Region = APAC'),",
-				"     ERROR_FUNCTION('Region = EMEA'),",
-				"     ERROR_FUNCTION('Region = AMER'),",
-				"     disjoint: false) ~> split1@(APAC, EMEA, AMER, AMER)"
+				"source(output(",
+				"          OrderID as string,",
+				"          CustomerID as string,",
+				"          ProductID as string,",
+				"          OrderDate as date,",
+				"          Amount as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source2",
+				"source(output(",
+				"          ProductID as string,",
+				"          ProductName as string,",
+				"          Category as string,",
+				"          Price as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source3",
+				"source1, source2 join(source1@CustomerID == source2@CustomerID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1, source3 join(source2@ProductID == source3@ProductID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2 split(ERROR_FUNCTION(''),",
+				"     disjoint: false) ~> split1@(, )"
 			]
 		}
 	}
