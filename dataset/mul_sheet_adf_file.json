@@ -1,0 +1,29 @@
+{
+	"name": "mul_sheet_adf_file",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Azure_Blob_Storage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"sheet_no": {
+				"type": "int"
+			}
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "mul_sheet_adf.xlsx",
+				"folderPath": "IN1689",
+				"container": "boootcamp25"
+			},
+			"sheetIndex": {
+				"value": "@dataset().sheet_no",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	}
+}
