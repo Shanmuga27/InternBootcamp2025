@@ -42,6 +42,9 @@
 				}
 			],
 			"scriptLines": [
+				"parameters{",
+				"     filename as string",
+				"}",
 				"source(output(",
 				"          OrderID as string,",
 				"          CustomerID as string,",
@@ -60,12 +63,14 @@
 				"OrderTypeRecent, OrderTypeOld union(byName: true)~> UnionOldRecentOrders",
 				"UnionOldRecentOrders window(over(OrderID),",
 				"     desc(OrderDate, true),",
-				"     Rank_Column = rank()) ~> Dedupliacte",
-				"Dedupliacte filter(Rank_Column == 1) ~> latestOrderDateperOrderID",
+				"     Row_Column = rowNumber()) ~> Dedupliacte",
+				"Dedupliacte filter(Row_Column == 1) ~> latestOrderDateperOrderID",
 				"latestOrderDateperOrderID sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:[($filename)],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> AllOrdersUnionedIN1686"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> AllOrdersUnionedIN1686"
 			]
 		}
 	}
