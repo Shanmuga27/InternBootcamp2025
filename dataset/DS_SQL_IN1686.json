@@ -3,10 +3,19 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_On_Prem_IN1686",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"Database_Name": {
+					"value": "@dataset().DB_Name",
+					"type": "Expression"
+				}
+			}
 		},
 		"parameters": {
 			"Tablename": {
+				"type": "string"
+			},
+			"DB_Name": {
 				"type": "string"
 			}
 		},
