@@ -1,0 +1,96 @@
+{
+	"name": "PL_Incremental_load_using_control_table_IN1680",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy_data_from_src_to_dest_using_sql_server",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "select * from orders where \norder_date>(select coalesce(end_time,'1990-01-01') from  control_table_adf where job_name = 'orders')",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_SQL_Server_IN1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "KRavi",
+							"TableName": "orders"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_Server_IN1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "KRavi",
+							"TableName": "tgt_orders"
+						}
+					}
+				]
+			},
+			{
+				"name": "update",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "Copy_data_from_src_to_dest_using_sql_server",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "LS_SQL_Server_IN1680",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "merge into control_table_adf  as t\nusing (select 'orders' as job_name,  max(order_date)   as end_time from tgt_orders)  as s\non  t.job_name = s.job_name\nwhen matched then \nupdate  set t.end_time = s.end_time\nwhen not matched then \ninsert (job_name, end_time)\nvalues(s.job_name, s.end_time);\n"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
