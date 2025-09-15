@@ -3,79 +3,19 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Get Metadata1",
-				"type": "GetMetadata",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"typeProperties": {
-					"dataset": {
-						"referenceName": "DS_CSV_IN1686",
-						"type": "DatasetReference",
-						"parameters": {
-							"Container": "boootcamp25",
-							"Folder": "IN1686/Orders",
-							"File": "*"
-						}
-					},
-					"fieldList": [
-						"lastModified"
-					],
-					"storeSettings": {
-						"type": "AzureBlobStorageReadSettings",
-						"enablePartitionDiscovery": false
-					},
-					"formatSettings": {
-						"type": "DelimitedTextReadSettings"
-					}
-				}
-			},
-			{
-				"name": "LastestFile",
-				"type": "Filter",
-				"dependsOn": [
-					{
-						"activity": "Get Metadata1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"items": {
-						"value": "@activity('Get Metadata1').output.lastModified",
-						"type": "Expression"
-					},
-					"condition": {
-						"value": "@equals(item().lastModified,\n    max(\n        activity('Get Metadata1').output.childItems,\n        item().lastModified\n    )\n)",
-						"type": "Expression"
-					}
-				}
-			},
-			{
 				"name": "Set variable1",
 				"type": "SetVariable",
 				"state": "Inactive",
 				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "LastestFile",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": ""
+				}
 			}
 		],
 		"annotations": []
