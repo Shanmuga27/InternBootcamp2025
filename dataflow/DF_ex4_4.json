@@ -72,7 +72,8 @@
 				"     disjoint: true) ~> split1@(APAC, EMEA, AMER)",
 				"split1@APAC filter(( Country == 'India' || Country == 'Australia' ) && startsWith(Name, 'A')) ~> filterAPAC",
 				"split1@EMEA filter(( Country == 'UK' ) && Amount > 2000) ~> filterEMEA",
-				"split1@AMER filter(( Country == 'USA' || Country == 'Canada' ) && contains(Name, 'Inc.')) ~> filter1"
+				"split1@AMER filter(( Country == 'USA' || Country == 'Canada' ) && contains(array(Name), 'Inc.')\r",
+				") ~> filter1"
 			]
 		}
 	}
