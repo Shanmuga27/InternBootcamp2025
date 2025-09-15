@@ -136,68 +136,11 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
 						"type": "DelimitedTextReadSettings"
-					}
-				}
-			},
-			{
-				"name": "Lookup SRC_DATE",
-				"type": "Lookup",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "SqlServerSource",
-						"sqlReaderQuery": "select max(date)\nfrom src;",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "DS_OnPrem_SQLServer",
-						"type": "DatasetReference",
-						"parameters": {
-							"Par_SchemaName": "RRamesh",
-							"Par_TableName": "src"
-						}
-					}
-				}
-			},
-			{
-				"name": "Lookup CTRL_TABLE_DATE",
-				"type": "Lookup",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "SqlServerSource",
-						"sqlReaderQuery": "select max(end_time)\nfrom control_table;",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "DS_OnPrem_SQLServer",
-						"type": "DatasetReference",
-						"parameters": {
-							"Par_SchemaName": "RRamesh",
-							"Par_TableName": "control_table"
-						}
 					}
 				}
 			},
@@ -259,7 +202,14 @@
 			{
 				"name": "Script_UPDATE_CTRL_TABLE",
 				"type": "Script",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -283,20 +233,6 @@
 				}
 			}
 		],
-		"parameters": {
-			"run_id": {
-				"type": "object"
-			},
-			"job_name": {
-				"type": "object"
-			},
-			"start_time": {
-				"type": "object"
-			},
-			"end_time": {
-				"type": "object"
-			}
-		},
 		"variables": {
 			"var": {
 				"type": "String"
