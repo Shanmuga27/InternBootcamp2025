@@ -1,0 +1,102 @@
+{
+	"name": "DF_Orders_filter_and_union",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "srcrecentorders"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "srcoldorders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "sink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DerivedNewCol"
+				},
+				{
+					"name": "derivedOldCol"
+				},
+				{
+					"name": "unionBothOldAndNew"
+				},
+				{
+					"name": "windowforranking"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "split2"
+				},
+				{
+					"name": "filterlatestrecords"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          OrderID as string,",
+				"          CustomerID as string,",
+				"          ProductID as string,",
+				"          OrderDate as date,",
+				"          Amount as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcrecentorders",
+				"source(output(",
+				"          OrderID as string,",
+				"          CustomerID as string,",
+				"          ProductID as string,",
+				"          OrderDate as date,",
+				"          Amount as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcoldorders",
+				"split1@ordersLastYear derive(OrderType = 'Recent') ~> DerivedNewCol",
+				"split2@OrdersOldYear derive(OrderType = 'Old') ~> derivedOldCol",
+				"DerivedNewCol, derivedOldCol union(byName: true)~> unionBothOldAndNew",
+				"unionBothOldAndNew window(over(OrderID),",
+				"     desc(OrderDate, true),",
+				"     rownumber = rowNumber()) ~> windowforranking",
+				"srcrecentorders split(OrderDate > addMonths(currentDate(), -12),",
+				"     disjoint: false) ~> split1@(ordersLastYear)",
+				"srcoldorders split(OrderDate < addMonths(currentDate(), -12),",
+				"     disjoint: false) ~> split2@(OrdersOldYear)",
+				"windowforranking filter(rownumber==1) ~> filterlatestrecords",
+				"filterlatestrecords sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          anime_id as string,",
+				"          name as string,",
+				"          genre as string,",
+				"          type as string,",
+				"          episodes as string,",
+				"          rating as string,",
+				"          members as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink"
+			]
+		}
+	}
+}
