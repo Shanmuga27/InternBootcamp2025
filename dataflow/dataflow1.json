@@ -1,0 +1,32 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 split(ERROR_FUNCTION('Region = APAC'),",
+				"     ERROR_FUNCTION('Region = EMEA'),",
+				"     ERROR_FUNCTION('Region = AMER'),",
+				"     disjoint: false) ~> split1@(APAC, EMEA, AMER, AMER)"
+			]
+		}
+	}
+}
