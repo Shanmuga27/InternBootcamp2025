@@ -1,35 +1,71 @@
 {
-	"name": "DF_Exercise2_IN1686",
+	"name": "DF_Exercise4_IN1686",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "DS_CSV_IN1686",
+						"referenceName": "DS_CSV1_IN1686",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "SrcOrders"
 				}
 			],
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "DS_CSV_IN1686",
+						"referenceName": "DS_CSV1_IN1686",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "AllOrdersUnionedIN1686"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "RecentOrders"
+				},
+				{
+					"name": "OrderTypeRecent"
+				},
+				{
+					"name": "OrderTypeOld"
+				},
+				{
+					"name": "UnionOldRecentOrders"
+				},
+				{
+					"name": "Dedupliacte"
+				},
+				{
+					"name": "latestOrderDateperOrderID"
+				}
+			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          OrderID as string,",
+				"          CustomerID as string,",
+				"          ProductID as string,",
+				"          OrderDate as date,",
+				"          Amount as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 sink(allowSchemaDrift: true,",
+				"     ignoreNoFilesFound: false) ~> SrcOrders",
+				"SrcOrders split(OrderDate >= addMonths(currentDate(), -12),",
+				"     OrderDate <  addMonths(currentDate(), -12),",
+				"     disjoint: false) ~> RecentOrders@(RecentOrders, OldOrders)",
+				"RecentOrders@RecentOrders derive(OrderType = \"Recent\") ~> OrderTypeRecent",
+				"RecentOrders@OldOrders derive(OrderType = \"Old\") ~> OrderTypeOld",
+				"OrderTypeRecent, OrderTypeOld union(byName: true)~> UnionOldRecentOrders",
+				"UnionOldRecentOrders window(over(OrderID),",
+				"     desc(OrderDate, true),",
+				"     Rank_Column = rank()) ~> Dedupliacte",
+				"Dedupliacte filter(Rank_Column == 1) ~> latestOrderDateperOrderID",
+				"latestOrderDateperOrderID sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true) ~> AllOrdersUnionedIN1686"
 			]
 		}
 	}
