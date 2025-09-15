@@ -33,6 +33,12 @@
 				},
 				{
 					"name": "union1"
+				},
+				{
+					"name": "window1"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -52,7 +58,11 @@
 				"splitDATE@OldOrders derive(OrderType = 'Old') ~> derivedOLD",
 				"splitDATE@RecentOrders derive(OrderType = 'Recent') ~> derivedRECENT",
 				"derivedRECENT, derivedOLD union(byName: true)~> union1",
-				"union1 sink(allowSchemaDrift: true,",
+				"union1 window(over(OrderID),",
+				"     desc(OrderDate, true),",
+				"     row = rowNumber()) ~> window1",
+				"window1 filter(row==1) ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['AllOrders_Unioned_IN1685.csv'],",
 				"     skipDuplicateMapInputs: true,",
