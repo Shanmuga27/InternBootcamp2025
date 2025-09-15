@@ -14,18 +14,25 @@
 			],
 			"sinks": [
 				{
-					"name": "sink1"
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sinkBLOB"
 				}
 			],
 			"transformations": [
 				{
-					"name": "split1"
+					"name": "splitDATE"
+				},
+				{
+					"name": "derivedOLD"
+				},
+				{
+					"name": "derivedRECENT"
 				},
 				{
 					"name": "union1"
-				},
-				{
-					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -39,14 +46,18 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourceORDERS",
-				"sourceORDERS split(ERROR_FUNCTION(''),",
-				"     disjoint: true) ~> split1@(RecentOrders, OldOrders)",
-				"split1@OldOrders, split1@RecentOrders union(byName: true)~> union1",
-				"union1 derive(column1 = ERROR_FUNCTION('')) ~> derivedColumn1",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"sourceORDERS split(OrderDate > addMonths(currentDate(), -12),",
+				"     OrderDate < addMonths(currentDate(), -12),",
+				"     disjoint: true) ~> splitDATE@(RecentOrders, OldOrders)",
+				"splitDATE@OldOrders derive(OrderType = 'Old') ~> derivedOLD",
+				"splitDATE@RecentOrders derive(OrderType = 'Recent') ~> derivedRECENT",
+				"derivedRECENT, derivedOLD union(byName: true)~> union1",
+				"union1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['AllOrders_Unioned_IN1685.csv'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkBLOB"
 			]
 		}
 	}
