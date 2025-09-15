@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "PS_Incremental_Load_Method2",
 	"properties": {
 		"activities": [
 			{
