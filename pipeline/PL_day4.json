@@ -5,6 +5,8 @@
 			{
 				"name": "Get Metadata1",
 				"type": "GetMetadata",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -38,6 +40,8 @@
 			{
 				"name": "ForEach1",
 				"type": "ForEach",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Get Metadata1",
@@ -122,8 +126,140 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "ForEach2",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('var')",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Lookup1",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "ExcelSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									}
+								},
+								"dataset": {
+									"referenceName": "DS_Excel",
+									"type": "DatasetReference",
+									"parameters": {
+										"Param_Container": "boootcamp25",
+										"Param_Folder": "IN1685/sub_IN1685",
+										"Param_File": "multiple_sheets.xlsx",
+										"Param_Sheet_Index": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									}
+								},
+								"firstRowOnly": false
+							}
+						},
+						{
+							"name": "Copy data2",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Lookup1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "ExcelSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_Excel",
+									"type": "DatasetReference",
+									"parameters": {
+										"Param_Container": "boootcamp25",
+										"Param_Folder": "IN1685/sub_IN1685",
+										"Param_File": "multiple_sheets.xlsx",
+										"Param_Sheet_Index": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_CSV_IN1685",
+									"type": "DatasetReference"
+								}
+							]
+						}
+					]
+				}
 			}
 		],
+		"variables": {
+			"var": {
+				"type": "Array",
+				"defaultValue": [
+					0,
+					1
+				]
+			}
+		},
 		"annotations": []
 	}
 }
