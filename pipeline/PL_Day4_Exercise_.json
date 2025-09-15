@@ -580,10 +580,7 @@
 					"scripts": [
 						{
 							"type": "NonQuery",
-							"text": {
-								"value": "update ct set job_start_time=getdate(),job_end_time=getdate(),job_status='starting' where job_id=1",
-								"type": "Expression"
-							}
+							"text": "update ct set job_start_time=getdate(),job_end_time=getdate(),job_status='starting' where job_id=1"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
@@ -682,11 +679,8 @@
 				"typeProperties": {
 					"scripts": [
 						{
-							"type": "Query",
-							"text": {
-								"value": "update CT set\njob_end_time=getdate(),\njob_status='success'\nwhere\njob_id=1",
-								"type": "Expression"
-							}
+							"type": "NonQuery",
+							"text": "update CT set\njob_end_time=getdate(),\njob_status='success'\nwhere\njob_id=1"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
