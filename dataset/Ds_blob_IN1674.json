@@ -7,8 +7,10 @@
 		},
 		"parameters": {
 			"filename": {
-				"type": "string",
-				"defaultValue": "\"\""
+				"type": "string"
+			},
+			"folder": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
@@ -16,7 +18,14 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"folderPath": "IN1674",
+				"fileName": {
+					"value": "@dataset().filename",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().folder",
+					"type": "Expression"
+				},
 				"container": "boootcamp25"
 			},
 			"columnDelimiter": ",",
