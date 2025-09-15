@@ -183,6 +183,9 @@
 				"defaultValue": 0
 			}
 		},
+		"folder": {
+			"name": "exercise"
+		},
 		"annotations": []
 	}
 }

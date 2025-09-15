@@ -29,6 +29,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -141,6 +142,9 @@
 			"current_file_name": {
 				"type": "Integer"
 			}
+		},
+		"folder": {
+			"name": "exercise"
 		},
 		"annotations": []
 	}

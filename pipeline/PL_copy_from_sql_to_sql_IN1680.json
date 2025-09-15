@@ -74,6 +74,9 @@
 				]
 			}
 		],
+		"folder": {
+			"name": "exercise"
+		},
 		"annotations": []
 	}
 }

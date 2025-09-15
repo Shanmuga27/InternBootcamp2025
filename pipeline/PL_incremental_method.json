@@ -95,6 +95,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -107,6 +108,9 @@
 			"Max_id": {
 				"type": "Integer"
 			}
+		},
+		"folder": {
+			"name": "exercise"
 		},
 		"annotations": []
 	}
