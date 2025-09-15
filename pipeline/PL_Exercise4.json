@@ -103,7 +103,8 @@
 					"sink": {
 						"type": "SqlServerSink",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
 					},
 					"enableStaging": false,
 					"translator": {
@@ -132,8 +133,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"schema": "JSivakum",
-							"table": "tgt_orders",
-							"db": "AllOrders_Unioned_IN1677.csv"
+							"table": "AllOrders_Unioned_IN1677",
+							"db": "ADF_Training"
 						}
 					}
 				]
