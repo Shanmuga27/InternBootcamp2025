@@ -3,13 +3,22 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "Ls_SQL Server_IN1674",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"DatabaseName": {
+					"value": "@dataset().Database",
+					"type": "Expression"
+				}
+			}
 		},
 		"parameters": {
 			"schemaname": {
 				"type": "string"
 			},
 			"tablename": {
+				"type": "string"
+			},
+			"Database": {
 				"type": "string"
 			}
 		},
