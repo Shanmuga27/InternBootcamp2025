@@ -23,19 +23,24 @@
 			],
 			"transformations": [
 				{
-					"name": "splitDATE"
+					"name": "splitDATE",
+					"description": "Conditional split - OrderDate"
 				},
 				{
-					"name": "derivedOLD"
+					"name": "derivedOLD",
+					"description": "Derived column -'OrderType - Old'"
 				},
 				{
-					"name": "derivedRECENT"
+					"name": "derivedRECENT",
+					"description": "Derived column- 'OrderType - Recent'"
 				},
 				{
-					"name": "union1"
+					"name": "union1",
+					"description": "Union 'derivedRECENT, derivedOLD'"
 				},
 				{
-					"name": "window1"
+					"name": "window1",
+					"description": "Remove duplicates - Row Number"
 				},
 				{
 					"name": "filter1"
