@@ -9,7 +9,7 @@
 						"referenceName": "DS_OnPrem_SQLServer",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "sourceORDERS"
 				}
 			],
 			"sinks": [
@@ -32,8 +32,8 @@
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> source1",
-				"source1 split(ERROR_FUNCTION(''),",
+				"     format: 'table') ~> sourceORDERS",
+				"sourceORDERS split(ERROR_FUNCTION(''),",
 				"     disjoint: true) ~> split1@(RecentOrders, OldOrders)",
 				"split1@OldOrders, split1@RecentOrders union(byName: true)~> union1",
 				"union1 derive(column1 = ERROR_FUNCTION('')) ~> derivedColumn1",

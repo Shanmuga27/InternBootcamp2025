@@ -5,14 +5,14 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"name": "source1"
+					"name": "sourceCUST"
 				}
 			],
 			"sinks": [],
 			"transformations": [],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source1"
+				"     validateSchema: false) ~> sourceCUST"
 			]
 		}
 	}
