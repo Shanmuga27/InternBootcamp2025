@@ -1,5 +1,13 @@
 {
 	"name": "internadfbootcamp2025",
+	"properties": {
+		"globalParameters": {
+			"Region": {
+				"type": "string",
+				"value": "-"
+			}
+		}
+	},
 	"location": "centralindia",
 	"identity": {
 		"type": "SystemAssigned",
