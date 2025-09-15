@@ -18,14 +18,8 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": {
-					"value": "@dataset().filename",
-					"type": "Expression"
-				},
-				"folderPath": {
-					"value": "@dataset().folder",
-					"type": "Expression"
-				},
+				"fileName": "Orders.csv",
+				"folderPath": "Exercise 4 src files",
 				"container": "boootcamp25"
 			},
 			"columnDelimiter": ",",
