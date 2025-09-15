@@ -5,6 +5,14 @@
 			"referenceName": "LS_Onprem_SQLSERVER__IN1689",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"tablename": {
+				"type": "string"
+			},
+			"schemaname": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "SqlServerTable",
 		"schema": [
@@ -32,8 +40,14 @@
 			}
 		],
 		"typeProperties": {
-			"schema": "VSri",
-			"table": "tgt_customer_IN1689"
+			"schema": {
+				"value": "@dataset().schemaname",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().tablename",
+				"type": "Expression"
+			}
 		}
 	}
 }
