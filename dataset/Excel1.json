@@ -1,20 +1,26 @@
 {
-	"name": "DelimitedText5",
+	"name": "Excel1",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_Azure_Blob_Storage",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"folder": {
+			"container": {
+				"type": "string"
+			},
+			"directory": {
 				"type": "string"
 			},
 			"filename": {
 				"type": "string"
+			},
+			"sheetno": {
+				"type": "int"
 			}
 		},
 		"annotations": [],
-		"type": "DelimitedText",
+		"type": "Excel",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
@@ -23,15 +29,19 @@
 					"type": "Expression"
 				},
 				"folderPath": {
-					"value": "@dataset().folder",
+					"value": "@dataset().directory",
 					"type": "Expression"
 				},
-				"container": "boootcamp25"
+				"container": {
+					"value": "@dataset().container",
+					"type": "Expression"
+				}
 			},
-			"columnDelimiter": ",",
-			"escapeChar": "\\",
-			"firstRowAsHeader": true,
-			"quoteChar": "\""
+			"sheetIndex": {
+				"value": "@dataset().sheetno",
+				"type": "Expression"
+			},
+			"firstRowAsHeader": true
 		},
 		"schema": []
 	}
