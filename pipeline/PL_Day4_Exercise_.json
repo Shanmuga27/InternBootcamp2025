@@ -579,28 +579,11 @@
 				"typeProperties": {
 					"scripts": [
 						{
-							"parameters": [
-								{
-									"name": "pl_id",
-									"type": "Int32",
-									"value": {
-										"value": "@pipeline().RunId",
-										"type": "Expression"
-									},
-									"direction": "Input"
-								},
-								{
-									"name": "pl_name",
-									"type": "String",
-									"value": {
-										"value": "@pipeline().Pipeline",
-										"type": "Expression"
-									},
-									"direction": "Input"
-								}
-							],
 							"type": "NonQuery",
-							"text": "insert into CT (job_id ,job_name ,job_start_time ,job_status) values\n(pl_id,pl_name,getdate(),'starting')"
+							"text": {
+								"value": "update ct set job_start_time=getdate(),job_end_time=getdate(),job_status='starting' where job_id=1",
+								"type": "Expression"
+							}
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
@@ -628,18 +611,14 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": {
-							"value": "select * from orders where\nord_date>(select max(job_end_time) from CT)",
-							"type": "Expression"
-						},
+						"sqlReaderQuery": "select * from orders where\nord_date>(select job_end_time from CT where job_id=1)",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
 					"sink": {
 						"type": "SqlServerSink",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false,
-						"tableOption": "autoCreate"
+						"sqlWriterUseTableLock": false
 					},
 					"enableStaging": false,
 					"translator": {
@@ -703,20 +682,9 @@
 				"typeProperties": {
 					"scripts": [
 						{
-							"parameters": [
-								{
-									"name": "pl_id",
-									"type": "Int32",
-									"value": {
-										"value": "@pipeline().RunId",
-										"type": "Expression"
-									},
-									"direction": "Input"
-								}
-							],
 							"type": "Query",
 							"text": {
-								"value": "update CT set\njob_end_time=getdate(),\njob_status='success'\nwhere\njob_id=pl_id",
+								"value": "update CT set\njob_end_time=getdate(),\njob_status='success'\nwhere\njob_id=1",
 								"type": "Expression"
 							}
 						}
@@ -725,15 +693,6 @@
 				}
 			}
 		],
-		"variables": {
-			"var": {
-				"type": "Array",
-				"defaultValue": [
-					0,
-					1
-				]
-			}
-		},
 		"annotations": []
 	}
 }
