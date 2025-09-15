@@ -1,0 +1,58 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference"
+					},
+					"name": "SrcOrders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "OrdersSplit"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcOrders",
+				"SrcOrders split(addMonths(currentDate(),-12),",
+				"     disjoint: false) ~> OrdersSplit@(RecentOrders, OldOrders)",
+				"OrdersSplit@RecentOrders, OrdersSplit@OldOrders union(byName: true)~> union1",
+				"union1 derive(Order_type = ERROR_FUNCTION('')) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          Order_type",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}

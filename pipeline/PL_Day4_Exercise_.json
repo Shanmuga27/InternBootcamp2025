@@ -580,7 +580,7 @@
 					"scripts": [
 						{
 							"type": "NonQuery",
-							"text": "update ct set job_start_time=getdate(),job_end_time=getdate(),job_status='starting' where job_id=1"
+							"text": "update ct set job_start_time=getdate(),job_status='starting' where job_id=1"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
@@ -608,14 +608,15 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "select * from orders where\nord_date>(select job_end_time from CT where job_id=1)",
+						"sqlReaderQuery": "select * from orders where\nord_date > (select job_end_time from CT where job_id=1)",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
 					"sink": {
 						"type": "SqlServerSink",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
 					},
 					"enableStaging": false,
 					"translator": {
@@ -687,6 +688,15 @@
 				}
 			}
 		],
+		"variables": {
+			"var": {
+				"type": "Array",
+				"defaultValue": [
+					0,
+					1
+				]
+			}
+		},
 		"annotations": []
 	}
 }
