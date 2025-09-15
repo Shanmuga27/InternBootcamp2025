@@ -38,7 +38,7 @@
 							"sink": {
 								"container": "boootcamp25",
 								"folder": "IN1680/ex4",
-								"file": "AllordersResult.csv"
+								"file": "unionOrders.csv"
 							}
 						}
 					},
@@ -52,8 +52,6 @@
 			{
 				"name": "copy_data_into_sql_server",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DF_for_orders",
