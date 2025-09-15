@@ -3,9 +3,16 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
+				"name": "CP_Blob_Server",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Data flow",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -29,7 +36,8 @@
 					"sink": {
 						"type": "SqlServerSink",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
 					},
 					"enableStaging": false,
 					"translator": {
@@ -46,8 +54,8 @@
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference",
 						"parameters": {
-							"PR_Directory": "Exercise 4 src files",
-							"PR_Filename": "Products.csv"
+							"PR_Directory": "IN1684/Day 4",
+							"PR_Filename": "AllOrders_Unioned_IN1684.csv"
 						}
 					}
 				],
@@ -56,7 +64,7 @@
 						"referenceName": "DS_SQL_Server_IN1684",
 						"type": "DatasetReference",
 						"parameters": {
-							"PR_Tablename": "Products",
+							"PR_Tablename": "AllOrders_Unioned_IN1684",
 							"PR_Schema": "PMahendi",
 							"PR_Database": "ADF_Training"
 						}
@@ -83,6 +91,10 @@
 							"Orders": {
 								"PR_Directory": "Exercise 4 src files",
 								"PR_Filename": "Orders.csv"
+							},
+							"sink": {
+								"PR_Directory": "IN1684/Day 4",
+								"PR_Filename": "AllOrders_Unioned_IN1684.csv"
 							}
 						}
 					},
