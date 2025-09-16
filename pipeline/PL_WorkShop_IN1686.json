@@ -1,0 +1,236 @@
+{
+	"name": "PL_WorkShop_IN1686",
+	"properties": {
+		"activities": [
+			{
+				"name": "Customers",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Excel_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Folder": "IN1686/WORKSHOP",
+							"FileName": "Customers.xlsx"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Tablename": "Cutomers",
+							"DB_Name": "ADF_Trianing"
+						}
+					}
+				]
+			},
+			{
+				"name": "SalesReps",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Excel_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Folder": "IN1686/WORKSHOP",
+							"FileName": "sales Rep.xlsx"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Tablename": "Sales_Reps",
+							"DB_Name": "ADF_Trianing"
+						}
+					}
+				]
+			},
+			{
+				"name": "Locations",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Excel_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Folder": "IN1686/WORKSHOP",
+							"FileName": "Locations.xlsx"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Tablename": "Locations",
+							"DB_Name": "ADF_Trianing"
+						}
+					}
+				]
+			},
+			{
+				"name": "Estimate",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Excel_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Folder": "IN1686/WORKSHOP",
+							"FileName": "Estimate.xlsx"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Tablename": "Estimate",
+							"DB_Name": "ADF_Trianing"
+						}
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}
