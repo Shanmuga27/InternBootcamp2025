@@ -5,14 +5,7 @@
 			{
 				"name": "Lookup_ETL_config",
 				"type": "Lookup",
-				"dependsOn": [
-					{
-						"activity": "Get Metadata1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -69,6 +62,121 @@
 									"value": "@equals(item().LoadType, 'Full')",
 									"type": "Expression"
 								},
+								"ifFalseActivities": [
+									{
+										"name": "Lookup KEY",
+										"type": "Lookup",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"sqlReaderQuery": {
+													"value": "@concat(\n    'select ISNULL(MAX(', item().KeyColumn, '), 0) AS Key FROM', item().TGT_Table\n)",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"dataset": {
+												"referenceName": "DS_OnPrem_SQLServer",
+												"type": "DatasetReference",
+												"parameters": {
+													"Par_SchemaName": "RRamesh",
+													"Par_TableName": "ETL_Config",
+													"Param_DB_name": "ADF_Training"
+												}
+											},
+											"firstRowOnly": false
+										}
+									},
+									{
+										"name": "Copy INCR",
+										"type": "Copy",
+										"dependsOn": [
+											{
+												"activity": "Lookup KEY",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"additionalColumns": [
+													{
+														"name": "LastModifiedDate",
+														"value": {
+															"value": "@utcNow()",
+															"type": "Expression"
+														}
+													}
+												],
+												"sqlReaderQuery": {
+													"value": "@concat(\n    'select * from ', item().SRC_Table,\n    'where ', item().KeyColumn, '>''',\n    string(activity('Lookup KEY').output.firstRow.Key),\n    ''''\n)",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "SqlServerSink",
+												"writeBehavior": "insert",
+												"sqlWriterUseTableLock": false
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_OnPrem_SQLServer",
+												"type": "DatasetReference",
+												"parameters": {
+													"Par_SchemaName": "RRamesh",
+													"Par_TableName": "@item().SRC_Table",
+													"Param_DB_name": "ADF_Training"
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_OnPrem_SQLServer",
+												"type": "DatasetReference",
+												"parameters": {
+													"Par_SchemaName": "RRamesh",
+													"Par_TableName": {
+														"value": "@item().TGT_Table",
+														"type": "Expression"
+													},
+													"Param_DB_name": "ADF_Training"
+												}
+											}
+										]
+									}
+								],
 								"ifTrueActivities": [
 									{
 										"name": "Copy FULL",
@@ -85,6 +193,19 @@
 										"typeProperties": {
 											"source": {
 												"type": "SqlServerSource",
+												"additionalColumns": [
+													{
+														"name": "LastModifiedDate",
+														"value": {
+															"value": "@utcNow()",
+															"type": "Expression"
+														}
+													}
+												],
+												"sqlReaderQuery": {
+													"value": "@concat(\n    'select * from ', item().SRC_Table\n)",
+													"type": "Expression"
+												},
 												"queryTimeout": "02:00:00",
 												"partitionOption": "None"
 											},
@@ -115,7 +236,7 @@
 												"parameters": {
 													"Par_SchemaName": "RRamesh",
 													"Par_TableName": {
-														"value": "@item().name",
+														"value": "@item().SRC_Table",
 														"type": "Expression"
 													},
 													"Param_DB_name": "ADF_Training"
@@ -129,7 +250,7 @@
 												"parameters": {
 													"Par_SchemaName": "RRamesh",
 													"Par_TableName": {
-														"value": "@item().TGT_table",
+														"value": "@item().TGT_Table",
 														"type": "Expression"
 													},
 													"Param_DB_name": "ADF_Training"
@@ -141,40 +262,6 @@
 							}
 						}
 					]
-				}
-			},
-			{
-				"name": "Get Metadata1",
-				"type": "GetMetadata",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataset": {
-						"referenceName": "DS_CSV_IN1685",
-						"type": "DatasetReference",
-						"parameters": {
-							"Param_Container": "boootcamp25",
-							"Param_Folder": "Exercise 4 src files",
-							"Param_File": "*"
-						}
-					},
-					"fieldList": [
-						"childItems"
-					],
-					"storeSettings": {
-						"type": "AzureBlobStorageReadSettings",
-						"enablePartitionDiscovery": false
-					},
-					"formatSettings": {
-						"type": "DelimitedTextReadSettings"
-					}
 				}
 			}
 		],
