@@ -3,12 +3,8 @@
 	"properties": {
 		"globalParameters": {
 			"Region": {
-				"type": "array",
-				"value": [
-					"APAC",
-					"EMEA",
-					"AMER"
-				]
+				"type": "string",
+				"value": "\"APAC\",\"EMEA\",\"AMER\""
 			}
 		}
 	},
