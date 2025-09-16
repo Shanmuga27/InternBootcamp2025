@@ -79,7 +79,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@concat(\n    'select ISNULL(MAX(', item().KeyColumn, '), 0) \n    AS Key FROM' , item().TgtTable\n)",
+													"value": "@concat(\n    'select ISNULL(MAX(', item().KeyColumn, '), 0) \n    AS KeyID FROM' , item().TgtTable\n)",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -129,7 +129,7 @@
 													}
 												],
 												"sqlReaderQuery": {
-													"value": "@concat(\n    'select * from ', item().SrcTable,\n    'where ', item().KeyColumn, '>''',\n    string(activity('Lookup KEY').output.firstRow.Key),\n    ''''\n)",
+													"value": "@concat(\n    'select * from ', item().SrcTable,\n    'where ', item().KeyColumn, '>''',\n    string(activity('Lookup KEY').output.firstRow.KeyID),\n    ''''\n)",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
