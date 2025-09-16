@@ -1,6 +1,64 @@
 {
 	"name": "PL_Exercise4_Global_IN1686",
 	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Exercise4_Region_IN1686",
+						"type": "DataFlowReference",
+						"parameters": {
+							"pRegion": {
+								"value": "@pipeline().globalParameters.Region",
+								"type": "Expression"
+							},
+							"FILENAME1": {
+								"value": "'@{pipeline().parameters.FILENAME1}'",
+								"type": "Expression"
+							},
+							"FILENAME2": {
+								"value": "'@{pipeline().parameters.FILENAME2}'",
+								"type": "Expression"
+							},
+							"FILENAME3": {
+								"value": "'@{pipeline().parameters.FILENAME3}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"pRegion": {
+				"type": "array"
+			},
+			"FILENAME1": {
+				"type": "string"
+			},
+			"FILENAME2": {
+				"type": "string"
+			},
+			"FILENAME3": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }

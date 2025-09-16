@@ -61,7 +61,10 @@
 			],
 			"scriptLines": [
 				"parameters{",
-				"     pRegion as string[]",
+				"     pRegion as string[],",
+				"     FILENAME1 as string,",
+				"     FILENAME2 as string,",
+				"     FILENAME3 as string",
 				"}",
 				"source(output(",
 				"          CustomerID as string,",
