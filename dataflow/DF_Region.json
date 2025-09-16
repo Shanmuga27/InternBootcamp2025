@@ -17,13 +17,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "Orders"
-				},
-				{
-					"dataset": {
-						"referenceName": "DS_Blob_IN1684",
-						"type": "DatasetReference"
-					},
-					"name": "Products"
 				}
 			],
 			"sinks": [
@@ -51,9 +44,6 @@
 			],
 			"transformations": [
 				{
-					"name": "RegionColumn"
-				},
-				{
 					"name": "split1"
 				},
 				{
@@ -67,6 +57,12 @@
 				},
 				{
 					"name": "CustomerName"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "RegionColumn"
 				}
 			],
 			"scriptLines": [
@@ -92,28 +88,10 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> Orders",
-				"source(output(",
-				"          ProductID as string,",
-				"          ProductName as string,",
-				"          Category as string,",
-				"          Price as short",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> Products",
-				"join1 derive(Region = iif(Country == 'India', 'APAC', \r",
-				"    iif(Country == 'Australia', 'APAC',\r",
-				"        iif(Country == 'Canada', 'AMER', \r",
-				"            iif(Country == 'USA', 'AMER', \r",
-				"                iif(Country == 'UK', 'EMEA','NS')\r",
-				"            )\r",
-				"        )\r",
-				"    )\r",
-				")) ~> RegionColumn",
-				"RegionColumn split($PR_Region[0]=='APAC',",
-				"     $PR_Region[1]=='EMEA',",
-				"     $PR_Region[2]=='AMER',",
-				"     disjoint: false) ~> split1@(APAC, EMEA, AMER, UNK)",
+				"RegionColumn split($PR_Region[1]==Region,",
+				"     $PR_Region[2]==Region,",
+				"     $PR_Region[3]==Region,",
+				"     disjoint: true) ~> split1@(APAC, EMEA, AMER, UNK)",
 				"split1@APAC filter(startsWith(split1@APAC@CustomerID, 'A')) ~> CustomerID",
 				"split1@EMEA filter(Amount > 2000\r",
 				") ~> Amount",
@@ -123,7 +101,23 @@
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
 				"split1@AMER filter(contains(array(Name), \"Inc\")) ~> CustomerName",
-				"CustomerID sink(allowSchemaDrift: true,",
+				"CustomerID select(mapColumn(",
+				"          CustomerID = split1@APAC@CustomerID,",
+				"          Name,",
+				"          Country,",
+				"          Age,",
+				"          OrderID,",
+				"          ProductID,",
+				"          OrderDate,",
+				"          Amount,",
+				"          Region",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"join1 derive(Region = iif(Country == \"India\" || Country== \"Australia\", \"APAC\", \r",
+				"    iif(Country == \"UK\", \"EMEA\", \r",
+				"        iif(Country == \"USA\" || Country == \"Canada\", \"AMER\", \"UNK\")))) ~> RegionColumn",
+				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['Orders_APAC'],",
 				"     skipDuplicateMapInputs: true,",
