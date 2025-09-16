@@ -222,7 +222,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF",
+						"referenceName": "DF_Multiple_Region",
 						"type": "DataFlowReference",
 						"parameters": {
 							"regions": {

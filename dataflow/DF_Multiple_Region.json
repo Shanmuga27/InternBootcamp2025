@@ -1,5 +1,5 @@
 {
-	"name": "DF",
+	"name": "DF_Multiple_Region",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
