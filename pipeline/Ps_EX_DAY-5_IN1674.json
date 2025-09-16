@@ -115,8 +115,9 @@
 						"referenceName": "Ds_blob_IN1674",
 						"type": "DatasetReference",
 						"parameters": {
-							"filename": "Orders.csv",
-							"folder": "Exercise 4 src files"
+							"filename": "Allorders_unioned_IN1674.csv",
+							"folder": "IN1674",
+							"container": "boootcamp25"
 						}
 					}
 				],
@@ -146,8 +147,20 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "Df_Day-5_IN1674",
-						"type": "DataFlowReference"
+						"referenceName": "DfDay5IN1674",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"OrdersTable": {
+								"filename": "Orders.csv",
+								"folder": "Exercise 4 src files",
+								"container": "boootcamp25"
+							},
+							"sink1": {
+								"filename": "Allorders_unioned_IN1674.csv",
+								"folder": "IN1674",
+								"container": "boootcamp25"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,

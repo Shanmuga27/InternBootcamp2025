@@ -11,6 +11,9 @@
 			},
 			"folder": {
 				"type": "string"
+			},
+			"container": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
@@ -18,9 +21,18 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "Orders.csv",
-				"folderPath": "Exercise 4 src files",
-				"container": "boootcamp25"
+				"fileName": {
+					"value": "@dataset().filename",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().folder",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().container",
+					"type": "Expression"
+				}
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
