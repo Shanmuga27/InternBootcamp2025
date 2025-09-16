@@ -19,7 +19,7 @@
 						"referenceName": "DF_ex4_4",
 						"type": "DataFlowReference",
 						"parameters": {
-							"param_R": {
+							"param_Region": {
 								"value": "@pipeline().globalParameters.Region",
 								"type": "Expression"
 							}

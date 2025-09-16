@@ -46,7 +46,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Lookup_ETL_config').output.value[2]",
+						"value": "@activity('Lookup_ETL_config').output",
 						"type": "Expression"
 					},
 					"isSequential": true,
@@ -54,8 +54,6 @@
 						{
 							"name": "If Condition1",
 							"type": "IfCondition",
-							"state": "Inactive",
-							"onInactiveMarkAs": "Succeeded",
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
