@@ -298,7 +298,7 @@
 				}
 			},
 			{
-				"name": "Lookup1",
+				"name": "Lookup_ETL_Config",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -312,7 +312,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "select LoadType from ETL_Config",
+						"sqlReaderQuery": "select * from ETL_Config",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -329,11 +329,11 @@
 				}
 			},
 			{
-				"name": "ForEach1",
+				"name": "Loop through ETL_Config",
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Lookup1",
+						"activity": "Lookup_ETL_Config",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -342,20 +342,224 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Lookup1').output.value",
+						"value": "@activity('Lookup_ETL_Config').output.value",
 						"type": "Expression"
 					},
 					"activities": [
 						{
-							"name": "If Condition1",
+							"name": "Condition",
 							"type": "IfCondition",
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@if(equals(item().Name,'Full'),'True','False')",
+									"value": "@equals(item().LoadType,'Full')",
 									"type": "Expression"
-								}
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Lookup_Incremental",
+										"type": "Lookup",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"sqlReaderQuery": {
+													"value": "@concat('select isnull(max(',item().KeyColumn,'),0) as key_max from ', item().TargetTable)",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"dataset": {
+												"referenceName": "DS_SQL_Server_IN1684",
+												"type": "DatasetReference",
+												"parameters": {
+													"PR_Tablename": {
+														"value": "@item().SourceTable",
+														"type": "Expression"
+													},
+													"PR_Schema": "PMahendi",
+													"PR_Database": "ADF_Training"
+												}
+											},
+											"firstRowOnly": false
+										}
+									},
+									{
+										"name": "Incremental Load",
+										"type": "Copy",
+										"dependsOn": [
+											{
+												"activity": "Lookup_Incremental",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"additionalColumns": [
+													{
+														"name": "LastModified",
+														"value": {
+															"value": "@utcNow()",
+															"type": "Expression"
+														}
+													}
+												],
+												"sqlReaderQuery": {
+													"value": "@concat('select * from', item().SourceTable,\n    'where',item().KeyColumn,'>''',\n    activity('Lookup_Incremental').output.key_max,'''')",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "SqlServerSink",
+												"writeBehavior": "insert",
+												"sqlWriterUseTableLock": false,
+												"tableOption": "autoCreate"
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_SQL_Server_IN1684",
+												"type": "DatasetReference",
+												"parameters": {
+													"PR_Tablename": {
+														"value": "@item().SourceTable",
+														"type": "Expression"
+													},
+													"PR_Schema": "PMahendi",
+													"PR_Database": "ADF_Training"
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_SQL_Server_IN1684",
+												"type": "DatasetReference",
+												"parameters": {
+													"PR_Tablename": {
+														"value": "@item().TargetTable",
+														"type": "Expression"
+													},
+													"PR_Schema": "PMahendi",
+													"PR_Database": "ADF_Training"
+												}
+											}
+										]
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "Full Load",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"additionalColumns": [
+													{
+														"name": "LastModified",
+														"value": {
+															"value": "@utcNow()",
+															"type": "Expression"
+														}
+													}
+												],
+												"sqlReaderQuery": {
+													"value": "@concat('Select * from', item().SourceTable)",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "SqlServerSink",
+												"preCopyScript": {
+													"value": "@concat('truncate table',item().TargetTable)",
+													"type": "Expression"
+												},
+												"writeBehavior": "insert",
+												"sqlWriterUseTableLock": false,
+												"tableOption": "autoCreate"
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_SQL_Server_IN1684",
+												"type": "DatasetReference",
+												"parameters": {
+													"PR_Tablename": {
+														"value": "@item().SourceTable\r\n",
+														"type": "Expression"
+													},
+													"PR_Schema": "PMahendi",
+													"PR_Database": "ADF_Training"
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_SQL_Server_IN1684",
+												"type": "DatasetReference",
+												"parameters": {
+													"PR_Tablename": {
+														"value": "@item().TargetTable",
+														"type": "Expression"
+													},
+													"PR_Schema": "PMahendi",
+													"PR_Database": "ADF_Training"
+												}
+											}
+										]
+									}
+								]
 							}
 						}
 					]
