@@ -1,0 +1,39 @@
+{
+	"name": "DF_Ex4_Global",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source2",
+				"source1 derive(Region = ERROR_FUNCTION('iif(__NEW_LINE_R____NEW_LINE_N__    Country in (__SINGLE_QUOTE__India__SINGLE_QUOTE__,__SINGLE_QUOTE__Japan__SINGLE_QUOTE__,__SINGLE_QUOTE__Singapore__SINGLE_QUOTE__),__SINGLE_QUOTE__APAC__SINGLE_QUOTE__,__NEW_LINE_R____NEW_LINE_N__    iif(Country in (__SINGLE_QUOTE__UK__SINGLE_QUOTE__,__SINGLE_QUOTE__Germany__SINGLE_QUOTE__,__SINGLE_QUOTE__France__SINGLE_QUOTE__),__SINGLE_QUOTE__EMEA__SINGLE_QUOTE__,__NEW_LINE_R____NEW_LINE_N__        iif(Country in (__SINGLE_QUOTE__USA__SINGLE_QUOTE__,__SINGLE_QUOTE__Canada__SINGLE_QUOTE__),__SINGLE_QUOTE__AMER__SINGLE_QUOTE__,__SINGLE_QUOTE__OTHER__SINGLE_QUOTE__)__NEW_LINE_R____NEW_LINE_N__    )__NEW_LINE_R____NEW_LINE_N__)__NEW_LINE_R____NEW_LINE_N__ ')) ~> derivedColumn1"
+			]
+		}
+	}
+}
