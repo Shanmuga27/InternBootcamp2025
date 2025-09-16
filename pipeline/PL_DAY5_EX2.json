@@ -198,6 +198,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -426,7 +427,7 @@
 													}
 												],
 												"sqlReaderQuery": {
-													"value": "@concat('select * from ', item().SourceTable,\n    'where',item().KeyColumn,'>''',\n    activity('Lookup_Incremental').output.value.k,'''')",
+													"value": "@concat('select * from ', item().SourceTable, ' where ', item().KeyColumn, ' > ''', activity('Lookup_Incremental').output.value[0].k, '''')\n ",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
