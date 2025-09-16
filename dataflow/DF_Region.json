@@ -91,7 +91,7 @@
 				"RegionColumn split($PR_Region[1]==Region,",
 				"     $PR_Region[2]==Region,",
 				"     $PR_Region[3]==Region,",
-				"     disjoint: true) ~> split1@(APAC, EMEA, AMER, UNK)",
+				"     disjoint: true) ~> split1@(APAC, EMEA, AMER)",
 				"split1@APAC filter(startsWith(split1@APAC@CustomerID, 'A')) ~> CustomerID",
 				"split1@EMEA filter(Amount > 2000\r",
 				") ~> Amount",
