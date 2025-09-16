@@ -26,6 +26,20 @@
 						"type": "DatasetReference"
 					},
 					"name": "OrdersAPAC"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "OrdersEMEA"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "CustomerAMER"
 				}
 			],
 			"transformations": [
@@ -33,16 +47,16 @@
 					"name": "CustomersJoinsOrders"
 				},
 				{
-					"name": "APACFilter"
+					"name": "StartsWithJ"
 				},
 				{
 					"name": "split1"
 				},
 				{
-					"name": "EMEAfilter"
+					"name": "amountgt2000"
 				},
 				{
-					"name": "AMERfilter"
+					"name": "LikeINC"
 				}
 			],
 			"scriptLines": [
@@ -73,17 +87,25 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> CustomersJoinsOrders",
-				"split1@APAC filter(startsWith(Name,'J')) ~> APACFilter",
+				"split1@APAC filter(startsWith(Name,'J')) ~> StartsWithJ",
 				"CustomersJoinsOrders split($pRegion[1] == 'APAC' && (Country== 'India' || Country== 'Australia'),",
 				"     $pRegion[2] == 'EMEA' && (Country== 'UK'),",
 				"     $pRegion[3] == 'EMEA' && (Country== 'USA' || Country== 'Canada'),",
 				"     disjoint: false) ~> split1@(APAC, EMEA, AMER)",
-				"split1@EMEA filter(Amount > 2000) ~> EMEAfilter",
-				"split1@AMER filter(like(lower(Name), 'inc')) ~> AMERfilter",
-				"APACFilter sink(allowSchemaDrift: true,",
+				"split1@EMEA filter(Amount > 2000) ~> amountgt2000",
+				"split1@AMER filter(like(lower(Name), 'inc')) ~> LikeINC",
+				"StartsWithJ sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> OrdersAPAC"
+				"     skipDuplicateMapOutputs: true) ~> OrdersAPAC",
+				"amountgt2000 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> OrdersEMEA",
+				"LikeINC sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> CustomerAMER"
 			]
 		}
 	}
