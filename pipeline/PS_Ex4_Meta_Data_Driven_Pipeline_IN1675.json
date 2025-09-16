@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "Select * from ETL_Config",
+						"sqlReaderQuery": "Select * from ETL_Config ",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -85,7 +85,7 @@
 														{
 															"type": "Query",
 															"text": {
-																"value": "@concat('Truncate Table',@item().TargetTable)",
+																"value": "@concat('Truncate Table ', item().TargetTable)\n",
 																"type": "Expression"
 															}
 														}
@@ -115,17 +115,119 @@
 												"typeProperties": {
 													"source": {
 														"type": "SqlServerSource",
+														"additionalColumns": [
+															{
+																"name": "LastModified",
+																"value": {
+																	"value": "@utcnow()",
+																	"type": "Expression"
+																}
+															}
+														],
 														"queryTimeout": "02:00:00",
 														"partitionOption": "None"
 													},
-													"enableStaging": false
+													"sink": {
+														"type": "SqlServerSink",
+														"writeBehavior": "insert",
+														"sqlWriterUseTableLock": false
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"mappings": [
+															{
+																"source": {
+																	"name": "CustomerID",
+																	"type": "String",
+																	"physicalType": "nvarchar"
+																},
+																"sink": {
+																	"name": "CustomerID",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "Name",
+																	"type": "String",
+																	"physicalType": "nvarchar"
+																},
+																"sink": {
+																	"name": "Name",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "Country",
+																	"type": "String",
+																	"physicalType": "nvarchar"
+																},
+																"sink": {
+																	"name": "Country",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "Age",
+																	"type": "String",
+																	"physicalType": "nvarchar"
+																},
+																"sink": {
+																	"name": "Age",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															},
+															{
+																"source": {
+																	"name": "LastModified",
+																	"type": "String"
+																},
+																"sink": {
+																	"name": "LastModified",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																}
+															}
+														],
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
 												},
 												"inputs": [
 													{
 														"referenceName": "DS_OnPremSQL_IN1675",
 														"type": "DatasetReference",
 														"parameters": {
-															"TableName": "@item"
+															"TableName": {
+																"value": "@item().SourceTable",
+																"type": "Expression"
+															},
+															"SchemaName": "DMuthuku",
+															"DatabaseName": "ADF_Training"
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "DS_OnPremSQL_IN1675",
+														"type": "DatasetReference",
+														"parameters": {
+															"TableName": {
+																"value": "@item().TargetTable",
+																"type": "Expression"
+															},
+															"SchemaName": "DMuthuku",
+															"DatabaseName": "ADF_Training"
 														}
 													}
 												]
@@ -133,7 +235,120 @@
 										]
 									},
 									{
-										"value": "Incremental"
+										"value": "Incremental",
+										"activities": [
+											{
+												"name": "Lookup2",
+												"type": "Lookup",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"sqlReaderQuery": {
+															"value": "@concat(\n    'select isnull(max(',item().KeyColumn, '),0) as Max_Value from ',item().TargetTable\n)\n ",
+															"type": "Expression"
+														},
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"dataset": {
+														"referenceName": "DS_OnpremSQL",
+														"type": "DatasetReference"
+													},
+													"firstRowOnly": false
+												}
+											},
+											{
+												"name": "Copy data2",
+												"type": "Copy",
+												"dependsOn": [
+													{
+														"activity": "Lookup2",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"additionalColumns": [
+															{
+																"name": "LastModified",
+																"value": {
+																	"value": "@utcnow()",
+																	"type": "Expression"
+																}
+															}
+														],
+														"sqlReaderQuery": {
+															"value": "@concat('select * from ', item().SourceTable, ' where ', item().KeyColumn, ' > ''', activity('Lookup2').output.value[0].Max_Value, '''')",
+															"type": "Expression"
+														},
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"sink": {
+														"type": "SqlServerSink",
+														"writeBehavior": "insert",
+														"sqlWriterUseTableLock": false
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "DS_OnPremSQL_IN1675",
+														"type": "DatasetReference",
+														"parameters": {
+															"TableName": {
+																"value": "@item().SourceTable",
+																"type": "Expression"
+															},
+															"SchemaName": "DMuthuku",
+															"DatabaseName": "ADF_Training"
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "DS_OnPremSQL_IN1675",
+														"type": "DatasetReference",
+														"parameters": {
+															"TableName": {
+																"value": "@item().TargetTable",
+																"type": "Expression"
+															},
+															"SchemaName": "DMuthuku",
+															"DatabaseName": "ADF_Training"
+														}
+													}
+												]
+											}
+										]
 									}
 								]
 							}
