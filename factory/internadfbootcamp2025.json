@@ -2,9 +2,13 @@
 	"name": "internadfbootcamp2025",
 	"properties": {
 		"globalParameters": {
-			"Region_APAC": {
-				"type": "string",
-				"value": "'APAC'"
+			"Region": {
+				"type": "array",
+				"value": [
+					"APAC",
+					"EMEA",
+					"AMER"
+				]
 			}
 		}
 	},
