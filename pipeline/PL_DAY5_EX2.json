@@ -373,7 +373,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@concat('select isnull(max(',item().KeyColumn,'),0) as key_max from ', item().TargetTable)",
+													"value": "@concat('select isnull(max(',item().KeyColumn,'),0) as k from ', item().TargetTable)",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -426,7 +426,7 @@
 													}
 												],
 												"sqlReaderQuery": {
-													"value": "@concat('select * from ', item().SourceTable,\n    'where',item().KeyColumn,'>''',\n    activity('Lookup_Incremental').output.firstrow.key_max,'''')",
+													"value": "@concat('select * from ', item().SourceTable,\n    'where',item().KeyColumn,'>''',\n    activity('Lookup_Incremental').output.value.k,'''')",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
