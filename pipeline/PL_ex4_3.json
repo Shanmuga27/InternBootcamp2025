@@ -129,7 +129,7 @@
 													}
 												],
 												"sqlReaderQuery": {
-													"value": "@concat(\n    'SELECT * FROM ', item().SrcTable,\n    ' WHERE ', item().KeyColumn, ' > ',\n    string(activity('Lookup KEY').output.firstRow.KeyID)\n)",
+													"value": "@concat(\r\n   'SELECT * FROM ', item().SrcTable,\r\n   ' WHERE ', item().KeyColumn, ' > ''',\r\n   activity('Lookup KEY').output.firstRow.KeyID,\r\n   ''''\r\n)",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
