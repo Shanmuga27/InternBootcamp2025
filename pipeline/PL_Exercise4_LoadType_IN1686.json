@@ -54,7 +54,26 @@
 						{
 							"name": "If Condition1",
 							"type": "IfCondition",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "SourceTable",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "TargetTable",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "KeyColumn",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
@@ -78,7 +97,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "SELECT ISNULL(MAX(@{item().Keycolumn}),'1990-01-01') AS MAXKEY\nFROM @{item().TargetTable};",
+													"value": "SELECT ISNULL(MAX(@{item().Keycolumn}),'0') AS MAXKEY\nFROM @{item().TargetTable};",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -86,7 +105,14 @@
 											},
 											"dataset": {
 												"referenceName": "DS_SQL_IN1686",
-												"type": "DatasetReference"
+												"type": "DatasetReference",
+												"parameters": {
+													"Tablename": {
+														"value": "@variables('Target_Table')",
+														"type": "Expression"
+													},
+													"DB_Name": "ADF_Training"
+												}
 											}
 										}
 									},
@@ -112,8 +138,17 @@
 										"typeProperties": {
 											"source": {
 												"type": "SqlServerSource",
+												"additionalColumns": [
+													{
+														"name": "LastModifiedDate",
+														"value": {
+															"value": "@utcNow()",
+															"type": "Expression"
+														}
+													}
+												],
 												"sqlReaderQuery": {
-													"value": "SELECT *FROM @{item().SourceTable}\nWHERE @{item().Keycolumn} > activity('Lookup1').output.firstRow.MAXKEY",
+													"value": "@concat(\n   'SELECT * FROM ', item().SourceTable,\n   ' WHERE ', item().KeyColumn, ' > ''',\n   activity('Lookup1').output.firstRow.MAXKEY,\n   ''''\n)",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -122,7 +157,8 @@
 											"sink": {
 												"type": "SqlServerSink",
 												"writeBehavior": "insert",
-												"sqlWriterUseTableLock": false
+												"sqlWriterUseTableLock": false,
+												"tableOption": "autoCreate"
 											},
 											"enableStaging": false,
 											"translator": {
@@ -137,7 +173,14 @@
 										"inputs": [
 											{
 												"referenceName": "DS_SQL_IN1686",
-												"type": "DatasetReference"
+												"type": "DatasetReference",
+												"parameters": {
+													"Tablename": {
+														"value": "@variables('Source_Table')",
+														"type": "Expression"
+													},
+													"DB_Name": "ADF_Training"
+												}
 											}
 										],
 										"outputs": [
@@ -145,6 +188,10 @@
 												"referenceName": "DS_SQL_IN1686",
 												"type": "DatasetReference",
 												"parameters": {
+													"Tablename": {
+														"value": "@variables('Target_Table')",
+														"type": "Expression"
+													},
 													"DB_Name": "ADF_Training"
 												}
 											}
@@ -206,6 +253,15 @@
 										"typeProperties": {
 											"source": {
 												"type": "SqlServerSource",
+												"additionalColumns": [
+													{
+														"name": "LastModifiedDate",
+														"value": {
+															"value": "@utcNow()",
+															"type": "Expression"
+														}
+													}
+												],
 												"queryTimeout": "02:00:00",
 												"partitionOption": "None"
 											},
@@ -230,7 +286,10 @@
 												"referenceName": "DS_SQL_IN1686",
 												"type": "DatasetReference",
 												"parameters": {
-													"Tablename": "Orders",
+													"Tablename": {
+														"value": "@variables('Source_Table')",
+														"type": "Expression"
+													},
 													"DB_Name": "ADF_Training"
 												}
 											}
@@ -240,7 +299,10 @@
 												"referenceName": "DS_SQL_IN1686",
 												"type": "DatasetReference",
 												"parameters": {
-													"Tablename": "Stg_Orders",
+													"Tablename": {
+														"value": "@variables('Target_Table')",
+														"type": "Expression"
+													},
 													"DB_Name": "ADF_Training"
 												}
 											}
@@ -248,23 +310,71 @@
 									}
 								]
 							}
+						},
+						{
+							"name": "SourceTable",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Source_Table",
+								"value": {
+									"value": "@item().SourceTable",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "TargetTable",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Target_Table",
+								"value": {
+									"value": "@item().TargetTable",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "KeyColumn",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Key_Column",
+								"value": {
+									"value": "@item().Keycolumn",
+									"type": "Expression"
+								}
+							}
 						}
 					]
 				}
 			}
 		],
-		"parameters": {
-			"SourceTable": {
-				"type": "string"
+		"variables": {
+			"Target_Table": {
+				"type": "String"
 			},
-			"TargetTable": {
-				"type": "string"
+			"Source_Table": {
+				"type": "String"
 			},
-			"LoadType": {
-				"type": "string"
-			},
-			"Keycolumn": {
-				"type": "string"
+			"Key_Column": {
+				"type": "String"
 			}
 		},
 		"annotations": []
