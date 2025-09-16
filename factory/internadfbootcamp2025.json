@@ -4,7 +4,11 @@
 		"globalParameters": {
 			"Region": {
 				"type": "string",
-				"value": "-"
+				"value": [
+					"APAC",
+					"EMEA",
+					"AMER"
+				]
 			}
 		}
 	},
