@@ -200,8 +200,7 @@
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Id",
-									"type": "Int32",
+									"name": "CustomerID",
 									"physicalType": "int"
 								}
 							},
@@ -217,7 +216,27 @@
 									"physicalType": "nvarchar"
 								}
 							},
-							null
+							{
+								"source": {
+									"name": "Country",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Country",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Age",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Age"
+								}
+							}
 						],
 						"typeConversion": true,
 						"typeConversionSettings": {
