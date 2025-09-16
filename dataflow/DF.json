@@ -1,0 +1,125 @@
+{
+	"name": "DF",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference"
+					},
+					"name": "SrcCustomers"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference"
+					},
+					"name": "SrcOrders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "APACFilteredData"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "EMEAFilteredData"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "AMERFilteredData"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "region"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "filter2"
+				},
+				{
+					"name": "filter3"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     regions as string[]",
+				"}",
+				"source(output(",
+				"          CustomerID as string,",
+				"          Name as string,",
+				"          Country as string,",
+				"          Age as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcCustomers",
+				"source(output(",
+				"          OrderID as string,",
+				"          CustomerID as string,",
+				"          ProductID as string,",
+				"          OrderDate as date,",
+				"          Amount as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcOrders",
+				"SrcCustomers, SrcOrders join(SrcCustomers@CustomerID == SrcOrders@CustomerID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"region split(region==$regions[1],",
+				"     region==$regions[3],",
+				"     region==$regions[2],",
+				"     disjoint: false) ~> split1@(APAC, EMEA, AMER)",
+				"join1 derive(region = iif(Country=='India'||Country=='Australia', 'APAC',\r",
+				"    iif(Country=='UK', 'EMEA', \r",
+				"        iif(Country=='USA'||Country=='Canada', 'AMER','Others')))\r",
+				") ~> region",
+				"split1@APAC filter(startsWith(split1@APAC@CustomerID, 'A')) ~> filter1",
+				"split1@AMER filter(Amount>2000) ~> filter2",
+				"split1@EMEA filter(regexMatch(Name, 'Inc')) ~> filter3",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Orders_APAC'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> APACFilteredData",
+				"filter2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Orders_EMEA'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> EMEAFilteredData",
+				"filter3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Customers_AMER'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> AMERFilteredData"
+			]
+		}
+	}
+}

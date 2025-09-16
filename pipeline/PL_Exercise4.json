@@ -36,6 +36,8 @@
 			{
 				"name": "Data flow1",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -72,6 +74,8 @@
 			{
 				"name": "Copy data1",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Data flow1",
@@ -138,6 +142,259 @@
 						}
 					}
 				]
+			},
+			{
+				"name": "Copy data2",
+				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "boootcamp25",
+							"directory": "Exercise 4 src files",
+							"file": "Products.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SqlServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "JSivakum",
+							"table": "Products",
+							"db": "ADF_Training"
+						}
+					}
+				]
+			},
+			{
+				"name": "Data flow2",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF",
+						"type": "DataFlowReference",
+						"parameters": {
+							"regions": {
+								"value": "@pipeline().globalParameters.Region",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"SrcCustomers": {
+								"Container": "boootcamp25",
+								"directory": "Exercise 4 src files",
+								"file": "Customers.csv"
+							},
+							"SrcOrders": {
+								"Container": "boootcamp25",
+								"directory": "Exercise 4 src files",
+								"file": "Orders.csv"
+							},
+							"APACFilteredData": {
+								"container": "boootcamp25",
+								"directory": "IN1677/global_parameter",
+								"file": "Orders_APAC"
+							},
+							"EMEAFilteredData": {
+								"container": "boootcamp25",
+								"directory": "IN1677/global_parameter",
+								"file": "Orders_EMEA"
+							},
+							"AMERFilteredData": {
+								"container": "boootcamp25",
+								"directory": "IN1677/global_parameter",
+								"file": "Customers_AMER"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Get Metadata1",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "Data flow2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "boootcamp25",
+							"directory": "IN1677/global_parameter",
+							"file": "*"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy data3",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "SqlServerSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"tableOption": "autoCreate"
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_Blob_IN1677_Src",
+									"type": "DatasetReference",
+									"parameters": {
+										"Container": "boootcamp25",
+										"directory": "IN1677/global_parameter",
+										"file": {
+											"value": "@item().Name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_SqlServer",
+									"type": "DatasetReference",
+									"parameters": {
+										"schema": "JSivakum",
+										"table": {
+											"value": "@item().Name",
+											"type": "Expression"
+										},
+										"db": "ADF_Training"
+									}
+								}
+							]
+						}
+					]
+				}
 			}
 		],
 		"annotations": []
