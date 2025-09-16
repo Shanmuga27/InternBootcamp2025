@@ -10,7 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "DIM_CATEGORY_T(in).csv",
 				"folderPath": "IN1689",
 				"container": "boootcamp25"
 			},
