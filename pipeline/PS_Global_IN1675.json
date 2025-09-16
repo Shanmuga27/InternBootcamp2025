@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "PS_Global_IN1675",
 	"properties": {
 		"activities": [
 			{
@@ -89,6 +89,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
