@@ -435,8 +435,7 @@
 											"sink": {
 												"type": "SqlServerSink",
 												"writeBehavior": "insert",
-												"sqlWriterUseTableLock": false,
-												"tableOption": "autoCreate"
+												"sqlWriterUseTableLock": false
 											},
 											"enableStaging": false,
 											"translator": {
@@ -468,7 +467,7 @@
 												"type": "DatasetReference",
 												"parameters": {
 													"PR_Tablename": {
-														"value": "@concat('stg_',item().TargetTable)",
+														"value": "@item().TargetTable",
 														"type": "Expression"
 													},
 													"PR_Schema": "PMahendi",
@@ -503,22 +502,17 @@
 														}
 													}
 												],
-												"sqlReaderQuery": {
-													"value": "@concat('Select * from ', item().SourceTable)",
-													"type": "Expression"
-												},
 												"queryTimeout": "02:00:00",
 												"partitionOption": "None"
 											},
 											"sink": {
 												"type": "SqlServerSink",
 												"preCopyScript": {
-													"value": "@concat('truncate table ',item().TargetTable)",
+													"value": "@{concat('TRUNCATE TABLE ',item().TargetTable)}",
 													"type": "Expression"
 												},
 												"writeBehavior": "insert",
-												"sqlWriterUseTableLock": false,
-												"tableOption": "autoCreate"
+												"sqlWriterUseTableLock": false
 											},
 											"enableStaging": false,
 											"translator": {
@@ -550,7 +544,7 @@
 												"type": "DatasetReference",
 												"parameters": {
 													"PR_Tablename": {
-														"value": "@concat('stg_',item().TargetTable)",
+														"value": "@item().TargetTable",
 														"type": "Expression"
 													},
 													"PR_Schema": "PMahendi",
