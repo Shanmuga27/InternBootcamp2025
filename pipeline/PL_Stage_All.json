@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "select * from  ETL_Config",
+						"sqlReaderQuery": "select \nSourceTable ,\nTargetTable,\nLoadType,\nKeyColumn\nfrom ETL_Config",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -117,7 +117,10 @@
 										"typeProperties": {
 											"source": {
 												"type": "SqlServerSource",
-												"sqlReaderQuery": "@concat(\n   'SELECT * FROM ', item().SrcTable,\n   ' WHERE ', item().KeyColumn, ' > ''',\n   activity('Lookup KEY').output.firstRow.KeyID,\n   ''''\n)",
+												"sqlReaderQuery": {
+													"value": "@concat(\n   'SELECT * FROM ', item().SrcTable,\n   ' WHERE ', item().KeyColumn, ' > ''',\n   activity('Lookup2').output.firstRow.KeyID,\n   ''''\n)",
+													"type": "Expression"
+												},
 												"queryTimeout": "02:00:00",
 												"partitionOption": "None"
 											},
@@ -182,7 +185,10 @@
 										"typeProperties": {
 											"source": {
 												"type": "SqlServerSource",
-												"sqlReaderQuery": "@concat(\n    'select * from ', item().SrcTable\n)",
+												"sqlReaderQuery": {
+													"value": "@concat(\n    'select * from ', item().SrcTable\n)",
+													"type": "Expression"
+												},
 												"queryTimeout": "02:00:00",
 												"partitionOption": "None"
 											},
