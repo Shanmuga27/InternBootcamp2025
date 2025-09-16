@@ -35,14 +35,9 @@
 			{
 				"name": "ForEach1",
 				"type": "ForEach",
-				"dependsOn": [
-					{
-						"activity": "Lookup1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
@@ -172,6 +167,216 @@
 								"ifTrueActivities": [
 									{
 										"name": "Copy data1",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"sqlReaderQuery": {
+													"value": "@concat(\n    'select * from ', item().SourceTable\n)",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "SqlServerSink",
+												"writeBehavior": "insert",
+												"sqlWriterUseTableLock": false
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_EX_IN1674",
+												"type": "DatasetReference",
+												"parameters": {
+													"schemaname": "Ckumaram",
+													"tablename": {
+														"value": "@item().SourceTable",
+														"type": "Expression"
+													},
+													"Database": "ADF_Training"
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_EX_IN1674",
+												"type": "DatasetReference",
+												"parameters": {
+													"schemaname": "CKumaram",
+													"tablename": {
+														"value": "@item().TargetTable",
+														"type": "Expression"
+													},
+													"Database": "ADF_Training"
+												}
+											}
+										]
+									}
+								]
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "ForEach1_copy1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup1').output",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "If Condition1_copy1",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@equals(item().loadtype,'Full')",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Lookup2_copy1",
+										"type": "Lookup",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"sqlReaderQuery": {
+													"value": "@concat(\n    'select ISNULL(MAX(', item().KeyColumn, '), 0)\n    AS KeyID FROM ' , item().TargetTable\n)",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"dataset": {
+												"referenceName": "DS_EX_IN1674",
+												"type": "DatasetReference",
+												"parameters": {
+													"schemaname": "CKumaram",
+													"tablename": "ETL_Config",
+													"Database": "ADF_Training"
+												}
+											}
+										}
+									},
+									{
+										"name": "Copy data2_copy1",
+										"type": "Copy",
+										"dependsOn": [
+											{
+												"activity": "Lookup2_copy1",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"sqlReaderQuery": {
+													"value": "@concat(\n   'SELECT * FROM ', item().SourceTable,\n   ' WHERE ', item().KeyColumn, ' > ''',\n   activity('Lookup2').output.firstRow.KeyID,\n   ''''\n)",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "SqlServerSink",
+												"writeBehavior": "insert",
+												"sqlWriterUseTableLock": false
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_EX_IN1674",
+												"type": "DatasetReference",
+												"parameters": {
+													"schemaname": "CKumaram",
+													"tablename": {
+														"value": "@item().SourceTable",
+														"type": "Expression"
+													},
+													"Database": "ADF_Training"
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_EX_IN1674",
+												"type": "DatasetReference",
+												"parameters": {
+													"schemaname": "CKumaram",
+													"tablename": {
+														"value": "\n@item().TargetTable",
+														"type": "Expression"
+													},
+													"Database": "ADF_Training"
+												}
+											}
+										]
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "Copy data1_copy1",
 										"type": "Copy",
 										"dependsOn": [],
 										"policy": {
