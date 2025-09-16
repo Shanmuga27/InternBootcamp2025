@@ -54,11 +54,13 @@
 						{
 							"name": "If Condition1",
 							"type": "IfCondition",
+							"state": "Inactive",
+							"onInactiveMarkAs": "Succeeded",
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "full",
+									"value": "@equals(item()['LoadType'], 'Full')",
 									"type": "Expression"
 								},
 								"ifFalseActivities": [
