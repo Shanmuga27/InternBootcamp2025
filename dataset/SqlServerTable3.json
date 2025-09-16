@@ -3,7 +3,24 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_Onprem_SQLSERVER__IN1689",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"database": {
+					"value": "@dataset().db",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"schema": {
+				"type": "string"
+			},
+			"table": {
+				"type": "string"
+			},
+			"db": {
+				"type": "string"
+			}
 		},
 		"annotations": [],
 		"type": "SqlServerTable",
@@ -28,8 +45,14 @@
 			}
 		],
 		"typeProperties": {
-			"schema": "VSri",
-			"table": "tgt_api_IN1689"
+			"schema": {
+				"value": "@dataset().schema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().table",
+				"type": "Expression"
+			}
 		}
 	}
 }

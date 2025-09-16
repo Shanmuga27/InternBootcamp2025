@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "DelimitedText1",
+						"referenceName": "DS_IN1689",
 						"type": "DatasetReference"
 					},
 					"name": "SINK"
@@ -63,24 +63,10 @@
 				"windowRemoveDuplicates filter(rowNum == 1) ~> filter1",
 				"filter1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     input(",
-				"          SOURCE_SYSTEM_CODE as string,",
-				"          AIRFLOW_RUN_ID as string,",
-				"          ETL_AUDIT_CREATE_USER as string,",
-				"          ETL_AUDIT_CREATE_TS as string,",
-				"          ETL_AUDIT_UPDATE_USER as string,",
-				"          ETL_AUDIT_UPDATE_TS as string,",
-				"          CATEGORY_ID as string,",
-				"          DEPT_ID as string,",
-				"          CLASS_ID as string,",
-				"          LINE_ID as string,",
-				"          DEPT_NAME as string,",
-				"          CLASS_NAME as string,",
-				"          LINE_NAME as string,",
-				"          CREATION_DT as string",
-				"     ),",
+				"     partitionFileNames:['All_Unioned_IN1689'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SINK"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SINK"
 			]
 		}
 	}
