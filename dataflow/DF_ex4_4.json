@@ -66,14 +66,13 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1 split($param_Region == 'APAC',",
-				"     $param_Region == 'EMEA',",
-				"     $param_Region == 'AMER',",
+				"join1 split(regexSplit($param_Region,',')[0] == 'APAC',",
+				"     regexSplit($param_Region, ',')[1] == 'EMEA',",
+				"     regexSplit($param_Region, ',')[2] == 'EMEA',",
 				"     disjoint: true) ~> split1@(APAC, EMEA, AMER)",
 				"split1@APAC filter(( Country == 'India' || Country == 'Australia' ) && startsWith(Name, 'A')) ~> filterAPAC",
 				"split1@EMEA filter(( Country == 'UK' ) && Amount > 2000) ~> filterEMEA",
-				"split1@AMER filter(( Country == 'USA' || Country == 'Canada' ) && contains(array(Name), 'Inc.')\r",
-				") ~> filter1"
+				"split1@AMER filter(( Country == 'USA' || Country == 'Canada' ) && contains(array(Name), 'Inc.')) ~> filter1"
 			]
 		}
 	}
