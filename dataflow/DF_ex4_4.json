@@ -19,7 +19,29 @@
 					"name": "sourceORDERS"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "OrdersAPAC"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "OrdersEMEA"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "CustomersAMER"
+				}
+			],
 			"transformations": [
 				{
 					"name": "join1",
@@ -35,7 +57,7 @@
 					"name": "filterEMEA"
 				},
 				{
-					"name": "filter1"
+					"name": "filterAMER"
 				}
 			],
 			"scriptLines": [
@@ -70,9 +92,27 @@
 				"     $param_R[2] == 'EMEA',",
 				"     $param_R[3] == 'AMER',",
 				"     disjoint: true) ~> split1@(APAC, EMEA, AMER)",
-				"split1@APAC filter(( Country == 'India' || Country == 'Australia' ) && startsWith(Name, 'A')) ~> filterAPAC",
+				"split1@APAC filter(( Country == 'India' || Country == 'Australia' ) && startsWith(Name, 'B')) ~> filterAPAC",
 				"split1@EMEA filter(( Country == 'UK' ) && Amount > 2000) ~> filterEMEA",
-				"split1@AMER filter(( Country == 'USA' || Country == 'Canada' ) && like(Name, 'Inc')) ~> filter1"
+				"split1@AMER filter(( Country == 'USA' || Country == 'Canada' ) && like(Name, 'Inc')) ~> filterAMER",
+				"filterAPAC sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Orders_APAC.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> OrdersAPAC",
+				"filterEMEA sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Orders_EMEA.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> OrdersEMEA",
+				"filterAMER sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Customers_AMER.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> CustomersAMER"
 			]
 		}
 	}

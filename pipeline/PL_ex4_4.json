@@ -34,6 +34,21 @@
 								"Param_Container": "boootcamp25",
 								"Param_Folder": "Exercise 4 src files",
 								"Param_File": "Orders.csv"
+							},
+							"OrdersAPAC": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/ex4_4",
+								"Param_File": "Orders_APAC.csv"
+							},
+							"OrdersEMEA": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/ex4_4",
+								"Param_File": "Orders_EMEA.csv"
+							},
+							"CustomersAMER": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/ex4_4",
+								"Param_File": "Customers_AMER.csv"
 							}
 						}
 					},
