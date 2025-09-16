@@ -9,36 +9,94 @@
 						"referenceName": "DS_Blob_1680",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "ordersAndCustomer"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_Blob_1680",
 						"type": "DatasetReference"
 					},
-					"name": "source2"
+					"name": "source1"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "sink3"
+				}
+			],
 			"transformations": [
 				{
 					"name": "split1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "filter2"
+				},
+				{
+					"name": "filter3"
 				}
 			],
 			"scriptLines": [
+				"parameters{",
+				"     global_parameter as string[]",
+				"}",
 				"source(output(",
-				"          anime_id as string,",
-				"          name as string,",
-				"          genre as string,",
-				"          type as string,",
-				"          episodes as string,",
-				"          rating as string,",
-				"          members as string",
+				"          OrderID as string,",
+				"          CustomerID as string,",
+				"          ProductID as string,",
+				"          OrderDate as date,",
+				"          Amount as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ordersAndCustomer",
+				"source(output(",
+				"          CustomerID as string,",
+				"          Name as string,",
+				"          Country as string,",
+				"          Age as short",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source(output(",
+				"join1 split($global_parameter[1] == 'APAC' &&( Country =='India' || Country=='Australia'),",
+				"     $global_parameter[2] == 'EMEA' && Country== 'UK',",
+				"     $global_parameter[3] == 'AMER' && (Country !='India' || Country !='Australia' || Country  != 'UK' ),",
+				"     disjoint: true) ~> split1@(apac, EMEA, AMER)",
+				"ordersAndCustomer, source1 join(ordersAndCustomer@CustomerID == source1@CustomerID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"split1@apac filter(startsWith(Name, 'J')) ~> filter1",
+				"split1@EMEA filter(Amount>2000) ~> filter2",
+				"split1@AMER filter(like(lower(Name), 'inc')) ~> filter3",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
 				"          anime_id as string,",
 				"          name as string,",
 				"          genre as string,",
@@ -47,11 +105,34 @@
 				"          rating as string,",
 				"          members as string",
 				"     ),",
-				"     allowSchemaDrift: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1",
+				"filter2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source2",
-				"source1 split(ERROR_FUNCTION(''),",
-				"     disjoint: false) ~> split1@(, )"
+				"     input(",
+				"          anime_id as string,",
+				"          name as string,",
+				"          genre as string,",
+				"          type as string,",
+				"          episodes as string,",
+				"          rating as string,",
+				"          members as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2",
+				"filter3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          anime_id as string,",
+				"          name as string,",
+				"          genre as string,",
+				"          type as string,",
+				"          episodes as string,",
+				"          rating as string,",
+				"          members as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink3"
 			]
 		}
 	}
