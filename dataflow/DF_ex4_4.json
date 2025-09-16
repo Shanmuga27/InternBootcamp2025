@@ -40,7 +40,7 @@
 			],
 			"scriptLines": [
 				"parameters{",
-				"     param_Region as string",
+				"     param_Region as string ($param_Region)",
 				"}",
 				"source(output(",
 				"          CustomerID as string,",
