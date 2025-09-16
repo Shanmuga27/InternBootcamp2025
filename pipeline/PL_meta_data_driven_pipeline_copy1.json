@@ -1,0 +1,339 @@
+{
+	"name": "PL_meta_data_driven_pipeline_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_SQL_Server_IN1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "KRavi",
+							"TableName": "ETL_config",
+							"DatabaseName": "ADF_Training"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Until1",
+				"type": "Until",
+				"dependsOn": [
+					{
+						"activity": "Set variable3",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('len'),variables('File_detail'))",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Set variable1",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "If Condition1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "incr",
+								"value": {
+									"value": "@add(variables('len'),1 )",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set variable2",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Set variable1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "len",
+								"value": {
+									"value": "@variables('incr')",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "If Condition1",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@equals(activity('Lookup1').output.value[variables('len')].LoadType, 'Full' )",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Copy data2",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"sqlReaderQuery": "@concat(\n  'select * from ',\n  activity('Lookup1').output.value[variables('len')].SrcTable,\n  ' where cast(',\n  activity('Lookup1').output.value[variables('len')].KeyColumn,\n  ' as varchar) > (select coalesce(',\n  activity('Lookup1').output.value[variables('len')].KeyColumn,\n  ', -1) from ct_int where job_name = ''',\n  activity('Lookup1').output.value[variables('len')].TgtTable,\n  ''')'\n)",
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "SqlServerSink",
+												"writeBehavior": "insert",
+												"sqlWriterUseTableLock": false
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_SQL_Server_IN1680",
+												"type": "DatasetReference",
+												"parameters": {
+													"SchemaName": "KRavi",
+													"TableName": {
+														"value": "@activity('Lookup1').output.value[variables('len')].SrcTable",
+														"type": "Expression"
+													},
+													"DatabaseName": "ADF_Training"
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_SQL_Server_IN1680",
+												"type": "DatasetReference",
+												"parameters": {
+													"SchemaName": "KRavi",
+													"TableName": {
+														"value": "@activity('Lookup1').output.value[variables('len')].TgtTable",
+														"type": "Expression"
+													},
+													"DatabaseName": "ADF_Training"
+												}
+											}
+										]
+									},
+									{
+										"name": "Script1",
+										"type": "Script",
+										"dependsOn": [
+											{
+												"activity": "Copy data2",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"linkedServiceName": {
+											"referenceName": "LS_SQL_Server_IN1680",
+											"type": "LinkedServiceReference",
+											"parameters": {
+												"database": "ADF_Training"
+											}
+										},
+										"typeProperties": {
+											"scripts": [
+												{
+													"type": "Query",
+													"text": {
+														"value": "@concat(\n  'merge into ct_int as t ',\n  'using (select ''',\n  activity('Lookup1').output.value[variables('len')].TgtTable,\n  ''' as job_name, max(',\n  activity('Lookup1').output.value[variables('len')].KeyColumn,\n  ') as id from ',\n  activity('Lookup1').output.value[variables('len')].TgtTable,\n  ') as s ',\n  'on t.job_name = s.job_name ',\n  'when matched then update set t.id = cast(s.id as varchar) ',\n  'when not matched then insert (job_name, id) values (s.job_name, cast(s.id as varchar));'\n)",
+														"type": "Expression"
+													}
+												}
+											],
+											"scriptBlockExecutionTimeout": "02:00:00"
+										}
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "Copy data1",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "DelimitedTextSource",
+												"storeSettings": {
+													"type": "AzureBlobStorageReadSettings",
+													"recursive": true,
+													"enablePartitionDiscovery": false
+												},
+												"formatSettings": {
+													"type": "DelimitedTextReadSettings"
+												}
+											},
+											"sink": {
+												"type": "SqlServerSink",
+												"preCopyScript": {
+													"value": "@concat('truncate table ', activity('Lookup1').output.value[variables('len')].TgtTable)",
+													"type": "Expression"
+												},
+												"writeBehavior": "insert",
+												"sqlWriterUseTableLock": false,
+												"tableOption": "autoCreate"
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_Blob_1680",
+												"type": "DatasetReference",
+												"parameters": {
+													"container": "boootcamp25",
+													"folder": "Exercise 4 src files",
+													"file": {
+														"value": "@concat(activity('Lookup1').output.value[variables('len')].SrcTable,'.csv')",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_SQL_Server_IN1680",
+												"type": "DatasetReference",
+												"parameters": {
+													"SchemaName": "KRavi",
+													"TableName": {
+														"value": "@activity('Lookup1').output.value[variables('len')].TgtTable",
+														"type": "Expression"
+													},
+													"DatabaseName": "ADF_Training"
+												}
+											}
+										]
+									}
+								]
+							}
+						}
+					],
+					"timeout": "0.12:00:00"
+				}
+			},
+			{
+				"name": "Set variable3",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "File_detail",
+					"value": {
+						"value": "@activity('Lookup1').output.count",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"File_detail": {
+				"type": "Integer"
+			},
+			"len": {
+				"type": "Integer",
+				"defaultValue": 0
+			},
+			"incr": {
+				"type": "Integer",
+				"defaultValue": 0
+			}
+		},
+		"folder": {
+			"name": "exercise4"
+		},
+		"annotations": []
+	}
+}

@@ -27,6 +27,18 @@
 							"global_parameter": {
 								"value": "@pipeline().globalParameters.Region",
 								"type": "Expression"
+							},
+							"filename1": {
+								"value": "'@{pipeline().parameters.filename1}'",
+								"type": "Expression"
+							},
+							"filename2": {
+								"value": "'@{pipeline().parameters.filename2}'",
+								"type": "Expression"
+							},
+							"filename3": {
+								"value": "'@{pipeline().parameters.filename3}'",
+								"type": "Expression"
 							}
 						},
 						"datasetParameters": {
@@ -68,6 +80,20 @@
 				}
 			}
 		],
+		"parameters": {
+			"filename1": {
+				"type": "string",
+				"defaultValue": "Orders_APAC.csv"
+			},
+			"filename2": {
+				"type": "string",
+				"defaultValue": "Orders_EMEA.csv"
+			},
+			"filename3": {
+				"type": "string",
+				"defaultValue": "Customer_AMEA.csv"
+			}
+		},
 		"folder": {
 			"name": "exercise4"
 		},
