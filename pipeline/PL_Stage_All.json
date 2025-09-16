@@ -46,7 +46,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Lookup1').output.value",
+						"value": "@activity('Lookup1').output",
 						"type": "Expression"
 					},
 					"isSequential": true,
@@ -118,7 +118,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@concat(\n   'SELECT * FROM ', item().SrcTable,\n   ' WHERE ', item().KeyColumn, ' > ''',\n   activity('Lookup2').output.firstRow.KeyID,\n   ''''\n)",
+													"value": "@concat(\n   'SELECT * FROM ', item().SourceTable,\n   ' WHERE ', item().KeyColumn, ' > ''',\n   activity('Lookup2').output.firstRow.KeyID,\n   ''''\n)",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -186,7 +186,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@concat(\n    'select * from ', item().SrcTable\n)",
+													"value": "@concat(\n    'select * from ', item().SourceTable\n)",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
