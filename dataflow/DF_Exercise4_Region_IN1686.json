@@ -1,0 +1,90 @@
+{
+	"name": "DF_Exercise4_Region_IN1686",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "Customers"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "Orders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "OrdersAPAC"
+				}
+			],
+			"transformations": [
+				{
+					"name": "CustomersJoinsOrders"
+				},
+				{
+					"name": "APACFilter"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "EMEAfilter"
+				},
+				{
+					"name": "AMERfilter"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     pRegion as string[]",
+				"}",
+				"source(output(",
+				"          CustomerID as string,",
+				"          Name as string,",
+				"          Country as string,",
+				"          Age as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Customers",
+				"source(output(",
+				"          OrderID as string,",
+				"          CustomerID as string,",
+				"          ProductID as string,",
+				"          OrderDate as date,",
+				"          Amount as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Orders",
+				"Customers, Orders join(Customers@CustomerID == Orders@CustomerID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> CustomersJoinsOrders",
+				"split1@APAC filter(startsWith(Name,'J')) ~> APACFilter",
+				"CustomersJoinsOrders split($pRegion[1] == 'APAC' && (Country== 'India' || Country== 'Australia'),",
+				"     $pRegion[2] == 'EMEA' && (Country== 'UK'),",
+				"     $pRegion[3] == 'EMEA' && (Country== 'USA' || Country== 'Canada'),",
+				"     disjoint: false) ~> split1@(APAC, EMEA, AMER)",
+				"split1@EMEA filter(Amount > 2000) ~> EMEAfilter",
+				"split1@AMER filter(like(lower(Name), 'inc')) ~> AMERfilter",
+				"APACFilter sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> OrdersAPAC"
+			]
+		}
+	}
+}
