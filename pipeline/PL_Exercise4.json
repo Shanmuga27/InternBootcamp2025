@@ -469,7 +469,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@concat(\n    'select ',item().KeyColumn,'from ',item().TargetTable\n)\n",
+													"value": "@concat(\n    'select ',item().KeyColumn 'as keyc from ',item().TargetTable\n)\n",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -508,6 +508,10 @@
 										"typeProperties": {
 											"source": {
 												"type": "SqlServerSource",
+												"sqlReaderQuery": {
+													"value": "@concat(\n    'select * from ', item().SourceTable,\n    ' where ', item().KeyColumn ,' > \"',activity('Lookup3').output.firstRow.keyc,'\"'\n)",
+													"type": "Expression"
+												},
 												"queryTimeout": "02:00:00",
 												"partitionOption": "None"
 											},
