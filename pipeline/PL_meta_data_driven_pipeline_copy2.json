@@ -1,5 +1,5 @@
 {
-	"name": "PL_meta_data_driven_pipeline_copy1",
+	"name": "PL_meta_data_driven_pipeline_copy2",
 	"properties": {
 		"activities": [
 			{
@@ -124,10 +124,7 @@
 										"typeProperties": {
 											"source": {
 												"type": "SqlServerSource",
-												"sqlReaderQuery": {
-													"value": "@concat(\n  'select * from ',\n  activity('Lookup1').output.value[variables('len')].SrcTable,\n  ' where cast(',\n  activity('Lookup1').output.value[variables('len')].KeyColumn,\n  ' as varchar) > (select ',\n  activity('Lookup1').output.value[variables('len')].KeyColumn,\n  ' from ct_int where job_name = ''',\n  activity('Lookup1').output.value[variables('len')].TgtTable,\n  ''')'\n)",
-													"type": "Expression"
-												},
+												"sqlReaderQuery": "@concat(\n  'select * from ',\n  activity('Lookup1').output.value[variables('len')].SrcTable,\n  ' where cast(',\n  activity('Lookup1').output.value[variables('len')].KeyColumn,\n  ' as varchar) > (select coalesce(',\n  activity('Lookup1').output.value[variables('len')].KeyColumn,\n  ', -1) from ct_int where job_name = ''',\n  activity('Lookup1').output.value[variables('len')].TgtTable,\n  ''')'\n)",
 												"queryTimeout": "02:00:00",
 												"partitionOption": "None"
 											},
@@ -175,45 +172,6 @@
 												}
 											}
 										]
-									},
-									{
-										"name": "Script1",
-										"type": "Script",
-										"dependsOn": [
-											{
-												"activity": "Copy data2",
-												"dependencyConditions": [
-													"Succeeded"
-												]
-											}
-										],
-										"policy": {
-											"timeout": "0.12:00:00",
-											"retry": 0,
-											"retryIntervalInSeconds": 30,
-											"secureOutput": false,
-											"secureInput": false
-										},
-										"userProperties": [],
-										"linkedServiceName": {
-											"referenceName": "LS_SQL_Server_IN1680",
-											"type": "LinkedServiceReference",
-											"parameters": {
-												"database": "ADF_Training"
-											}
-										},
-										"typeProperties": {
-											"scripts": [
-												{
-													"type": "Query",
-													"text": {
-														"value": "@concat(\n  'UPDATE ct_int SET id = CAST((SELECT MAX(',\n  activity('Lookup1').output.value[variables('len')].KeyColumn,\n  ') FROM ',\n  activity('Lookup1').output.value[variables('len')].TgtTable,\n  ' WHERE job_name = ''',\n  activity('Lookup1').output.value[variables('len')].TgtTable,\n  ''') AS INT)'\n)",
-														"type": "Expression"
-													}
-												}
-											],
-											"scriptBlockExecutionTimeout": "02:00:00"
-										}
 									}
 								],
 								"ifTrueActivities": [
