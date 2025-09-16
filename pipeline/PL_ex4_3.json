@@ -215,7 +215,7 @@
 											"sink": {
 												"type": "SqlServerSink",
 												"preCopyScript": {
-													"value": "@{concat('truncate table ', item().TgtTable)}",
+													"value": "@concat('truncate table ', item().TgtTable)",
 													"type": "Expression"
 												},
 												"writeBehavior": "insert",
