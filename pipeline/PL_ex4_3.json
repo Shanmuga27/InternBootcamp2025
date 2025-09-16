@@ -90,7 +90,10 @@
 											},
 											"sink": {
 												"type": "SqlServerSink",
-												"preCopyScript": "truncate table stg_customers;",
+												"preCopyScript": {
+													"value": "@concat('truncate table', item().TGT_Table)",
+													"type": "Expression"
+												},
 												"writeBehavior": "insert",
 												"sqlWriterUseTableLock": false,
 												"tableOption": "autoCreate"
