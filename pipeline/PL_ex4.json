@@ -132,7 +132,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "boootcamp25",
-							"folder": "IN1689/tgt_orders",
+							"folder": "IN1689/day4",
 							"filename": "*"
 						}
 					},
@@ -212,7 +212,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"container": "boootcamp25",
-										"folder": "IN1689/tgt_orders",
+										"folder": "IN1689/day4",
 										"filename": {
 											"value": "@item().Name",
 											"type": "Expression"
