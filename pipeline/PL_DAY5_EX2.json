@@ -126,11 +126,10 @@
 						"referenceName": "DF_Region",
 						"type": "DataFlowReference",
 						"parameters": {
-							"PR_Region": [
-								"APAC",
-								"EMEA",
-								"AMER"
-							]
+							"PR_Region": {
+								"value": "@pipeline().globalParameters.Region",
+								"type": "Expression"
+							}
 						},
 						"datasetParameters": {
 							"Customers": {
@@ -140,10 +139,6 @@
 							"Orders": {
 								"PR_Directory": "Exercise 4 src files",
 								"PR_Filename": "Orders.csv"
-							},
-							"Products": {
-								"PR_Directory": "Exercise 4 src files",
-								"PR_Filename": "Products.csv"
 							},
 							"tgtAPAC": {
 								"PR_Directory": "IN1684/regions",
