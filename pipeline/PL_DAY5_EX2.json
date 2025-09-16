@@ -426,7 +426,7 @@
 													}
 												],
 												"sqlReaderQuery": {
-													"value": "@concat('select * from', item().SourceTable,\n    'where',item().KeyColumn,'>''',\n    activity('Lookup_Incremental').output.key_max,'''')",
+													"value": "@concat('select * from ', item().SourceTable,\n    'where',item().KeyColumn,'>''',\n    activity('Lookup_Incremental').output.key_max,'''')",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -504,7 +504,7 @@
 													}
 												],
 												"sqlReaderQuery": {
-													"value": "@concat('Select * from', item().SourceTable)",
+													"value": "@concat('Select * from ', item().SourceTable)",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
