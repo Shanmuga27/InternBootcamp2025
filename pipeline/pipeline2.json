@@ -79,7 +79,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@concat(\n    'select ',item().KeyColumn, ' as keyc from ',item().TargetTable\n)\n",
+													"value": "@concat(\n    'select isnull(max(',item().KeyColumn, '),0) as keyc from ',item().TargetTable\n)\n",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -119,6 +119,15 @@
 										"typeProperties": {
 											"source": {
 												"type": "SqlServerSource",
+												"additionalColumns": [
+													{
+														"name": "last_modified",
+														"value": {
+															"value": "@utcNow()",
+															"type": "Expression"
+														}
+													}
+												],
 												"sqlReaderQuery": {
 													"value": "@concat(\n   'SELECT * FROM ', item().SourceTable,\n   ' WHERE ', item().KeyColumn, ' > ','''',\n   activity('Lookup3').output.value[0],\n   ''''\n)",
 													"type": "Expression"
@@ -187,6 +196,15 @@
 										"typeProperties": {
 											"source": {
 												"type": "SqlServerSource",
+												"additionalColumns": [
+													{
+														"name": "last_modified",
+														"value": {
+															"value": "@utcNow()",
+															"type": "Expression"
+														}
+													}
+												],
 												"sqlReaderQuery": {
 													"value": "@concat(\n    'select * from ', item().SourceTable\n)",
 													"type": "Expression"
