@@ -124,15 +124,13 @@
 										"typeProperties": {
 											"source": {
 												"type": "SqlServerSource",
-												"sqlReaderQuery": "@concat(\n  'select * from ',\n  activity('Lookup1').output.value[variables('len')].SrcTable,\n  ' where cast(',\n  activity('Lookup1').output.value[variables('len')].KeyColumn,\n  ' as varchar) > (select coalesce(',\n  activity('Lookup1').output.value[variables('len')].KeyColumn,\n  ', -1) from ct_int where job_name = ''',\n  activity('Lookup1').output.value[variables('len')].TgtTable,\n  ''')'\n)",
 												"queryTimeout": "02:00:00",
 												"partitionOption": "None"
 											},
 											"sink": {
 												"type": "SqlServerSink",
 												"writeBehavior": "insert",
-												"sqlWriterUseTableLock": false,
-												"tableOption": "autoCreate"
+												"sqlWriterUseTableLock": false
 											},
 											"enableStaging": false,
 											"translator": {
