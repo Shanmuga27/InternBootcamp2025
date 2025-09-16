@@ -79,7 +79,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@concat(\n    'select ISNULL(MAX(', item().KeyColumn, '), 0) AS Key FROM', item().TGT_Table\n)",
+													"value": "@concat(\n    'select ISNULL(MAX(', item().KeyColumn, '), 0) AS Key FROM', item().TgtTable\n)",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -94,7 +94,7 @@
 													"Param_DB_name": "ADF_Training"
 												}
 											},
-											"firstRowOnly": false
+											"firstRowOnly": true
 										}
 									},
 									{
@@ -129,7 +129,7 @@
 													}
 												],
 												"sqlReaderQuery": {
-													"value": "@concat(\n    'select * from ', item().SRC_Table,\n    'where ', item().KeyColumn, '>''',\n    string(activity('Lookup KEY').output.firstRow.Key),\n    ''''\n)",
+													"value": "@concat(\n    'select * from ', item().SrcTable,\n    'where ', item().KeyColumn, '>''',\n    string(activity('Lookup KEY').output.firstRow.Key),\n    ''''\n)",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -156,7 +156,10 @@
 												"type": "DatasetReference",
 												"parameters": {
 													"Par_SchemaName": "RRamesh",
-													"Par_TableName": "@item().SRC_Table",
+													"Par_TableName": {
+														"value": "@item().SrcTable",
+														"type": "Expression"
+													},
 													"Param_DB_name": "ADF_Training"
 												}
 											}
@@ -168,7 +171,7 @@
 												"parameters": {
 													"Par_SchemaName": "RRamesh",
 													"Par_TableName": {
-														"value": "@item().TGT_Table",
+														"value": "@item().TgtTable",
 														"type": "Expression"
 													},
 													"Param_DB_name": "ADF_Training"
@@ -203,7 +206,7 @@
 													}
 												],
 												"sqlReaderQuery": {
-													"value": "@concat(\n    'select * from ', item().SRC_Table\n)",
+													"value": "@concat(\n    'select * from ', item().SrcTable\n)",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -212,7 +215,7 @@
 											"sink": {
 												"type": "SqlServerSink",
 												"preCopyScript": {
-													"value": "@concat('truncate table', item().TGT_Table)",
+													"value": "@concat('truncate table', item().TgtTable)",
 													"type": "Expression"
 												},
 												"writeBehavior": "insert",
@@ -236,7 +239,7 @@
 												"parameters": {
 													"Par_SchemaName": "RRamesh",
 													"Par_TableName": {
-														"value": "@item().SRC_Table",
+														"value": "@item().SrcTable",
 														"type": "Expression"
 													},
 													"Param_DB_name": "ADF_Training"
@@ -250,7 +253,7 @@
 												"parameters": {
 													"Par_SchemaName": "RRamesh",
 													"Par_TableName": {
-														"value": "@item().TGT_Table",
+														"value": "@item().TgtTable",
 														"type": "Expression"
 													},
 													"Param_DB_name": "ADF_Training"
