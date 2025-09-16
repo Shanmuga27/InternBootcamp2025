@@ -82,24 +82,6 @@
 										},
 										"userProperties": [],
 										"typeProperties": {
-											"enableStaging": false
-										}
-									}
-								],
-								"ifTrueActivities": [
-									{
-										"name": "Copy FULL",
-										"type": "Copy",
-										"dependsOn": [],
-										"policy": {
-											"timeout": "0.12:00:00",
-											"retry": 0,
-											"retryIntervalInSeconds": 30,
-											"secureOutput": false,
-											"secureInput": false
-										},
-										"userProperties": [],
-										"typeProperties": {
 											"source": {
 												"type": "DelimitedTextSource",
 												"storeSettings": {
@@ -134,7 +116,7 @@
 													"Param_Container": "boootcamp25",
 													"Param_Folder": "Exercise 4 src files",
 													"Param_File": {
-														"value": "@activity('Get Metadata1').output.itemName",
+														"value": "@activity('Get Metadata1').output.childItems",
 														"type": "Expression"
 													}
 												}
@@ -144,6 +126,77 @@
 											{
 												"referenceName": "DS_OnPrem_SQLServer",
 												"type": "DatasetReference"
+											}
+										]
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "Copy FULL",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "DelimitedTextSource",
+												"storeSettings": {
+													"type": "AzureBlobStorageReadSettings",
+													"recursive": true,
+													"enablePartitionDiscovery": false
+												},
+												"formatSettings": {
+													"type": "DelimitedTextReadSettings"
+												}
+											},
+											"sink": {
+												"type": "SqlServerSink",
+												"writeBehavior": "insert",
+												"sqlWriterUseTableLock": false,
+												"tableOption": "autoCreate"
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_CSV_IN1685",
+												"type": "DatasetReference",
+												"parameters": {
+													"Param_Container": "boootcamp25",
+													"Param_Folder": "Exercise 4 src files",
+													"Param_File": {
+														"value": "@activity('Get Metadata1').output.childItems",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_OnPrem_SQLServer",
+												"type": "DatasetReference",
+												"parameters": {
+													"Par_SchemaName": "RRamesh",
+													"Par_TableName": {
+														"value": "@activity('Get Metadata1').output.childItems",
+														"type": "Expression"
+													},
+													"Param_DB_name": "ADF_Training"
+												}
 											}
 										]
 									}
@@ -188,6 +241,12 @@
 				}
 			}
 		],
+		"variables": {
+			"var": {
+				"type": "Array",
+				"defaultValue": []
+			}
+		},
 		"annotations": []
 	}
 }
