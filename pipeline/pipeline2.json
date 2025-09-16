@@ -93,7 +93,8 @@
 													"table": "ETL_Config",
 													"db": "ADF_Training"
 												}
-											}
+											},
+											"firstRowOnly": false
 										}
 									},
 									{
@@ -119,7 +120,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@concat(\n    'select * from ', item().SourceTable,\n    ' where ', item().KeyColumn ,' > \"',activity('Lookup3').output.firstRow.keyc, '\"'\n)",
+													"value": "@concat(\n   'SELECT * FROM ', item().SourceTable,\n   ' WHERE ', item().KeyColumn, ' > ','''',\n   activity('Lookup3').output.value[0],\n   ''''\n)",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -161,7 +162,7 @@
 												"parameters": {
 													"schema": "JSivakum",
 													"table": {
-														"value": "@item().Target_",
+														"value": "@item().TargetTable",
 														"type": "Expression"
 													},
 													"db": "ADF_Training"
