@@ -209,65 +209,10 @@
 				]
 			},
 			{
-				"name": "Data flow2",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "DF_Multiple_Region",
-						"type": "DataFlowReference",
-						"parameters": {
-							"regions": {
-								"value": "@pipeline().globalParameters.Region",
-								"type": "Expression"
-							}
-						},
-						"datasetParameters": {
-							"SrcCustomers": {
-								"Container": "boootcamp25",
-								"directory": "Exercise 4 src files",
-								"file": "Customers.csv"
-							},
-							"SrcOrders": {
-								"Container": "boootcamp25",
-								"directory": "Exercise 4 src files",
-								"file": "Orders.csv"
-							},
-							"APACFilteredData": {
-								"container": "boootcamp25",
-								"directory": "IN1677/global_parameter",
-								"file": "Orders_APAC"
-							},
-							"EMEAFilteredData": {
-								"container": "boootcamp25",
-								"directory": "IN1677/global_parameter",
-								"file": "Orders_EMEA"
-							},
-							"AMERFilteredData": {
-								"container": "boootcamp25",
-								"directory": "IN1677/global_parameter",
-								"file": "Customers_AMER"
-							}
-						}
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			},
-			{
 				"name": "Get Metadata1",
 				"type": "GetMetadata",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Data flow2",
@@ -309,6 +254,8 @@
 			{
 				"name": "ForEach1",
 				"type": "ForEach",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Get Metadata1",
@@ -392,6 +339,192 @@
 									}
 								}
 							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Data flow2",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Multiple_Region",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcCustomers": {
+								"Container": "boootcamp25",
+								"directory": "Exercise 4 src files",
+								"file": "Customers.csv"
+							},
+							"SrcOrders": {
+								"Container": "boootcamp25",
+								"directory": "Exercise 4 src files",
+								"file": "Orders.csv"
+							},
+							"APACFilteredData": {
+								"container": "boootcamp25",
+								"directory": "IN1677/global_parameter"
+							},
+							"EMEAFilteredData": {
+								"container": "boootcamp25",
+								"directory": "IN1677/global_parameter"
+							},
+							"AMERFilteredData": {
+								"container": "boootcamp25",
+								"directory": "IN1677/global_parameter"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Lookup2",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "select * from ETL_Config",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_SqlServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "JSivakum",
+							"table": "ETL_Config",
+							"db": "ADF_Training"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach2",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup2').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Switch1",
+							"type": "Switch",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"on": {
+									"value": "@item().LoadType",
+									"type": "Expression"
+								},
+								"cases": [
+									{
+										"value": "Full",
+										"activities": [
+											{
+												"name": "Copy data4",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"sink": {
+														"type": "SqlServerSink",
+														"writeBehavior": "insert",
+														"sqlWriterUseTableLock": false,
+														"tableOption": "autoCreate"
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "DS_SqlServer",
+														"type": "DatasetReference",
+														"parameters": {
+															"schema": "JSivakum",
+															"table": {
+																"value": "@activity('Lookup2').output.SourceTable",
+																"type": "Expression"
+															},
+															"db": "ADF_Training"
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "DS_SqlServer",
+														"type": "DatasetReference",
+														"parameters": {
+															"schema": "JSivakum",
+															"table": {
+																"value": "@activity('Lookup2').output.TargetTable",
+																"type": "Expression"
+															}
+														}
+													}
+												]
+											}
+										]
+									},
+									{
+										"value": "Incremental"
+									}
+								]
+							}
 						}
 					]
 				}
