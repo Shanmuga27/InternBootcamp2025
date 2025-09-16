@@ -1,5 +1,5 @@
 {
-	"name": "PL_Exercise4",
+	"name": "pipeline1",
 	"properties": {
 		"activities": [
 			{
@@ -244,6 +244,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {

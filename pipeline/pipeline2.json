@@ -1,0 +1,253 @@
+{
+	"name": "pipeline2",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup2",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "select \n   *\n from \n JSivakum.ETL_Config",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_SqlServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "JSivakum",
+							"table": "ETL_Config",
+							"db": "ADF_Training"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach2",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup2').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "If Condition1",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@equals(item().LoadType,'Full')",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Lookup3",
+										"type": "Lookup",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"sqlReaderQuery": {
+													"value": "@concat(\n    'select ',item().KeyColumn, ' as keyc from ',item().TargetTable\n)\n",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"dataset": {
+												"referenceName": "DS_SqlServer",
+												"type": "DatasetReference",
+												"parameters": {
+													"schema": "JSivakumar",
+													"table": "ETL_Config",
+													"db": "ADF_Training"
+												}
+											}
+										}
+									},
+									{
+										"name": "Copy data5",
+										"type": "Copy",
+										"dependsOn": [
+											{
+												"activity": "Lookup3",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"sqlReaderQuery": {
+													"value": "@concat(\n    'select * from ', item().SourceTable,\n    ' where ', item().KeyColumn ,' > \"',activity('Lookup3').output.firstRow.keyc, '\"'\n)",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "SqlServerSink",
+												"writeBehavior": "insert",
+												"sqlWriterUseTableLock": false
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_SqlServer",
+												"type": "DatasetReference",
+												"parameters": {
+													"schema": "JSivakumar",
+													"table": {
+														"value": "@item().SourceTable",
+														"type": "Expression"
+													},
+													"db": "ADF_Training"
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_SqlServer",
+												"type": "DatasetReference",
+												"parameters": {
+													"schema": "JSivakum",
+													"table": {
+														"value": "@item().Target_",
+														"type": "Expression"
+													},
+													"db": "ADF_Training"
+												}
+											}
+										]
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "Copy data4",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"sqlReaderQuery": {
+													"value": "@concat(\n    'select * from ', item().SourceTable\n)",
+													"type": "Expression"
+												},
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "SqlServerSink",
+												"preCopyScript": {
+													"value": "@concat(\n    'Truncate table ', item().TargetTable\n)",
+													"type": "Expression"
+												},
+												"writeBehavior": "insert",
+												"sqlWriterUseTableLock": false
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_SqlServer",
+												"type": "DatasetReference",
+												"parameters": {
+													"schema": "JSivakum",
+													"table": {
+														"value": "@item().SourceTable",
+														"type": "Expression"
+													},
+													"db": "ADF_Training"
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_SqlServer",
+												"type": "DatasetReference",
+												"parameters": {
+													"schema": "JSivakum",
+													"table": {
+														"value": "@item().TargetTable",
+														"type": "Expression"
+													},
+													"db": "ADF_Training"
+												}
+											}
+										]
+									}
+								]
+							}
+						}
+					]
+				}
+			}
+		],
+		"annotations": []
+	}
+}
