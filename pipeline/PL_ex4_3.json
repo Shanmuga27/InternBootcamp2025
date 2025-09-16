@@ -215,12 +215,11 @@
 											"sink": {
 												"type": "SqlServerSink",
 												"preCopyScript": {
-													"value": "@concat('truncate table', item().TgtTable)",
+													"value": "@{concat('truncate table', item().TgtTable)}",
 													"type": "Expression"
 												},
 												"writeBehavior": "insert",
-												"sqlWriterUseTableLock": false,
-												"tableOption": "autoCreate"
+												"sqlWriterUseTableLock": false
 											},
 											"enableStaging": false,
 											"translator": {
