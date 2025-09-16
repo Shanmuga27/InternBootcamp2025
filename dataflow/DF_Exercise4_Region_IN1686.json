@@ -97,15 +97,18 @@
 				"StartsWithJ sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> OrdersAPAC",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> OrdersAPAC",
 				"amountgt2000 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> OrdersEMEA",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> OrdersEMEA",
 				"LikeINC sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> CustomerAMER"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> CustomerAMER"
 			]
 		}
 	}
