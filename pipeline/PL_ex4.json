@@ -132,7 +132,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "boootcamp25",
-							"folder": "IN1689/day4",
+							"folder": "IN1689",
 							"filename": "*"
 						}
 					},
@@ -141,6 +141,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -213,11 +214,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"container": "boootcamp25",
-										"folder": "IN1689/day4",
-										"filename": {
-											"value": "@item().Name",
-											"type": "Expression"
-										}
+										"folder": "IN1689"
 									}
 								}
 							],
