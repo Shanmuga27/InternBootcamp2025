@@ -9,30 +9,123 @@
 						"referenceName": "DS_CSV_IN1675",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "Customers"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_CSV_IN1675",
 						"type": "DatasetReference"
 					},
-					"name": "source2"
+					"name": "Orders"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "TgtAPAC"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "TgtEMEA"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "TgtAMER"
+				}
+			],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
+					"name": "RegionColumn"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "CustomerAndOrders"
+				},
+				{
+					"name": "CustomerID"
+				},
+				{
+					"name": "Amount"
+				},
+				{
+					"name": "Name"
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"parameters{",
+				"     pRegion as string[] ([\"APAC\",\"EMEA\",\"AMER\"])",
+				"}",
+				"source(output(",
+				"          CustomerID as string,",
+				"          Name as string,",
+				"          Country as string,",
+				"          Age as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
-				"source(allowSchemaDrift: true,",
+				"     ignoreNoFilesFound: false) ~> Customers",
+				"source(output(",
+				"          OrderID as string,",
+				"          CustomerID as string,",
+				"          ProductID as string,",
+				"          OrderDate as date,",
+				"          Amount as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source2",
-				"source1 derive(Region = ERROR_FUNCTION('iif(__NEW_LINE_R____NEW_LINE_N__    Country in (__SINGLE_QUOTE__India__SINGLE_QUOTE__,__SINGLE_QUOTE__Japan__SINGLE_QUOTE__,__SINGLE_QUOTE__Singapore__SINGLE_QUOTE__),__SINGLE_QUOTE__APAC__SINGLE_QUOTE__,__NEW_LINE_R____NEW_LINE_N__    iif(Country in (__SINGLE_QUOTE__UK__SINGLE_QUOTE__,__SINGLE_QUOTE__Germany__SINGLE_QUOTE__,__SINGLE_QUOTE__France__SINGLE_QUOTE__),__SINGLE_QUOTE__EMEA__SINGLE_QUOTE__,__NEW_LINE_R____NEW_LINE_N__        iif(Country in (__SINGLE_QUOTE__USA__SINGLE_QUOTE__,__SINGLE_QUOTE__Canada__SINGLE_QUOTE__),__SINGLE_QUOTE__AMER__SINGLE_QUOTE__,__SINGLE_QUOTE__OTHER__SINGLE_QUOTE__)__NEW_LINE_R____NEW_LINE_N__    )__NEW_LINE_R____NEW_LINE_N__)__NEW_LINE_R____NEW_LINE_N__ ')) ~> derivedColumn1"
+				"     ignoreNoFilesFound: false) ~> Orders",
+				"CustomerAndOrders derive(Region = iif(\r",
+				"   Country == 'India' || Country == 'Australia', 'APAC',\r",
+				"   iif(\r",
+				"      Country == 'UK', 'EMEA',\r",
+				"      iif(\r",
+				"         Country == 'USA' || Country == 'Canada', 'AMER',\r",
+				"         'UNK'\r",
+				"      )\r",
+				"   )\r",
+				")\r",
+				" ) ~> RegionColumn",
+				"RegionColumn split($pRegion[1]==Region,",
+				"     $pRegion[2]==Region,",
+				"     $pRegion[3]==Region,",
+				"     disjoint: false) ~> split1@(APAC, EMEA, AMER)",
+				"Customers, Orders join(Customers@CustomerID == Orders@CustomerID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> CustomerAndOrders",
+				"split1@APAC filter(startsWith(split1@APAC@CustomerID, 'A')) ~> CustomerID",
+				"split1@EMEA filter(Amount>2000 ) ~> Amount",
+				"split1@AMER filter(regexMatch(Name, 'Inc')) ~> Name",
+				"CustomerID sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Orders_APAC.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> TgtAPAC",
+				"Amount sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Orders_EMEA.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> TgtEMEA",
+				"Name sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Customers_AMER.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> TgtAMER"
 			]
 		}
 	}
