@@ -1,6 +1,197 @@
 {
 	"name": "Q-4_Filters",
 	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Q_4_filters",
+						"type": "DataFlowReference",
+						"parameters": {
+							"Region": {
+								"value": "@pipeline().globalParameters.Region",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"source1": {
+								"filename": "Orders.csv",
+								"folder": "Exercise 4 src files",
+								"container": "boootcamp25"
+							},
+							"source2": {
+								"filename": "Customers.csv",
+								"folder": "Exercise 4 src files",
+								"container": "boootcamp25"
+							},
+							"sink1": {
+								"filename": "Orders_APAC",
+								"folder": "IN1674/Q-4ANS",
+								"container": "boootcamp25"
+							},
+							"sink2": {
+								"filename": "Orders_EMEA",
+								"folder": "IN1674/Q-4ANS",
+								"container": "boootcamp25"
+							},
+							"sink3": {
+								"filename": "Customers_AMER",
+								"folder": "IN1674/Q-4ANS",
+								"container": "boootcamp25"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "SqlServerSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"tableOption": "autoCreate"
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "Ds_blob_IN1674",
+									"type": "DatasetReference",
+									"parameters": {
+										"filename": {
+											"value": "@item().name",
+											"type": "Expression"
+										},
+										"folder": "IN1674/Q-4ANS",
+										"container": "boootcamp25"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_EX_IN1674",
+									"type": "DatasetReference",
+									"parameters": {
+										"schemaname": "CKumaram",
+										"tablename": {
+											"value": "@item().name",
+											"type": "Expression"
+										},
+										"Database": "ADF_Training"
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Get Metadata1",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "Data flow1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "*",
+							"folder": "IN1674/Q-4ANS",
+							"container": "boootcamp25"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			}
+		],
 		"annotations": []
 	}
 }

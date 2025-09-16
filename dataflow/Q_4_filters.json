@@ -19,16 +19,50 @@
 					"name": "source2"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				},
+				{
+					"dataset": {
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "sink3"
+				}
+			],
 			"transformations": [
 				{
 					"name": "join1"
 				},
 				{
 					"name": "split1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "filter2"
+				},
+				{
+					"name": "filter3"
 				}
 			],
 			"scriptLines": [
+				"parameters{",
+				"     Region as string[]",
+				"}",
 				"source(output(",
 				"          OrderID as string,",
 				"          CustomerID as string,",
@@ -53,10 +87,32 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1 split($global_parameter[1] == 'APAC' &&( Country =='India' || Country=='Australia')  ,",
-				"     ERROR_FUNCTION(''),",
-				"     ERROR_FUNCTION(''),",
-				"     disjoint: false) ~> split1@(APAC, , )"
+				"join1 split($Region[1] == 'APAC' &&( Country =='India' || Country=='Australia')  ,",
+				"     $Region[2] == 'EMEA'&& Country== 'UK'\r",
+				" ,",
+				"     $Region[3] == 'AMER' && (Country == 'USA' || Country == 'Canada'),",
+				"     disjoint: false) ~> split1@(APAC, EMEA, AMER)",
+				"split1@APAC filter(startsWith(split1@APAC@CustomerID, 'A')) ~> filter1",
+				"split1@EMEA filter(Amount>2000) ~> filter2",
+				"split1@AMER filter(regexMatch(Name, \"Inc\")) ~> filter3",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Orders_APAC'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1",
+				"filter2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Orders_EMEA'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink2",
+				"filter3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Customers_AMER'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink3"
 			]
 		}
 	}
