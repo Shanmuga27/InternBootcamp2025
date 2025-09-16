@@ -3,14 +3,17 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_Onprem_SQLSERVER__IN1689",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"database": "ADF_Training"
+			}
 		},
 		"annotations": [],
 		"type": "SqlServerTable",
 		"schema": [],
 		"typeProperties": {
 			"schema": "VSri",
-			"table": "cat_Testing"
+			"table": "All_Unioned_IN1689"
 		}
 	}
 }
