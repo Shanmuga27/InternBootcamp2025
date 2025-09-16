@@ -468,7 +468,7 @@
 												"type": "DatasetReference",
 												"parameters": {
 													"PR_Tablename": {
-														"value": "@item().TargetTable",
+														"value": "@concat('stg_',item().TargetTable)",
 														"type": "Expression"
 													},
 													"PR_Schema": "PMahendi",
@@ -550,7 +550,7 @@
 												"type": "DatasetReference",
 												"parameters": {
 													"PR_Tablename": {
-														"value": "@item().TargetTable",
+														"value": "@concat('stg_',item().TargetTable)",
 														"type": "Expression"
 													},
 													"PR_Schema": "PMahendi",
