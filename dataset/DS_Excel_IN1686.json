@@ -8,6 +8,12 @@
 		"parameters": {
 			"DatasetSheetName": {
 				"type": "string"
+			},
+			"Folder": {
+				"type": "string"
+			},
+			"FileName": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
@@ -19,8 +25,14 @@
 			},
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "northwind.xlsx",
-				"folderPath": "IN1686",
+				"fileName": {
+					"value": "@dataset().FileName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().Folder",
+					"type": "Expression"
+				},
 				"container": "boootcamp25"
 			},
 			"firstRowAsHeader": true
