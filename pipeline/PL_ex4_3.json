@@ -79,7 +79,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@concat(\n    'select ISNULL(MAX(', item().KeyColumn, '), 0) \n    AS KeyID FROM' , item().TgtTable\n)",
+													"value": "@concat(\n    'select ISNULL(MAX(', item().KeyColumn, '), 0) \n    AS KeyID FROM ' , item().TgtTable\n)",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
