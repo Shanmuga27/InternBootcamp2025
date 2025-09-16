@@ -49,6 +49,7 @@
 						"value": "@activity('Lookup1').output.value",
 						"type": "Expression"
 					},
+					"isSequential": true,
 					"activities": [
 						{
 							"name": "If Condition1",
@@ -59,7 +60,174 @@
 								"expression": {
 									"value": "@equals(item().loadtype,'Full')",
 									"type": "Expression"
-								}
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Lookup2",
+										"type": "Lookup",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"sqlReaderQuery": "@concat(\n    'select ISNULL(MAX(', item().KeyColumn, '), 0)\n    AS KeyID FROM ' , item().TgtTable\n)",
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"dataset": {
+												"referenceName": "DS_EX_IN1674",
+												"type": "DatasetReference",
+												"parameters": {
+													"schemaname": "CKumaram",
+													"tablename": "ETL_Config",
+													"Database": "ADF_Training"
+												}
+											}
+										}
+									},
+									{
+										"name": "Copy data2",
+										"type": "Copy",
+										"dependsOn": [
+											{
+												"activity": "Lookup2",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"sqlReaderQuery": "@concat(\n   'SELECT * FROM ', item().SrcTable,\n   ' WHERE ', item().KeyColumn, ' > ''',\n   activity('Lookup KEY').output.firstRow.KeyID,\n   ''''\n)",
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "SqlServerSink",
+												"writeBehavior": "insert",
+												"sqlWriterUseTableLock": false
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_EX_IN1674",
+												"type": "DatasetReference",
+												"parameters": {
+													"schemaname": "CKumaram",
+													"tablename": {
+														"value": "@item().SourceTable",
+														"type": "Expression"
+													},
+													"Database": "ADF_Training"
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_EX_IN1674",
+												"type": "DatasetReference",
+												"parameters": {
+													"schemaname": "CKumaram",
+													"tablename": {
+														"value": "\n@item().TargetTable",
+														"type": "Expression"
+													},
+													"Database": "ADF_Training"
+												}
+											}
+										]
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "Copy data1",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "SqlServerSource",
+												"sqlReaderQuery": "@concat(\n    'select * from ', item().SrcTable\n)",
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
+											},
+											"sink": {
+												"type": "SqlServerSink",
+												"writeBehavior": "insert",
+												"sqlWriterUseTableLock": false
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_EX_IN1674",
+												"type": "DatasetReference",
+												"parameters": {
+													"schemaname": "Ckumaram",
+													"tablename": {
+														"value": "@item().SourceTable",
+														"type": "Expression"
+													},
+													"Database": "ADF_Training"
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_EX_IN1674",
+												"type": "DatasetReference",
+												"parameters": {
+													"schemaname": "CKumaram",
+													"tablename": {
+														"value": "@item().TargetTable",
+														"type": "Expression"
+													},
+													"Database": "ADF_Training"
+												}
+											}
+										]
+									}
+								]
 							}
 						}
 					]
