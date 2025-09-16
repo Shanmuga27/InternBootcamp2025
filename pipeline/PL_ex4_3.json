@@ -24,6 +24,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
+						"sqlReaderQuery": "select \nSrcTable ,\nTgtTable,\n LoadType,\n KeyColumn\nfrom ETL_Config;",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -53,7 +54,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Lookup_ETL_config').output",
+						"value": "@activity('Lookup_ETL_config').output.value",
 						"type": "Expression"
 					},
 					"isSequential": true,
@@ -65,71 +66,9 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@equals(item()['LoadType'], 'Full')",
+									"value": "@equals(item().LoadType, 'Full')",
 									"type": "Expression"
 								},
-								"ifFalseActivities": [
-									{
-										"name": "Copy INCR",
-										"type": "Copy",
-										"dependsOn": [],
-										"policy": {
-											"timeout": "0.12:00:00",
-											"retry": 0,
-											"retryIntervalInSeconds": 30,
-											"secureOutput": false,
-											"secureInput": false
-										},
-										"userProperties": [],
-										"typeProperties": {
-											"source": {
-												"type": "DelimitedTextSource",
-												"storeSettings": {
-													"type": "AzureBlobStorageReadSettings",
-													"recursive": true,
-													"enablePartitionDiscovery": false
-												},
-												"formatSettings": {
-													"type": "DelimitedTextReadSettings"
-												}
-											},
-											"sink": {
-												"type": "SqlServerSink",
-												"writeBehavior": "insert",
-												"sqlWriterUseTableLock": false
-											},
-											"enableStaging": false,
-											"translator": {
-												"type": "TabularTranslator",
-												"typeConversion": true,
-												"typeConversionSettings": {
-													"allowDataTruncation": true,
-													"treatBooleanAsNumber": false
-												}
-											}
-										},
-										"inputs": [
-											{
-												"referenceName": "DS_CSV_IN1685",
-												"type": "DatasetReference",
-												"parameters": {
-													"Param_Container": "boootcamp25",
-													"Param_Folder": "Exercise 4 src files",
-													"Param_File": {
-														"value": "@activity('Get Metadata1').output.childItems",
-														"type": "Expression"
-													}
-												}
-											}
-										],
-										"outputs": [
-											{
-												"referenceName": "DS_OnPrem_SQLServer",
-												"type": "DatasetReference"
-											}
-										]
-									}
-								],
 								"ifTrueActivities": [
 									{
 										"name": "Copy FULL",
@@ -145,18 +84,13 @@
 										"userProperties": [],
 										"typeProperties": {
 											"source": {
-												"type": "DelimitedTextSource",
-												"storeSettings": {
-													"type": "AzureBlobStorageReadSettings",
-													"recursive": true,
-													"enablePartitionDiscovery": false
-												},
-												"formatSettings": {
-													"type": "DelimitedTextReadSettings"
-												}
+												"type": "SqlServerSource",
+												"queryTimeout": "02:00:00",
+												"partitionOption": "None"
 											},
 											"sink": {
 												"type": "SqlServerSink",
+												"preCopyScript": "truncate table stg_customers;",
 												"writeBehavior": "insert",
 												"sqlWriterUseTableLock": false,
 												"tableOption": "autoCreate"
@@ -173,15 +107,15 @@
 										},
 										"inputs": [
 											{
-												"referenceName": "DS_CSV_IN1685",
+												"referenceName": "DS_OnPrem_SQLServer",
 												"type": "DatasetReference",
 												"parameters": {
-													"Param_Container": "boootcamp25",
-													"Param_Folder": "Exercise 4 src files",
-													"Param_File": {
-														"value": "@activity('Get Metadata1').output.childItems",
+													"Par_SchemaName": "RRamesh",
+													"Par_TableName": {
+														"value": "@item().name",
 														"type": "Expression"
-													}
+													},
+													"Param_DB_name": "ADF_Training"
 												}
 											}
 										],
@@ -192,7 +126,7 @@
 												"parameters": {
 													"Par_SchemaName": "RRamesh",
 													"Par_TableName": {
-														"value": "@activity('Get Metadata1').output.childItems",
+														"value": "@item().TGT_table",
 														"type": "Expression"
 													},
 													"Param_DB_name": "ADF_Training"
