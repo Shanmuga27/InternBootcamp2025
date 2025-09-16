@@ -12,16 +12,33 @@
 					"name": "ORDERS"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText2",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
-					"name": "Recentorders"
+					"name": "DCrecent"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "split1"
 				},
 				{
-					"name": "OldOrders"
+					"name": "DCOld"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "windowRemoveDuplicates"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
@@ -29,15 +46,25 @@
 				"          OrderID as string,",
 				"          CustomerID as string,",
 				"          ProductID as string,",
-				"          OrderDate as string,",
+				"          OrderDate as date,",
 				"          Amount as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> ORDERS",
-				"ORDERS filter(OrderDate>=addMonths(currentDate(), -12)) ~> Recentorders",
-				"Recentorders derive() ~> derivedColumn1",
-				"derivedColumn1 filter(ERROR_FUNCTION('')) ~> OldOrders"
+				"split1@RecentOrders derive(OrderType = 'Recent') ~> DCrecent",
+				"ORDERS split(OrderDate>=addMonths(currentDate(), -12),",
+				"     disjoint: false) ~> split1@(RecentOrders, OldOrders)",
+				"split1@OldOrders derive(OrderType = 'Old') ~> DCOld",
+				"DCrecent, DCOld union(byName: true)~> union1",
+				"union1 window(over(OrderID),",
+				"     desc(OrderDate, false),",
+				"     rowNum = rowNumber()) ~> windowRemoveDuplicates",
+				"windowRemoveDuplicates filter(rowNum == 1) ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
