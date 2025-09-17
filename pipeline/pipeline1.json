@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_SRC-EDL_sales-rep",
+						"referenceName": "DF_SRC_EDL_sales_rep",
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"sourceSALESREP": {

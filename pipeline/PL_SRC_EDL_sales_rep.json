@@ -1,5 +1,5 @@
 {
-	"name": "PL_SRC-EDL_sales-rep",
+	"name": "PL_SRC_EDL_sales_rep",
 	"properties": {
 		"activities": [
 			{
@@ -31,6 +31,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -324,7 +325,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_SRC-EDL_sales-rep",
+						"referenceName": "DF_SRC_EDL_sales_rep",
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"sourceSALESREP": {
