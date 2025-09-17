@@ -260,6 +260,9 @@
 				]
 			}
 		},
+		"folder": {
+			"name": "training exercises"
+		},
 		"annotations": []
 	}
 }

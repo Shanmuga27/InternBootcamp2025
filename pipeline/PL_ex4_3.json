@@ -273,6 +273,9 @@
 				"defaultValue": []
 			}
 		},
+		"folder": {
+			"name": "training exercises"
+		},
 		"annotations": []
 	}
 }
