@@ -3,103 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "ForEach1",
-				"type": "ForEach",
-				"dependsOn": [
-					{
-						"activity": "Get Metadata1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"items": {
-						"value": "@activity('Get Metadata1').output.childItems",
-						"type": "Expression"
-					},
-					"isSequential": true,
-					"activities": [
-						{
-							"name": "Copy data1",
-							"type": "Copy",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "DelimitedTextSource",
-									"additionalColumns": [
-										{
-											"value": "$$FILEPATH"
-										},
-										{
-											"value": "$$FILEPATH"
-										}
-									],
-									"storeSettings": {
-										"type": "AzureBlobStorageReadSettings",
-										"recursive": true,
-										"enablePartitionDiscovery": false
-									},
-									"formatSettings": {
-										"type": "DelimitedTextReadSettings"
-									}
-								},
-								"sink": {
-									"type": "DelimitedTextSink",
-									"storeSettings": {
-										"type": "AzureBlobStorageWriteSettings"
-									},
-									"formatSettings": {
-										"type": "DelimitedTextWriteSettings",
-										"quoteAllText": true,
-										"fileExtension": ".txt"
-									}
-								},
-								"enableStaging": false,
-								"translator": {
-									"type": "TabularTranslator",
-									"typeConversion": true,
-									"typeConversionSettings": {
-										"allowDataTruncation": true,
-										"treatBooleanAsNumber": false
-									}
-								}
-							},
-							"inputs": [
-								{
-									"referenceName": "DS_Blob_IN1684",
-									"type": "DatasetReference"
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "DS_Blob_IN1684",
-									"type": "DatasetReference",
-									"parameters": {
-										"PR_Directory": "IN1684/Workshop/Source",
-										"PR_Filename": {
-											"value": "@replace(item().name,'xlsx','csv')",
-											"type": "Expression"
-										}
-									}
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"name": "Get Metadata1",
-				"type": "GetMetadata",
+				"name": "DF_EDL",
+				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -110,24 +15,57 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataset": {
-						"referenceName": "DS_Blob_IN1684",
-						"type": "DatasetReference",
-						"parameters": {
-							"PR_Directory": "IN1684/Workshop/Source",
-							"PR_Filename": "*"
+					"dataflow": {
+						"referenceName": "DF_SRC_EDL",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"Customers": {
+								"PR_Directory": "IN1684/Workshop/Source",
+								"PR_Filename": "Customers.csv"
+							},
+							"Locations": {
+								"PR_Directory": "IN1684/Workshop/Source",
+								"PR_Filename": "Locations.csv"
+							},
+							"Items": {
+								"PR_Directory": "IN1684/Workshop/Source",
+								"PR_Filename": "Products.csv"
+							},
+							"SalesRep": {
+								"PR_Directory": "IN1684/Workshop/Source",
+								"PR_Filename": "sales Rep.csv"
+							},
+							"Estimate": {
+								"PR_Directory": "IN1684/Workshop/Source",
+								"PR_Filename": "Estimate.csv"
+							},
+							"CustomersEDL": {
+								"PR_Directory": "IN1684/Workshop/EDL",
+								"PR_Filename": "EDL_Customers"
+							},
+							"LoationEDL": {
+								"PR_Directory": "IN1684/Workshop/EDL",
+								"PR_Filename": "EDL_Locations"
+							},
+							"ItemEDL": {
+								"PR_Directory": "IN1684/Workshop/EDL",
+								"PR_Filename": "EDL_Item"
+							},
+							"SalesRepEDL": {
+								"PR_Directory": "IN1684/Workshop/EDL",
+								"PR_Filename": "EDL_SalesRep"
+							},
+							"EstimateEDL": {
+								"PR_Directory": "IN1684/Workshop/EDL",
+								"PR_Filename": "EDL_Estimate"
+							}
 						}
 					},
-					"fieldList": [
-						"childItems"
-					],
-					"storeSettings": {
-						"type": "AzureBlobStorageReadSettings",
-						"enablePartitionDiscovery": false
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
 					},
-					"formatSettings": {
-						"type": "DelimitedTextReadSettings"
-					}
+					"traceLevel": "Fine"
 				}
 			}
 		],
