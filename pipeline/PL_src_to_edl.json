@@ -1,0 +1,209 @@
+{
+	"name": "PL_src_to_edl",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Metadata1",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_blob_excel",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "workshop",
+							"file": "*",
+							"sheetindex": 0
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "If Condition1",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@contains(item().name, variables('files'))",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "Copy data1",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "ExcelSource",
+												"additionalColumns": [
+													{
+														"name": "Delete_flag",
+														"value": {
+															"value": "\"N\"",
+															"type": "Expression"
+														}
+													},
+													{
+														"name": "Created_by",
+														"value": {
+															"value": "'IN1680'",
+															"type": "Expression"
+														}
+													},
+													{
+														"name": "Created_timestamp",
+														"value": {
+															"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+															"type": "Expression"
+														}
+													},
+													{
+														"name": "Last_updated_by",
+														"value": {
+															"value": "\"IN1680\"",
+															"type": "Expression"
+														}
+													},
+													{
+														"name": "Last_updated_timestamp",
+														"value": {
+															"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+															"type": "Expression"
+														}
+													},
+													{
+														"name": "Created_date",
+														"value": {
+															"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+															"type": "Expression"
+														}
+													},
+													{
+														"name": "Date_last_modified",
+														"value": {
+															"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+															"type": "Expression"
+														}
+													}
+												],
+												"storeSettings": {
+													"type": "AzureBlobStorageReadSettings",
+													"recursive": true,
+													"enablePartitionDiscovery": false
+												}
+											},
+											"sink": {
+												"type": "DelimitedTextSink",
+												"storeSettings": {
+													"type": "AzureBlobStorageWriteSettings"
+												},
+												"formatSettings": {
+													"type": "DelimitedTextWriteSettings",
+													"quoteAllText": true,
+													"fileExtension": ".txt"
+												}
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_blob_excel",
+												"type": "DatasetReference",
+												"parameters": {
+													"container": "boootcamp25",
+													"folder": "IN1680/workshop",
+													"file": {
+														"value": "item().name",
+														"type": "Expression"
+													},
+													"sheetindex": 0
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_Blob_1680",
+												"type": "DatasetReference",
+												"parameters": {
+													"container": "boootcamp25",
+													"folder": "IN1680/workshop_edl",
+													"file": {
+														"value": "@replace(item().name,'xlsx' ,'csv' )",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									}
+								]
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"files": {
+				"type": "Array",
+				"defaultValue": [
+					"['Customers.xlsx','sales Rep.xlsx','Products.xlsx']"
+				]
+			}
+		},
+		"folder": {
+			"name": "src_to_edl"
+		},
+		"annotations": []
+	}
+}
