@@ -100,7 +100,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"Param_Container": "boootcamp25",
-										"Param_Folder": "IN1685/src_workshop",
+										"Param_Folder": "IN1685/SRC_workshop",
 										"Param_File": {
 											"value": "@replace(item().name, 'xlsx', 'csv')",
 											"type": "Expression"
