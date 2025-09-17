@@ -23,7 +23,7 @@
 						"referenceName": "DS_excel",
 						"type": "DatasetReference"
 					},
-					"name": "Locations"
+					"name": "location"
 				}
 			],
 			"sinks": [
@@ -116,7 +116,7 @@
 				"     ignoreNoFilesFound: false) ~> Estimate",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> Locations",
+				"     ignoreNoFilesFound: false) ~> location",
 				"Customers select(mapColumn(",
 				"          Customer_Id,",
 				"          Company_Name",
