@@ -288,14 +288,16 @@
 				"          Last_Modified_GMT,",
 				"          Item_Id_Key = selectPROD@Item_Id,",
 				"          Location_Id_Key = selectLOCATIONS@Location_Id,",
+				"          Location_Name,",
+				"          Location_City,",
 				"          Sales_Rep_Id_Key = selectSALESREP@Sales_Rep_Id",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> select1",
 				"select1 derive(Sticker_Requirement_Purchase_descr = iif(Sticker_Requirements=='NULL', 'No stickers', iif(Inner_Requirements=='NULL' && Customer_Requirements=='NULL', Sticker_Requirements, Sticker_Requirements)),",
-				"          Confidence_Factor_descr = iif(Confidence_Factor_Id==1, '25%', iif(Confidence_Factor_Id==2, '50%', iif(Confidence_Factor_Id==3, '75%', iif(Confidence_Factor_Id==4, '90%', iif(Confidence_Factor_Id==5, 'Dropped', iif(Confidence_Factor_Id==6, 'Actual', iif(Confidence_Factor_Id==7, '90%-Pre', iif(Confidence_Factor_Id==8, '90%-Releases', 'Invalid'))))))))) ~> derived1",
-				"derived1 derive(Level_Descr = iif(Confidence_Factor_descr=='25%', '', iif(Confidence_Factor_descr=='50%', '', iif(Confidence_Factor_descr=='Dropped', '', iif(Confidence_Factor_descr=='75%', 'Pending Confirmation', iif(Confidence_Factor_descr=='90%', 'Pending Approval', iif(Confidence_Factor_descr=='Actual', 'Confirmed', iif(Confidence_Factor_descr=='90%-Pre', 'Confirmed', iif(Confidence_Factor_descr=='90%-Releases', 'Confirmed', 'Invalid')))))))),",
-				"          column1 = ERROR_FUNCTION('')) ~> derived2"
+				"          Confidence_Factor_descr = iif(Confidence_Factor_Id==1, '25%', iif(Confidence_Factor_Id==2, '50%', iif(Confidence_Factor_Id==3, '75%', iif(Confidence_Factor_Id==4, '90%', iif(Confidence_Factor_Id==5, 'Dropped', iif(Confidence_Factor_Id==6, 'Actual', iif(Confidence_Factor_Id==7, '90%-Pre', iif(Confidence_Factor_Id==8, '90%-Releases', 'Invalid')))))))),",
+				"          column1 = ERROR_FUNCTION('')) ~> derived1",
+				"derived1 derive(Level_Descr = iif(Confidence_Factor_descr=='25%', '', iif(Confidence_Factor_descr=='50%', '', iif(Confidence_Factor_descr=='Dropped', '', iif(Confidence_Factor_descr=='75%', 'Pending Confirmation', iif(Confidence_Factor_descr=='90%', 'Pending Approval', iif(Confidence_Factor_descr=='Actual', 'Confirmed', iif(Confidence_Factor_descr=='90%-Pre', 'Confirmed', iif(Confidence_Factor_descr=='90%-Releases', 'Confirmed', 'Invalid'))))))))) ~> derived2"
 			]
 		}
 	}
