@@ -5,6 +5,8 @@
 			{
 				"name": "Customers_SRC_TO_EDL",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -120,6 +122,12 @@
 					"dataflow": {
 						"referenceName": "DF_SRC_EDL_IN1686",
 						"type": "DataFlowReference",
+						"parameters": {
+							"filename": {
+								"value": "'@{W2_Customers_EDL_IN1686.csv}'",
+								"type": "Expression"
+							}
+						},
 						"datasetParameters": {
 							"SrcCustomers": {
 								"DatasetSheetName": 0,
@@ -129,7 +137,7 @@
 							"W2CustomersEDLIN1686": {
 								"Container": "boootcamp25",
 								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
-								"File": "W2_Customers_EDL_IN1686"
+								"File": "W2_Customers_EDL_IN1686.csv"
 							}
 						}
 					},
@@ -193,7 +201,7 @@
 						"parameters": {
 							"Container": "boootcamp25",
 							"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
-							"File": "W2_Customers_EDL_IN1686"
+							"File": "W2_Customers_EDL_IN1686.csv"
 						}
 					}
 				],
@@ -209,11 +217,6 @@
 				]
 			}
 		],
-		"parameters": {
-			"Filename": {
-				"type": "string"
-			}
-		},
 		"annotations": []
 	}
 }
