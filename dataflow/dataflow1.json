@@ -12,14 +12,14 @@
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "EDLCustomer"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "source2"
+					"name": "EDLLocation"
 				},
 				{
 					"name": "source3"
@@ -31,7 +31,7 @@
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "STGCustomer"
 				},
 				{
 					"name": "sink2"
@@ -42,10 +42,10 @@
 			],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
+					"name": "NullHandling1"
 				},
 				{
-					"name": "derivedColumn2"
+					"name": "HandleEmpty1"
 				},
 				{
 					"name": "derivedColumn3"
@@ -76,28 +76,30 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
+				"     ignoreNoFilesFound: false) ~> EDLCustomer",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source2",
+				"     ignoreNoFilesFound: false) ~> EDLLocation",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false) ~> source3",
-				"derivedColumn2 derive(each(match(type=='string'), $$ = \r",
+				"HandleEmpty1 derive(each(match(type=='string'), $$ = \r",
 				"iif(isNull($$) || $$ == 'NULL', 'UNK', $$)\r",
 				"),",
 				"          each(match(type == 'integer'), $$ = iifNull($#, 0)),",
-				"          each(match(type == 'timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> derivedColumn1",
-				"source1 derive(Date_Last_Modified = toTimestamp(currentDate()),",
+				"          each(match(type == 'timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> NullHandling1",
+				"EDLCustomer derive(Date_Last_Modified = toTimestamp(currentDate()),",
 				"          Last_Updated_By = \"IN1684\",",
-				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn2",
-				"source2 derive() ~> derivedColumn3",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> HandleEmpty1",
+				"EDLLocation derive() ~> derivedColumn3",
 				"derivedColumn3 derive() ~> derivedColumn4",
 				"source3 derive() ~> derivedColumn5",
 				"derivedColumn5 derive() ~> derivedColumn6",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"NullHandling1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['STG_Customer'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> STGCustomer",
 				"derivedColumn4 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
