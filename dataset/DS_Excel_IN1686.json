@@ -7,7 +7,7 @@
 		},
 		"parameters": {
 			"DatasetSheetName": {
-				"type": "string"
+				"type": "int"
 			},
 			"Folder": {
 				"type": "string"
