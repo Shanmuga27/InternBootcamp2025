@@ -28,6 +28,9 @@
 				{
 					"name": "derivedColumn1",
 					"description": "NULL & transf"
+				},
+				{
+					"name": "derivedColumn2"
 				}
 			],
 			"scriptLines": [
@@ -53,9 +56,11 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourceEDLSalesRep",
-				"sourceEDLSalesRep derive(each(match(type=='string'), $$ = replace(iifNull($$, \"UNK\"),'NULL', 'UNK')),",
+				"derivedColumn2 derive(each(match(type=='string'), $$ = replace(iifNull($$, \"UNK\"),'NULL', 'UNK')),",
 				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$, currentTimestamp()))) ~> derivedColumn1",
+				"sourceEDLSalesRep derive(Last_Modified_Time = currentTimestamp(),",
+				"          Last_Updated_By = 'IN1685') ~> derivedColumn2",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['STG_SalesRep.csv'],",
