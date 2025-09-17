@@ -1,0 +1,148 @@
+{
+	"name": "DF_SRC_EDL_estimate",
+	"properties": {
+		"folder": {
+			"name": "workshop"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sourceEST"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1",
+					"description": "Estimate audit"
+				},
+				{
+					"name": "surrogateKey1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Estimate_Key as integer,",
+				"          Transaction_Id as integer,",
+				"          Transaction_Line_Id as short,",
+				"          Memo as string,",
+				"          Sticker_Requirements as string,",
+				"          Inner_Requirements as string,",
+				"          Customer_Requirements as string,",
+				"          Sales_Program as string,",
+				"          Buyer_Dept as string,",
+				"          Buyer_Confirmed_On as string,",
+				"          Dept_Program as string,",
+				"          Program_0 as string,",
+				"          Cancelled as string,",
+				"          Confidence_Factor_Id as string,",
+				"          Company_Id as integer,",
+				"          Item_Id as string,",
+				"          Location_Id as string,",
+				"          Sales_Rep_Id as string,",
+				"          TranId as string,",
+				"          Price_Sticker_Id as string,",
+				"          Po as string,",
+				"          Release_Order_Number as string,",
+				"          Cntnr_ as string,",
+				"          Etd_Ship_Date as string,",
+				"          Ship_Date_Outbound as string,",
+				"          Cancel_Date_Outbound as string,",
+				"          Expiration_Date as string,",
+				"          Item_Count as string,",
+				"          Inner_Qty as string,",
+				"          Release_Quantity as string,",
+				"          Quantity_Received_In_Shipment as string,",
+				"          Item_Unit_Price as string,",
+				"          Amount as string,",
+				"          Eta_Arrival_Date as string,",
+				"          Closed_Script as boolean,",
+				"          created_date as timestamp,",
+				"          last_modified_date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceEST",
+				"sourceEST derive(Created_Date = currentTimestamp(),",
+				"          Last_Modified_Date = toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss', 'IST'),",
+				"          Delete_Flag = 'N',",
+				"          Created_Time = currentTimestamp(),",
+				"          Created_By = 'IN1685',",
+				"          Last_Modified_Time = toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss', 'IST'),",
+				"          Last_Updated_By = toString(null()),",
+				"          Last_Modified_GMT = toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss', 'IST')) ~> derivedColumn1",
+				"derivedColumn1 keyGenerate(output(Estimate_S_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"surrogateKey1 select(mapColumn(",
+				"          Estimate_S_Key,",
+				"          Transaction_Id,",
+				"          Transaction_Line_Id,",
+				"          Memo,",
+				"          Sticker_Requirements,",
+				"          Inner_Requirements,",
+				"          Customer_Requirements,",
+				"          Sales_Program,",
+				"          Buyer_Dept,",
+				"          Buyer_Confirmed_On,",
+				"          Dept_Program,",
+				"          Program_0,",
+				"          Cancelled,",
+				"          Confidence_Factor_Id,",
+				"          Company_Id,",
+				"          Item_Id,",
+				"          Location_Id,",
+				"          Sales_Rep_Id,",
+				"          TranId,",
+				"          Price_Sticker_Id,",
+				"          Po,",
+				"          Release_Order_Number,",
+				"          Cntnr_,",
+				"          Etd_Ship_Date,",
+				"          Ship_Date_Outbound,",
+				"          Cancel_Date_Outbound,",
+				"          Expiration_Date,",
+				"          Item_Count,",
+				"          Inner_Qty,",
+				"          Release_Quantity,",
+				"          Quantity_Received_In_Shipment,",
+				"          Item_Unit_Price,",
+				"          Amount,",
+				"          Eta_Arrival_Date,",
+				"          Created_Date = derivedColumn1@Created_Date,",
+				"          Last_Modified_Date = derivedColumn1@Last_Modified_Date,",
+				"          Delete_Flag,",
+				"          Created_Time,",
+				"          Created_By,",
+				"          Last_Modified_Time,",
+				"          Last_Updated_By,",
+				"          Last_Modified_GMT",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['EDL_Estimate.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
