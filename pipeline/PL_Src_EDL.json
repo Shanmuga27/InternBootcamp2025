@@ -41,19 +41,19 @@
 							},
 							"CustomersEDL": {
 								"PR_Directory": "IN1684/Workshop/EDL",
-								"PR_Filename": "EDL_Customers"
+								"PR_Filename": "EDL_Customer"
 							},
 							"LoationEDL": {
 								"PR_Directory": "IN1684/Workshop/EDL",
-								"PR_Filename": "EDL_Locations"
+								"PR_Filename": "EDL_Location"
 							},
 							"ItemEDL": {
 								"PR_Directory": "IN1684/Workshop/EDL",
-								"PR_Filename": "EDL_Item"
+								"PR_Filename": "EDL_Product"
 							},
 							"SalesRepEDL": {
 								"PR_Directory": "IN1684/Workshop/EDL",
-								"PR_Filename": "EDL_SalesRep"
+								"PR_Filename": "EDL_SalesReps"
 							},
 							"EstimateEDL": {
 								"PR_Directory": "IN1684/Workshop/EDL",
