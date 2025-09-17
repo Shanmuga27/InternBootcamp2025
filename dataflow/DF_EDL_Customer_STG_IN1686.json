@@ -1,0 +1,42 @@
+{
+	"name": "DF_EDL_Customer_STG_IN1686",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "EDLCustomer"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "NullHandling"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Customer_Id as integer,",
+				"          Company_Name as string,",
+				"          Customer_Key as short,",
+				"          Delete_Flag as boolean,",
+				"          Create_Date as date,",
+				"          Date_Last_Modified as string,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as string,",
+				"          Active_Flag as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EDLCustomer",
+				"EDLCustomer derive(each(match(), ERROR_FUNCTION('') = ERROR_FUNCTION(''))) ~> NullHandling"
+			]
+		}
+	}
+}
