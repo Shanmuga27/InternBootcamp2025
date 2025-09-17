@@ -10,6 +10,9 @@
 						"type": "DatasetReference"
 					},
 					"name": "SrcCustomers"
+				},
+				{
+					"name": "Locations"
 				}
 			],
 			"sinks": [
@@ -19,6 +22,9 @@
 						"type": "DatasetReference"
 					},
 					"name": "W2CustomersEDLIN1686"
+				},
+				{
+					"name": "sink1"
 				}
 			],
 			"transformations": [
@@ -30,11 +36,24 @@
 				},
 				{
 					"name": "CustomerKey"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "surrogateKey1"
+				},
+				{
+					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
 				"parameters{",
-				"     filename as string",
+				"     filename1 as string,",
+				"     filename2 as string,",
+				"     filename3 as string,",
+				"     filename4 as string,",
+				"     filename5 as string",
 				"}",
 				"source(output(",
 				"          Customer_Key as integer,",
@@ -44,6 +63,8 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SrcCustomers",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> Locations",
 				"CustomerKey derive(Delete_Flag = \"N\",",
 				"          Create_Date = currentDate(),",
 				"          Date_Last_Modified = toTimestamp(\"1990-01-01\", \"dd-MM-yyyy hh:mm:ss\"),",
@@ -61,12 +82,22 @@
 				"select1 keyGenerate(output(Customer_Key as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> CustomerKey",
+				"Locations select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 keyGenerate(output({undefined} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"surrogateKey1 derive() ~> derivedColumn1",
 				"AduitColumn sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:[($filename)],",
+				"     partitionFileNames:[($filename1)],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> W2CustomersEDLIN1686"
+				"     partitionBy('hash', 1)) ~> W2CustomersEDLIN1686",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}

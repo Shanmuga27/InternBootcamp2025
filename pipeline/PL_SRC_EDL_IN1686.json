@@ -123,8 +123,24 @@
 						"referenceName": "DF_SRC_EDL_IN1686",
 						"type": "DataFlowReference",
 						"parameters": {
-							"filename": {
-								"value": "'@{W2_Customers_EDL_IN1686.csv}'",
+							"filename1": {
+								"value": "'@{pipeline().parameters.filename1}'",
+								"type": "Expression"
+							},
+							"filename2": {
+								"value": "'@{pipeline().parameters.filename2}'",
+								"type": "Expression"
+							},
+							"filename3": {
+								"value": "'@{pipeline().parameters.filename3}'",
+								"type": "Expression"
+							},
+							"filename4": {
+								"value": "'@{pipeline().parameters.filename4}'",
+								"type": "Expression"
+							},
+							"filename5": {
+								"value": "'@{pipeline().parameters.filename5}'",
 								"type": "Expression"
 							}
 						},
@@ -151,6 +167,8 @@
 			{
 				"name": "W2_Customers_EDL_IN1686_SQL",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "W2_Customers_EDL_IN1686",
@@ -201,7 +219,10 @@
 						"parameters": {
 							"Container": "boootcamp25",
 							"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
-							"File": "W2_Customers_EDL_IN1686.csv"
+							"File": {
+								"value": "@pipeline().parameters.filename",
+								"type": "Expression"
+							}
 						}
 					}
 				],
@@ -217,6 +238,23 @@
 				]
 			}
 		],
+		"parameters": {
+			"filename1": {
+				"type": "string"
+			},
+			"filename2": {
+				"type": "string"
+			},
+			"filename3": {
+				"type": "string"
+			},
+			"filename4": {
+				"type": "string"
+			},
+			"filename5": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }
