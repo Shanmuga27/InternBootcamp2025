@@ -10,6 +10,27 @@
 						"type": "DatasetReference"
 					},
 					"name": "SrcCustomers"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcLocations"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcItems"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcSalesRep"
 				}
 			],
 			"sinks": [
@@ -19,6 +40,20 @@
 						"type": "DatasetReference"
 					},
 					"name": "StgCustomers"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "StgLocations"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "StgItems"
 				}
 			],
 			"transformations": [
@@ -27,6 +62,30 @@
 				},
 				{
 					"name": "CusAuditColumns"
+				},
+				{
+					"name": "LocNullHandling"
+				},
+				{
+					"name": "LocAuditColumns"
+				},
+				{
+					"name": "ItemsNullHandling"
+				},
+				{
+					"name": "ItemsAuditColumns"
+				},
+				{
+					"name": "LocColumnRename"
+				},
+				{
+					"name": "CusColumnRename"
+				},
+				{
+					"name": "ItemsColumnRename"
+				},
+				{
+					"name": "SalesNullHandling"
 				}
 			],
 			"scriptLines": [
@@ -46,15 +105,158 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SrcCustomers",
+				"source(output(",
+				"          Location_Id as integer,",
+				"          Name as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          State as string,",
+				"          Zipcode as string,",
+				"          Location_Key as integer,",
+				"          Delete_Flag as string,",
+				"          Active_Flag as string,",
+				"          Date_Last_Modified as timestamp,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcLocations",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcItems",
+				"source(output(",
+				"          Sales_Rep_Id as short,",
+				"          Sales_Rep_Name as string,",
+				"          Address as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          Email as string,",
+				"          LoginAccess as boolean,",
+				"          Phone as string,",
+				"          Sales_Key as short,",
+				"          Delete_Flag as boolean,",
+				"          Active_Flag as boolean,",
+				"          Create_Date as timestamp,",
+				"          Date_Last_Modified as string,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcSalesRep",
 				"SrcCustomers derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
-				"          each(match(type=='integer'), $$ = iif(isNull($$),0,$$))) ~> CusNullHandling",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),0,$$)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> CusNullHandling",
 				"CusNullHandling derive(Date_Last_Modified = toTimestamp(currentDate()),",
 				"          Last_Updated_by = 'IN1675',",
 				"          Last_Update_Timestamp = currentTimestamp()) ~> CusAuditColumns",
-				"CusAuditColumns sink(allowSchemaDrift: true,",
+				"SrcLocations derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),0,$$)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> LocNullHandling",
+				"LocNullHandling derive(Last_Updated_By = 'IN1675',",
+				"          Date_Last_Modified = toTimestamp(currentDate()),",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> LocAuditColumns",
+				"SrcItems derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$), 0, $$)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> ItemsNullHandling",
+				"ItemsNullHandling derive(Date_last_Modified = toTimestamp(currentDate()),",
+				"          Last_Updated_By = 'IN1675',",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> ItemsAuditColumns",
+				"LocAuditColumns select(mapColumn(",
+				"          Location_ID = Location_Id,",
+				"          Location_Name = Name,",
+				"          Location_Country = Country,",
+				"          Location_City = City,",
+				"          Location_State = State,",
+				"          Location_Zipcode = Zipcode,",
+				"          Location_Key,",
+				"          Delete_Flg = Delete_Flag,",
+				"          Active_Flg = Active_Flag,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> LocColumnRename",
+				"CusAuditColumns select(mapColumn(",
+				"          Customer_Key,",
+				"          Customer_Id,",
+				"          Company_Name,",
+				"          Delete_Flag,",
+				"          Create_Date,",
+				"          Date_Last_Modified,",
+				"          Created_By = Created_by,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By = Last_Updated_by,",
+				"          Last_Update_Timestamp,",
+				"          Active_Flag",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> CusColumnRename",
+				"ItemsAuditColumns select(mapColumn(",
+				"          Item_ID = Item_Id,",
+				"          Item_Descr = Generic_Description,",
+				"          Brand_Descr = PurchaseDescription,",
+				"          Artwork_Descr = Artwork,",
+				"          Color_Descr = Color,",
+				"          Package_Type_Descr = Package_Type,",
+				"          Special_Req_Descr = Special_Requirements,",
+				"          Case_Pack_Descr = Case_Pack,",
+				"          Full_Name_Descr = Full_Name,",
+				"          Display_Name_Descr = Display_Name,",
+				"          Account_Manager_Name,",
+				"          Brand_Name,",
+				"          Brand_Manager_Name,",
+				"          Item_Status_Descr = Item_Status,",
+				"          Item_Type_Descr = Item_Type,",
+				"          Maker_Name,",
+				"          Product_Manager_Name,",
+				"          Master_Carton_Req_Descr = Master_Carton_Rqmnts,",
+				"          Trade_Partner_Name,",
+				"          Type_Name,",
+				"          Trade_Partner_Cd = Trade_Partner_Code,",
+				"          Vendor_Name = VendorName,",
+				"          UPC_nbr = UPC,",
+				"          On_Hand_Quantity = QunatityOnHand,",
+				"          SSCC14_Nbr = SSCC14,",
+				"          Master_Carton_Item_nbr = Master_Carton_Markings_Item_N,",
+				"          Part_Of_Assembly_Item,",
+				"          Item_Key,",
+				"          Delete_Flag,",
+				"          Active_Flag,",
+				"          Create_Date,",
+				"          Date_last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> ItemsColumnRename",
+				"SrcSalesRep derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$))) ~> SalesNullHandling",
+				"CusColumnRename sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['STG_Customer.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> StgCustomers",
+				"LocColumnRename sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['STG_Locations.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> StgLocations",
+				"ItemsColumnRename sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> StgCustomers"
+				"     skipDuplicateMapOutputs: true) ~> StgItems"
 			]
 		}
 	}
