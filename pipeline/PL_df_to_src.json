@@ -1,0 +1,107 @@
+{
+	"name": "PL_df_to_src",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Metadata1",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680/workshop",
+							"file": "*"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Data flow1",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "DFSrc",
+									"type": "DataFlowReference",
+									"datasetParameters": {
+										"source1": {
+											"container": "boootcamp25",
+											"folder": "IN1680/workshop",
+											"file": {
+												"value": "@item().name",
+												"type": "Expression"
+											},
+											"sheetindex": 0
+										},
+										"sink1": {
+											"container": "boootcamp25",
+											"folder": "IN1680/workshop",
+											"file": "@replace(item().name,'xlsx' , 'csv')"
+										}
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "src_to_edl"
+		},
+		"annotations": []
+	}
+}

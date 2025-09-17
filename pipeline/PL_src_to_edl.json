@@ -62,6 +62,44 @@
 									"value": "@contains(item().name, variables('files'))",
 									"type": "Expression"
 								},
+								"ifFalseActivities": [
+									{
+										"name": "Copy data2",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "ExcelSource",
+												"storeSettings": {
+													"type": "AzureBlobStorageReadSettings",
+													"recursive": true,
+													"enablePartitionDiscovery": false
+												}
+											},
+											"enableStaging": false
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_blob_excel",
+												"type": "DatasetReference",
+												"parameters": {
+													"container": "boootcamp25",
+													"folder": "IN1680/workshop_edl",
+													"file": "Estimate.xlsx",
+													"sheetindex": 0
+												}
+											}
+										]
+									}
+								],
 								"ifTrueActivities": [
 									{
 										"name": "Copy data1",
