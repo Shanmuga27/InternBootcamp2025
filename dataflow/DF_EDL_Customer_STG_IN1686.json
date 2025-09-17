@@ -10,12 +10,31 @@
 						"type": "DatasetReference"
 					},
 					"name": "EDLCustomer"
+				},
+				{
+					"name": "source1"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"name": "sink1"
+				},
+				{
+					"name": "sink2"
+				}
+			],
 			"transformations": [
 				{
 					"name": "NullHandling"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select2"
 				}
 			],
 			"scriptLines": [
@@ -35,7 +54,35 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> EDLCustomer",
-				"EDLCustomer derive(each(match(type == \"String\"), $$ = ERROR_FUNCTION(''))) ~> NullHandling"
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> source1",
+				"EDLCustomer derive(each(match(), $$ = iif(isNull($$) || $$ == 'NULL','UNK',$$))) ~> NullHandling",
+				"NullHandling select(mapColumn(",
+				"          Customer_Id,",
+				"          Company_Name,",
+				"          Customer_Key,",
+				"          Delete_Flag,",
+				"          Create_Date,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp,",
+				"          Active_Flag",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"source1 derive() ~> derivedColumn1",
+				"derivedColumn1 select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2"
 			]
 		}
 	}
