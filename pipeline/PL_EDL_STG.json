@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_EDL_STG_SalesRep",
+				"name": "DF_EDL_STG_Products",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,18 +16,18 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_EDL_STG_SalesRep",
+						"referenceName": "DF_EDL_STG_Products",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"sourceEDLSalesRep": {
+							"sourceEDLProducts": {
 								"Param_Container": "boootcamp25",
 								"Param_Folder": "IN1685/EDL_workshop",
-								"Param_File": "EDL_SalesRep.csv"
+								"Param_File": "EDL_Products.csv"
 							},
 							"sink1": {
 								"Param_Container": "boootcamp25",
 								"Param_Folder": "IN1685/STG_workshop",
-								"Param_File": "STG_SalesRep.csv"
+								"Param_File": "STG_Products.csv"
 							}
 						}
 					},

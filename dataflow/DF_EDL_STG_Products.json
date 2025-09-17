@@ -1,0 +1,111 @@
+{
+	"name": "DF_EDL_STG_Products",
+	"properties": {
+		"folder": {
+			"name": "workshop/EDL_STG"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sourceEDLProducts"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1",
+					"description": "NULL & transf"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Item_S_Key as short,",
+				"          Item_Id as integer,",
+				"          Generic_Description as string,",
+				"          PurchaseDescription as string,",
+				"          Artwork as string,",
+				"          Color as string,",
+				"          Package_Type as string,",
+				"          Special_Requirements as string,",
+				"          Case_Pack as string,",
+				"          Full_Name as string,",
+				"          Display_Name as string,",
+				"          Account_Manager_Name as string,",
+				"          Brand_Name as string,",
+				"          Brand_Manager_Name as string,",
+				"          Item_Status as string,",
+				"          Item_Type as string,",
+				"          Maker_Name as string,",
+				"          Product_Manager_Name as string,",
+				"          Master_Carton_Rqmnts as string,",
+				"          Trade_Partner_Name as string,",
+				"          Part_Of_Assembly_Item as string,",
+				"          Type_Name as string,",
+				"          Trade_Partner_Code as string,",
+				"          VendorName as string,",
+				"          UPC as string,",
+				"          QunatityOnHand as string,",
+				"          SSCC14 as string,",
+				"          Master_Carton_Markings_Item_N as string,",
+				"          Created_Date as timestamp,",
+				"          Last_Modified_Date as string,",
+				"          Delete_Flag as boolean,",
+				"          Active_Flag as boolean,",
+				"          Created_Time as timestamp,",
+				"          Created_By as string,",
+				"          Last_Modified_Time as string,",
+				"          Last_Updated_By as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceEDLProducts",
+				"derivedColumn2 derive(each(match(type=='string'), $$ = replace(iifNull($$, \"UNK\"),'NULL', 'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> derivedColumn1",
+				"sourceEDLProducts derive(Last_Modified_Time = currentTimestamp(),",
+				"          Last_Updated_By = 'IN1685',",
+				"          Last_Modified_Date = currentTimestamp()) ~> derivedColumn2",
+				"derivedColumn1 select(mapColumn(",
+				"          Customer_S_Key,",
+				"          Customer_Id,",
+				"          Company_Name,",
+				"          Created_Date,",
+				"          Last_Modified_Date,",
+				"          Delete_Flag,",
+				"          Active_Flag,",
+				"          Created_Time,",
+				"          Created_By,",
+				"          Last_Modified_Time,",
+				"          Last_Updated_By",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['STG_Customers.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
