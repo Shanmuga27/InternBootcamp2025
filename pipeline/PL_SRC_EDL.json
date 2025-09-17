@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_SRC_EDL_Locations",
+				"name": "DF_SRC_EDL_Products",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,18 +16,18 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_SRC_EDL_Locations",
+						"referenceName": "DF_SRC_EDL_Products",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"sourceLocations": {
+							"sourcePRODUCTS": {
 								"Param_Container": "boootcamp25",
 								"Param_Folder": "IN1685/SRC_workshop",
-								"Param_File": "Locations.csv"
+								"Param_File": "Products.csv"
 							},
 							"sink1": {
 								"Param_Container": "boootcamp25",
 								"Param_Folder": "IN1685/EDL_workshop",
-								"Param_File": "EDL_Locations.csv"
+								"Param_File": "EDL_Products.csv"
 							}
 						}
 					},

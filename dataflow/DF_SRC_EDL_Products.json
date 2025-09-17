@@ -1,0 +1,136 @@
+{
+	"name": "DF_SRC_EDL_Products",
+	"properties": {
+		"folder": {
+			"name": "workshop"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sourcePRODUCTS"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1",
+					"description": "Products audit"
+				},
+				{
+					"name": "surrogateKey1",
+					"description": "Adding new key Items_S_Key starting from 1 with step 1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Item_key as integer,",
+				"          Item_Id as integer,",
+				"          Generic_Description as string,",
+				"          PurchaseDescription as string,",
+				"          Artwork as string,",
+				"          Color as string,",
+				"          Package_Type as string,",
+				"          Special_Requirements as string,",
+				"          Case_Pack as string,",
+				"          Full_Name as string,",
+				"          Display_Name as string,",
+				"          Account_Manager_Name as string,",
+				"          Brand_Name as string,",
+				"          Brand_Manager_Name as string,",
+				"          Item_Status as string,",
+				"          Item_Type as string,",
+				"          Maker_Name as string,",
+				"          Product_Manager_Name as string,",
+				"          Master_Carton_Rqmnts as string,",
+				"          Trade_Partner_Name as string,",
+				"          Part_Of_Assembly_Item as string,",
+				"          Type_Name as string,",
+				"          Trade_Partner_Code as string,",
+				"          VendorName as string,",
+				"          UPC as string,",
+				"          QunatityOnHand as string,",
+				"          SSCC14 as string,",
+				"          Master_Carton_Markings_Item_N as string,",
+				"          created_date as timestamp,",
+				"          last_modified_date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourcePRODUCTS",
+				"sourcePRODUCTS derive(Created_Date = currentTimestamp(),",
+				"          Last_Modified_Date = toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss', 'IST'),",
+				"          Delete_Flag = 'N',",
+				"          Active_Flag = 'Y',",
+				"          Created_Time = currentTimestamp(),",
+				"          Created_By = 'IN1685',",
+				"          Last_Modified_Time = toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss', 'IST'),",
+				"          Last_Updated_By = toString(null())) ~> derivedColumn1",
+				"derivedColumn1 keyGenerate(output(Item_S_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"surrogateKey1 select(mapColumn(",
+				"          Item_S_Key,",
+				"          Item_Id,",
+				"          Generic_Description,",
+				"          PurchaseDescription,",
+				"          Artwork,",
+				"          Color,",
+				"          Package_Type,",
+				"          Special_Requirements,",
+				"          Case_Pack,",
+				"          Full_Name,",
+				"          Display_Name,",
+				"          Account_Manager_Name,",
+				"          Brand_Name,",
+				"          Brand_Manager_Name,",
+				"          Item_Status,",
+				"          Item_Type,",
+				"          Maker_Name,",
+				"          Product_Manager_Name,",
+				"          Master_Carton_Rqmnts,",
+				"          Trade_Partner_Name,",
+				"          Part_Of_Assembly_Item,",
+				"          Type_Name,",
+				"          Trade_Partner_Code,",
+				"          VendorName,",
+				"          UPC,",
+				"          QunatityOnHand,",
+				"          SSCC14,",
+				"          Master_Carton_Markings_Item_N,",
+				"          Created_Date = derivedColumn1@Created_Date,",
+				"          Last_Modified_Date = derivedColumn1@Last_Modified_Date,",
+				"          Delete_Flag,",
+				"          Active_Flag,",
+				"          Created_Time,",
+				"          Created_By,",
+				"          Last_Modified_Time,",
+				"          Last_Updated_By",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['EDL_Products.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
