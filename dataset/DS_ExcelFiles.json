@@ -6,8 +6,14 @@
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"filename": {
+			"FolderName": {
 				"type": "string"
+			},
+			"FileName": {
+				"type": "string"
+			},
+			"SheetNo": {
+				"type": "int"
 			}
 		},
 		"annotations": [],
@@ -15,11 +21,20 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "Customers.xlsx",
-				"folderPath": "IN1689/workshop-sttm",
+				"fileName": {
+					"value": "@dataset().FileName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().FolderName",
+					"type": "Expression"
+				},
 				"container": "boootcamp25"
 			},
-			"sheetIndex": 0,
+			"sheetIndex": {
+				"value": "@dataset().SheetNo",
+				"type": "Expression"
+			},
 			"firstRowAsHeader": true
 		},
 		"schema": []

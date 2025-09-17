@@ -21,14 +21,15 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "Customers.xlsx",
+				"fileName": "Products.xlsx",
 				"folderPath": "IN1689/workshop-sttm",
 				"container": "boootcamp25"
 			},
 			"columnDelimiter": ",",
+			"rowDelimiter": "\n",
 			"escapeChar": "\\",
-			"firstRowAsHeader": true,
-			"quoteChar": "\""
+			"firstRowAsHeader": false,
+			"quoteChar": null
 		},
 		"schema": []
 	}

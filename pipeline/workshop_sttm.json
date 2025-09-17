@@ -15,54 +15,8 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
-					"sink": {
-						"type": "SqlServerSink",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false,
-						"tableOption": "autoCreate"
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "DS_IN1689",
-						"type": "DatasetReference",
-						"parameters": {
-							"container": "boootcamp25",
-							"folder": "IN1689/workshop-sttm",
-							"filename": "Customers.xlsx"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "ds_sql_customer",
-						"type": "DatasetReference",
-						"parameters": {
-							"schema": "VSri",
-							"table": "Customers_WS_STTM_IN1689"
-						}
-					}
-				]
+					"enableStaging": false
+				}
 			}
 		],
 		"annotations": []

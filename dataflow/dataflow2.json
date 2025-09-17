@@ -1,0 +1,88 @@
+{
+	"name": "dataflow2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_ExcelFiles",
+						"type": "DatasetReference"
+					},
+					"name": "SrcCustomers"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "SCustomers"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Customer_Key as integer,",
+				"          Customer_Id as integer,",
+				"          Company_Name as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcCustomers",
+				"SrcCustomers select(mapColumn(",
+				"          Customer_Id,",
+				"          Company_Name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 keyGenerate(output(Customer_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SCustomers",
+				"SCustomers derive(Delete_Flg = 'N',",
+				"          Create_Date = toTimestamp(currentDate()),",
+				"          Date_Last_Modified = toTimestamp(null()),",
+				"          Created_By = 'IN1689',",
+				"          Created_Timestamp = currentTimestamp(),",
+				"          Last_Updated_By = toString(null()),",
+				"          Last_Update_Timestamp = toTimestamp(null()),",
+				"          Active_Flag = 'Y') ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          Customer_Id,",
+				"          Customer_key,",
+				"          Company_Name,",
+				"          Delete_Flg,",
+				"          Create_Date,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp,",
+				"          Active_Flag",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['EDL_Customers'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
