@@ -34,7 +34,20 @@
 							"Estimate": {
 								"container": "boootcamp25",
 								"folder": "IN1674/Workshop_Files",
-								"file": "Estimate.xlsx"
+								"file": "Estimate.xlsx",
+								"sheetindex": 0
+							},
+							"location": {
+								"container": "boootcamp25",
+								"folder": "IN1674/Workshop_Files",
+								"file": "Locations.xlsx",
+								"sheetindex": 0
+							},
+							"Product": {
+								"container": "boootcamp25",
+								"folder": "IN1674/Workshop_Files",
+								"file": "Products.xlsx",
+								"sheetindex": 0
 							},
 							"sink1": {
 								"filename": {
@@ -47,7 +60,17 @@
 							"sink2": {
 								"filename": "Estimate.csv",
 								"folder": "IN1674/Workshop_Target_File",
-								"container": "IN1674/Workshop_Target_File"
+								"container": "boootcamp25"
+							},
+							"sink3": {
+								"filename": "Locations.csv",
+								"folder": "IN1674/Workshop_Target_File",
+								"container": "boootcamp25"
+							},
+							"sink4": {
+								"filename": "Products.csv",
+								"folder": "IN1674/Workshop_Target_File",
+								"container": "boootcamp25"
 							}
 						}
 					},
