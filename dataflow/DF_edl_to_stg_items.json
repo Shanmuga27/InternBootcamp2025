@@ -1,0 +1,140 @@
+{
+	"name": "DF_edl_to_stg_items",
+	"properties": {
+		"folder": {
+			"name": "edl_to_stg"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     filename as string",
+				"}",
+				"source(output(",
+				"          Item_Id as integer,",
+				"          Generic_Description as string,",
+				"          PurchaseDescription as string,",
+				"          Artwork as string,",
+				"          Color as string,",
+				"          Package_Type as string,",
+				"          Special_Requirements as string,",
+				"          Case_Pack as string,",
+				"          Full_Name as string,",
+				"          Display_Name as string,",
+				"          Account_Manager_Name as string,",
+				"          Brand_Name as string,",
+				"          Brand_Manager_Name as string,",
+				"          Item_Status as string,",
+				"          Item_Type as string,",
+				"          Maker_Name as string,",
+				"          Product_Manager_Name as string,",
+				"          Master_Carton_Rqmnts as string,",
+				"          Trade_Partner_Name as string,",
+				"          Part_Of_Assembly_Item as string,",
+				"          Type_Name as string,",
+				"          Trade_Partner_Code as string,",
+				"          VendorName as string,",
+				"          UPC as string,",
+				"          QunatityOnHand as integer,",
+				"          SSCC14 as integer,",
+				"          Master_Carton_Markings_Item_N as integer,",
+				"          Item_key as integer,",
+				"          Delete_flag as string,",
+				"          Created_by as string,",
+				"          Created_timestamp as timestamp,",
+				"          Last_updated_by as string,",
+				"          Last_updated_timestamp as timestamp,",
+				"          Active_flag as string,",
+				"          Created_date as timestamp,",
+				"          Date_last_modified as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive(each(match(type == 'string'), $$ = replace(iifNull($$, \"UNK\"),'NULL','UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$, 0)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01', 'yyyy-MM-dd')))) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          Item_Id,",
+				"          Item_Descr = Generic_Description,",
+				"          Brand_descr = PurchaseDescription,",
+				"          Artwork_descr = Artwork,",
+				"          Color_descr = Color,",
+				"          Package_Type_descr = Package_Type,",
+				"          Special_Req_descr = Special_Requirements,",
+				"          Case_Pack_descr = Case_Pack,",
+				"          Full_Name_descr = Full_Name,",
+				"          Display_name_descr = Display_Name,",
+				"          Account_manager_name = Account_Manager_Name,",
+				"          Brand_name = Brand_Name,",
+				"          brand_manager_name = Brand_Manager_Name,",
+				"          Item_status_descr = Item_Status,",
+				"          item_type_descr = Item_Type,",
+				"          maker_name = Maker_Name,",
+				"          product_manager_name = Product_Manager_Name,",
+				"          Master_Carton_req_descr = Master_Carton_Rqmnts,",
+				"          Trade_partner_Name = Trade_Partner_Name,",
+				"          Type_Name,",
+				"          Trade_partner_CD = Trade_Partner_Code,",
+				"          Vendor_Name = VendorName,",
+				"          UPC_nbr = UPC,",
+				"          On_Hand_Quantity = QunatityOnHand,",
+				"          SSCC14_nbr = SSCC14,",
+				"          Master_Carton_Item_nbr = Master_Carton_Markings_Item_N,",
+				"          Item_key,",
+				"          Delete_flag,",
+				"          Created_by,",
+				"          Created_timestamp,",
+				"          Last_updated_by,",
+				"          Last_updated_timestamp,",
+				"          Active_flag,",
+				"          Created_date,",
+				"          Date_last_modified",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          anime_id as string,",
+				"          name as string,",
+				"          genre as string,",
+				"          type as string,",
+				"          episodes as string,",
+				"          rating as string,",
+				"          members as string",
+				"     ),",
+				"     partitionFileNames:[($filename)],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
