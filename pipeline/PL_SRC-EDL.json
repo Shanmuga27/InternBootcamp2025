@@ -62,7 +62,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"expression": {
-									"value": "@contains(item().name, variables('var'))",
+									"value": "@equals(item().name, variables('var'))",
 									"type": "Expression"
 								},
 								"ifFalseActivities": [
