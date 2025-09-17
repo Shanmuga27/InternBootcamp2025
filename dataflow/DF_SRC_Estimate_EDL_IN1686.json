@@ -1,0 +1,136 @@
+{
+	"name": "DF_SRC_Estimate_EDL_IN1686",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Excel_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "SrcEstimate"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "W2EstimateEDLIN1686"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AduitColumn"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "EstimateKey"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     filename5 as string",
+				"}",
+				"source(output(",
+				"          Estimate_Key as integer,",
+				"          Transaction_Id as integer,",
+				"          Transaction_Line_Id as short,",
+				"          Memo as string,",
+				"          Sticker_Requirements as string,",
+				"          Inner_Requirements as string,",
+				"          Customer_Requirements as string,",
+				"          Sales_Program as string,",
+				"          Buyer_Dept as string,",
+				"          Buyer_Confirmed_On as string,",
+				"          Dept_Program as string,",
+				"          Program_0 as string,",
+				"          Cancelled as string,",
+				"          Confidence_Factor_Id as string,",
+				"          Company_Id as integer,",
+				"          Item_Id as string,",
+				"          Location_Id as string,",
+				"          Sales_Rep_Id as string,",
+				"          TranId as string,",
+				"          Price_Sticker_Id as string,",
+				"          Po as string,",
+				"          Release_Order_Number as string,",
+				"          Cntnr_ as string,",
+				"          Etd_Ship_Date as string,",
+				"          Ship_Date_Outbound as string,",
+				"          Cancel_Date_Outbound as string,",
+				"          Expiration_Date as string,",
+				"          Item_Count as string,",
+				"          Inner_Qty as string,",
+				"          Release_Quantity as string,",
+				"          Quantity_Received_In_Shipment as string,",
+				"          Item_Unit_Price as string,",
+				"          Amount as string,",
+				"          Eta_Arrival_Date as string,",
+				"          Closed_Script as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcEstimate",
+				"EstimateKey derive(Delete_Flag = \"N\",",
+				"          Create_Date = currentDate(),",
+				"          Date_Last_Modified_Gmt = toTimestamp(\"1990-01-01\", \"dd-MM-yyyy hh:mm:ss\"),",
+				"          Created_By = \"IN1868_Sanjay_Komala\",",
+				"          Created_Timestamp = currentTimestamp(),",
+				"          Last_Updated_By = toString(null()),",
+				"          Last_Update_Timestamp = toTimestamp(\"1990-01-01\", \"dd-MM-yyyy hh:mm:ss\")) ~> AduitColumn",
+				"SrcEstimate select(mapColumn(",
+				"          Transaction_Id,",
+				"          Transaction_Line_Id,",
+				"          Memo,",
+				"          Sticker_Requirements,",
+				"          Inner_Requirements,",
+				"          Customer_Requirements,",
+				"          Sales_Program,",
+				"          Buyer_Dept,",
+				"          Buyer_Confirmed_On,",
+				"          Dept_Program,",
+				"          Program_0,",
+				"          Cancelled,",
+				"          Confidence_Factor_Id,",
+				"          Company_Id,",
+				"          Item_Id,",
+				"          Location_Id,",
+				"          Sales_Rep_Id,",
+				"          TranId,",
+				"          Price_Sticker_Id,",
+				"          Po,",
+				"          Release_Order_Number,",
+				"          Cntnr_,",
+				"          Etd_Ship_Date,",
+				"          Ship_Date_Outbound,",
+				"          Cancel_Date_Outbound,",
+				"          Expiration_Date,",
+				"          Item_Count,",
+				"          Inner_Qty,",
+				"          Release_Quantity,",
+				"          Quantity_Received_In_Shipment,",
+				"          Item_Unit_Price,",
+				"          Amount,",
+				"          Eta_Arrival_Date,",
+				"          Closed_Script",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 keyGenerate(output(Estimate_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> EstimateKey",
+				"AduitColumn sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[($filename5)],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> W2EstimateEDLIN1686"
+			]
+		}
+	}
+}
