@@ -224,8 +224,10 @@
 				]
 			},
 			{
-				"name": "Data flow1",
+				"name": "W2LocationEDLIN1686",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -238,7 +240,167 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "DF_SRC_Locations_EDL_IN1686",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"parameters": {
+							"filename2": {
+								"value": "'@{pipeline().parameters.filename2}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"SrcLocations": {
+								"DatasetSheetName": 0,
+								"Folder": "IN1686/WORKSHOP",
+								"FileName": "Locations.xlsx"
+							},
+							"W2LocationEDLIN1686": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": {
+									"value": "@pipeline().parameters.filename2",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "W2ItemEDLIN1686",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_SRC_Item_EDL_IN1686",
+						"type": "DataFlowReference",
+						"parameters": {
+							"filename3": {
+								"value": "'@{pipeline().parameters.filename3}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"SrcItems": {
+								"DatasetSheetName": 0,
+								"Folder": "IN1686/WORKSHOP",
+								"FileName": "Products.xlsx"
+							},
+							"W2ItemEDLIN1686": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": {
+									"value": "@pipeline().parameters.filename3",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "W2SalesREPEDLIN1686",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_SRC_Sales_Rep_EDL_IN1686",
+						"type": "DataFlowReference",
+						"parameters": {
+							"filename4": {
+								"value": "'@{pipeline().parameters.filename4}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"SrcSalesRep": {
+								"DatasetSheetName": 0,
+								"Folder": "IN1686/WORKSHOP",
+								"FileName": "SalesREP.xlsx"
+							},
+							"W2LocationEDLIN1686": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": {
+									"value": "@pipeline().parameters.filename4",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "W2EstimateEDLIN1686",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_SRC_Estimate_EDL_IN1686",
+						"type": "DataFlowReference",
+						"parameters": {
+							"filename5": {
+								"value": "'@{pipeline().parameters.filename5}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"SrcEstimate": {
+								"DatasetSheetName": 0,
+								"Folder": "IN1686/WORKSHOP",
+								"FileName": "Estimate.xlsx"
+							},
+							"W2EstimateEDLIN1686": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": {
+									"value": "@pipeline().parameters.filename5",
+									"type": "Expression"
+								}
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
