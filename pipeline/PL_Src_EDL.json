@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Get all files",
-				"type": "GetMetadata",
+				"name": "Copy data1",
+				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -15,111 +15,127 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataset": {
+					"source": {
+						"type": "ExcelSource",
+						"additionalColumns": [
+							{
+								"name": "Created_Date",
+								"value": {
+									"value": "@formatDateTime(utcNow())",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Date_Last_Modified",
+								"value": {
+									"value": "@formatDateTime(utcNow())",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Customer_Key",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Customer_Key",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Customer_Id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Customer_Id",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Company_Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Company_Name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Created_Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Created_Date",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Date_Last_Modified",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Date_Last_Modified",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
 						"referenceName": "DS_Excel",
 						"type": "DatasetReference",
 						"parameters": {
 							"directory": "IN1684/Workshop/src",
-							"Filename": "*",
+							"Filename": "Customers.xlsx",
 							"sheetNo": 0
 						}
-					},
-					"fieldList": [
-						"childItems"
-					],
-					"storeSettings": {
-						"type": "AzureBlobStorageReadSettings",
-						"enablePartitionDiscovery": false
-					}
-				}
-			},
-			{
-				"name": "Loop and Load",
-				"type": "ForEach",
-				"dependsOn": [
-					{
-						"activity": "Get all files",
-						"dependencyConditions": [
-							"Succeeded"
-						]
 					}
 				],
-				"userProperties": [],
-				"typeProperties": {
-					"items": {
-						"value": "@activity('Get all files').output.childItems",
-						"type": "Expression"
-					},
-					"isSequential": true,
-					"activities": [
-						{
-							"name": "CP_Blob_Server",
-							"type": "Copy",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "ExcelSource",
-									"storeSettings": {
-										"type": "AzureBlobStorageReadSettings",
-										"recursive": true,
-										"enablePartitionDiscovery": false
-									}
-								},
-								"sink": {
-									"type": "SqlServerSink",
-									"writeBehavior": "insert",
-									"sqlWriterUseTableLock": false,
-									"tableOption": "autoCreate"
-								},
-								"enableStaging": false,
-								"translator": {
-									"type": "TabularTranslator",
-									"typeConversion": true,
-									"typeConversionSettings": {
-										"allowDataTruncation": true,
-										"treatBooleanAsNumber": false
-									}
-								}
-							},
-							"inputs": [
-								{
-									"referenceName": "DS_Excel",
-									"type": "DatasetReference",
-									"parameters": {
-										"directory": "IN1684/Workshop/src",
-										"Filename": {
-											"value": "@item().name",
-											"type": "Expression"
-										},
-										"sheetNo": 0
-									}
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "DS_SQL_Server_IN1684",
-									"type": "DatasetReference",
-									"parameters": {
-										"PR_Tablename": {
-											"value": "@concat('src_',item().name)",
-											"type": "Expression"
-										},
-										"PR_Schema": "PMahendi",
-										"PR_Database": "ADF_Training"
-									}
-								}
-							]
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_Server_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Tablename": "src_Customers",
+							"PR_Schema": "PMahendi",
+							"PR_Database": "ADF_Training"
 						}
-					]
-				}
+					}
+				]
 			}
 		],
 		"folder": {
