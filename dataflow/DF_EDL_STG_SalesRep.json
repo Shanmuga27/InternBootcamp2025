@@ -15,7 +15,15 @@
 					"name": "sourceEDLSalesRep"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "derivedColumn1",
@@ -45,9 +53,15 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourceEDLSalesRep",
-				"sourceEDLSalesRep derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
+				"sourceEDLSalesRep derive(each(match(type=='string'), $$ = replace(iifNull($$, \"UNK\"),'NULL', 'UNK')),",
 				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
-				"          each(match(type=='timestamp'), $$ = coalesce($$, toTimestamp('1900-01-01', 'dd-MM-yyyy')))) ~> derivedColumn1"
+				"          each(match(type=='timestamp'), $$ = iifNull($$, currentTimestamp()))) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['STG_SalesRep.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}
