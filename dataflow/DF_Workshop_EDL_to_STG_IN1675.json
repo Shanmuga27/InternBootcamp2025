@@ -1,0 +1,61 @@
+{
+	"name": "DF_Workshop_EDL_to_STG_IN1675",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcCustomers"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "StgCustomers"
+				}
+			],
+			"transformations": [
+				{
+					"name": "CusNullHandling"
+				},
+				{
+					"name": "CusAuditColumns"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Customer_Id as integer,",
+				"          Company_Name as string,",
+				"          Customer_Key as integer,",
+				"          Delete_Flag as string,",
+				"          Create_Date as timestamp,",
+				"          Date_Last_Modified as timestamp,",
+				"          Created_by as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_by as string,",
+				"          Last_Update_Timestamp as timestamp,",
+				"          Active_Flag as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcCustomers",
+				"SrcCustomers derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),0,$$))) ~> CusNullHandling",
+				"CusNullHandling derive(Date_Last_Modified = toTimestamp(currentDate()),",
+				"          Last_Updated_by = 'IN1675',",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> CusAuditColumns",
+				"CusAuditColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> StgCustomers"
+			]
+		}
+	}
+}

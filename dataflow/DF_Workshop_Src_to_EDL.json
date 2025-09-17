@@ -1,5 +1,5 @@
 {
-	"name": "DF_Workshop_Customers_Src_to_EDL",
+	"name": "DF_Workshop_Src_to_EDL",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
