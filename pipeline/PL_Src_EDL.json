@@ -35,18 +35,34 @@
 							"userProperties": [],
 							"typeProperties": {
 								"source": {
-									"type": "ExcelSource",
+									"type": "DelimitedTextSource",
+									"additionalColumns": [
+										{
+											"value": "$$FILEPATH"
+										},
+										{
+											"value": "$$FILEPATH"
+										}
+									],
 									"storeSettings": {
 										"type": "AzureBlobStorageReadSettings",
 										"recursive": true,
 										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
 									}
 								},
 								"sink": {
-									"type": "SqlServerSink",
-									"writeBehavior": "insert",
-									"sqlWriterUseTableLock": false,
-									"tableOption": "autoCreate"
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
 								},
 								"enableStaging": false,
 								"translator": {
@@ -60,29 +76,20 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "DS_Excel",
-									"type": "DatasetReference",
-									"parameters": {
-										"directory": "IN1684/Workshop/src",
-										"Filename": {
-											"value": "@item().name",
-											"type": "Expression"
-										},
-										"sheetNo": 0
-									}
+									"referenceName": "DS_Blob_IN1684",
+									"type": "DatasetReference"
 								}
 							],
 							"outputs": [
 								{
-									"referenceName": "DS_SQL_Server_IN1684",
+									"referenceName": "DS_Blob_IN1684",
 									"type": "DatasetReference",
 									"parameters": {
-										"PR_Tablename": {
-											"value": "@concat('SRC_',item().name)",
+										"PR_Directory": "IN1684/Workshop/Source",
+										"PR_Filename": {
+											"value": "@replace(item().name,'xlsx','csv')",
 											"type": "Expression"
-										},
-										"PR_Schema": "PMahendi",
-										"PR_Database": "ADF_Training"
+										}
 									}
 								}
 							]
@@ -104,12 +111,11 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "DS_Excel",
+						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference",
 						"parameters": {
-							"directory": "IN1684/Workshop/src",
-							"Filename": "*",
-							"sheetNo": 0
+							"PR_Directory": "IN1684/Workshop/Source",
+							"PR_Filename": "*"
 						}
 					},
 					"fieldList": [
@@ -118,6 +124,9 @@
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
 						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
 					}
 				}
 			}

@@ -1,0 +1,58 @@
+{
+	"name": "DF_SRC_EDL",
+	"properties": {
+		"folder": {
+			"name": "Workshop"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "Customers"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "AuditColumns"
+				},
+				{
+					"name": "select"
+				},
+				{
+					"name": "CustomerKey"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Customer_Key as integer,",
+				"          Customer_Id as integer,",
+				"          Company_Name as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Customers",
+				"CustomerKey derive(Create_Date = currentTimestamp(),",
+				"          Date_Last_Modified = currentTimestamp(),",
+				"          Created_By = \"IN1684\",",
+				"          Created_Timestamp = currentTimestamp(),",
+				"          Last_Updated_By = ERROR_FUNCTION(''),",
+				"          Last_Update_Timestamp = toTimestamp(\"1990-01-01\"),",
+				"          Active_Flag = 'Y') ~> AuditColumns",
+				"Customers select(mapColumn(",
+				"          Customer_Id,",
+				"          Company_Name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select",
+				"select keyGenerate(output(Customer_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> CustomerKey"
+			]
+		}
+	}
+}
