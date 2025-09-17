@@ -12,7 +12,11 @@
 					"name": "SrcCustomers"
 				},
 				{
-					"name": "Locations"
+					"dataset": {
+						"referenceName": "DS_Excel_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "SrcLocations"
 				}
 			],
 			"sinks": [
@@ -22,9 +26,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "W2CustomersEDLIN1686"
-				},
-				{
-					"name": "sink1"
 				}
 			],
 			"transformations": [
@@ -41,10 +42,7 @@
 					"name": "select2"
 				},
 				{
-					"name": "surrogateKey1"
-				},
-				{
-					"name": "derivedColumn1"
+					"name": "LocationKey"
 				}
 			],
 			"scriptLines": [
@@ -64,7 +62,8 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SrcCustomers",
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> Locations",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcLocations",
 				"CustomerKey derive(Delete_Flag = \"N\",",
 				"          Create_Date = currentDate(),",
 				"          Date_Last_Modified = toTimestamp(\"1990-01-01\", \"dd-MM-yyyy hh:mm:ss\"),",
@@ -82,22 +81,17 @@
 				"select1 keyGenerate(output(Customer_Key as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> CustomerKey",
-				"Locations select(skipDuplicateMapInputs: true,",
+				"SrcLocations select(skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
-				"select2 keyGenerate(output({undefined} as long),",
+				"select2 keyGenerate(output(Location_key as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> surrogateKey1",
-				"surrogateKey1 derive() ~> derivedColumn1",
+				"     stepValue: 1L) ~> LocationKey",
 				"AduitColumn sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:[($filename1)],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> W2CustomersEDLIN1686",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     partitionBy('hash', 1)) ~> W2CustomersEDLIN1686"
 			]
 		}
 	}
