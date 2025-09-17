@@ -1,5 +1,5 @@
 {
-	"name": "dataflow2",
+	"name": "SRC_EDL",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -10,6 +10,20 @@
 						"type": "DatasetReference"
 					},
 					"name": "SrcCustomers"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_ExcelFiles",
+						"type": "DatasetReference"
+					},
+					"name": "SrcLocations"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_ExcelFiles",
+						"type": "DatasetReference"
+					},
+					"name": "SrcProducts"
 				}
 			],
 			"sinks": [
@@ -19,6 +33,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
 				}
 			],
 			"transformations": [
@@ -33,6 +54,27 @@
 				},
 				{
 					"name": "select2"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "SLocations"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "select4"
+				},
+				{
+					"name": "select5"
+				},
+				{
+					"name": "SItems"
+				},
+				{
+					"name": "derivedColumn3"
 				}
 			],
 			"scriptLines": [
@@ -44,6 +86,51 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SrcCustomers",
+				"source(output(",
+				"          Location_Key as integer,",
+				"          Location_Id as integer,",
+				"          Name as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          State as string,",
+				"          Zipcode as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcLocations",
+				"source(output(",
+				"          Item_key as integer,",
+				"          Item_Id as integer,",
+				"          Generic_Description as string,",
+				"          PurchaseDescription as string,",
+				"          Artwork as string,",
+				"          Color as string,",
+				"          Package_Type as string,",
+				"          Special_Requirements as string,",
+				"          Case_Pack as string,",
+				"          Full_Name as string,",
+				"          Display_Name as string,",
+				"          Account_Manager_Name as string,",
+				"          Brand_Name as string,",
+				"          Brand_Manager_Name as string,",
+				"          Item_Status as string,",
+				"          Item_Type as string,",
+				"          Maker_Name as string,",
+				"          Product_Manager_Name as string,",
+				"          Master_Carton_Rqmnts as string,",
+				"          Trade_Partner_Name as string,",
+				"          Part_Of_Assembly_Item as string,",
+				"          Type_Name as string,",
+				"          Trade_Partner_Code as string,",
+				"          VendorName as string,",
+				"          UPC as string,",
+				"          QunatityOnHand as integer,",
+				"          SSCC14 as integer,",
+				"          Master_Carton_Markings_Item_N as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcProducts",
 				"SrcCustomers select(mapColumn(",
 				"          Customer_Id,",
 				"          Company_Name",
@@ -76,12 +163,91 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
+				"SrcLocations select(mapColumn(",
+				"          Location_Id,",
+				"          Name,",
+				"          City,",
+				"          Country,",
+				"          State,",
+				"          Zipcode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select3 keyGenerate(output(Location_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SLocations",
+				"SLocations derive(Delete_Flg = 'N',",
+				"          Active_Flag = 'Y',",
+				"          Date_Last_Modified = toTimestamp(null()),",
+				"          Created_By = 'IN1689',",
+				"          Created_Timestamp = currentTimestamp(),",
+				"          Last_Updated_By = toString(null()),",
+				"          Last_Update_Timestamp = toTimestamp(null())) ~> derivedColumn2",
+				"derivedColumn2 select(mapColumn(",
+				"          Location_Id,",
+				"          Location_key,",
+				"          Name,",
+				"          City,",
+				"          Country,",
+				"          State,",
+				"          Zipcode,",
+				"          Delete_Flg,",
+				"          Active_Flag,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4",
+				"SrcProducts select(mapColumn(",
+				"          Item_Id,",
+				"          Generic_Description,",
+				"          PurchaseDescription,",
+				"          Artwork,",
+				"          Color,",
+				"          Package_Type,",
+				"          Special_Requirements,",
+				"          Case_Pack,",
+				"          Full_Name,",
+				"          Display_Name,",
+				"          Account_Manager_Name,",
+				"          Brand_Name,",
+				"          Brand_Manager_Name,",
+				"          Item_Status,",
+				"          Item_Type,",
+				"          Maker_Name,",
+				"          Product_Manager_Name,",
+				"          Master_Carton_Rqmnts,",
+				"          Trade_Partner_Name,",
+				"          Part_Of_Assembly_Item,",
+				"          Type_Name,",
+				"          Trade_Partner_Code,",
+				"          VendorName,",
+				"          UPC,",
+				"          QunatityOnHand,",
+				"          SSCC14,",
+				"          Master_Carton_Markings_Item_N",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select5",
+				"select5 keyGenerate(output(Item_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SItems",
+				"SItems derive() ~> derivedColumn3",
 				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['EDL_Customers'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink1"
+				"     partitionBy('hash', 1)) ~> sink1",
+				"select4 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['EDL_Locations'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink2"
 			]
 		}
 	}

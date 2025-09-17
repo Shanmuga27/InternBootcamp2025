@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "dataflow2",
+						"referenceName": "SRC_EDL",
 						"type": "DataFlowReference"
 					},
 					"compute": {
