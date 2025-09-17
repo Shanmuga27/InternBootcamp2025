@@ -1,0 +1,123 @@
+{
+	"name": "DF_SRC_Locations_EDL_IN1686_copy1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Excel_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "SrcItems"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "W2ItemEDLIN1686"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AduitColumn"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "itemKey"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     filename3 as string",
+				"}",
+				"source(output(",
+				"          Item_key as integer,",
+				"          Item_Id as integer,",
+				"          Generic_Description as string,",
+				"          PurchaseDescription as string,",
+				"          Artwork as string,",
+				"          Color as string,",
+				"          Package_Type as string,",
+				"          Special_Requirements as string,",
+				"          Case_Pack as string,",
+				"          Full_Name as string,",
+				"          Display_Name as string,",
+				"          Account_Manager_Name as string,",
+				"          Brand_Name as string,",
+				"          Brand_Manager_Name as string,",
+				"          Item_Status as string,",
+				"          Item_Type as string,",
+				"          Maker_Name as string,",
+				"          Product_Manager_Name as string,",
+				"          Master_Carton_Rqmnts as string,",
+				"          Trade_Partner_Name as string,",
+				"          Part_Of_Assembly_Item as string,",
+				"          Type_Name as string,",
+				"          Trade_Partner_Code as string,",
+				"          VendorName as string,",
+				"          UPC as string,",
+				"          QunatityOnHand as string,",
+				"          SSCC14 as string,",
+				"          Master_Carton_Markings_Item_N as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcItems",
+				"itemKey derive(Delete_Flag = \"N\",",
+				"          Create_Date = currentDate(),",
+				"          Date_Last_Modified = toTimestamp(\"1990-01-01\", \"dd-MM-yyyy hh:mm:ss\"),",
+				"          Created_By = \"IN1868_Sanjay_Komala\",",
+				"          Created_Timestamp = currentTimestamp(),",
+				"          Last_Updated_By = toString(null()),",
+				"          Last_Update_Timestamp = toTimestamp(\"1990-01-01\", \"dd-MM-yyyy hh:mm:ss\"),",
+				"          Active_Flag = \"Y\") ~> AduitColumn",
+				"SrcItems select(mapColumn(",
+				"          Item_Id,",
+				"          Generic_Description,",
+				"          PurchaseDescription,",
+				"          Artwork,",
+				"          Color,",
+				"          Package_Type,",
+				"          Special_Requirements,",
+				"          Case_Pack,",
+				"          Full_Name,",
+				"          Display_Name,",
+				"          Account_Manager_Name,",
+				"          Brand_Name,",
+				"          Brand_Manager_Name,",
+				"          Item_Status,",
+				"          Item_Type,",
+				"          Maker_Name,",
+				"          Product_Manager_Name,",
+				"          Master_Carton_Rqmnts,",
+				"          Trade_Partner_Name,",
+				"          Part_Of_Assembly_Item,",
+				"          Type_Name,",
+				"          Trade_Partner_Code,",
+				"          VendorName,",
+				"          UPC,",
+				"          QunatityOnHand,",
+				"          SSCC14,",
+				"          Master_Carton_Markings_Item_N",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 keyGenerate(output(Item_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> itemKey",
+				"AduitColumn sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[($filename3)],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> W2ItemEDLIN1686"
+			]
+		}
+	}
+}
