@@ -1,10 +1,12 @@
 {
-	"name": "PL_SRC-EDL",
+	"name": "PL_SRC-EDL_sales-rep",
 	"properties": {
 		"activities": [
 			{
 				"name": "Get Metadata1",
 				"type": "GetMetadata",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -39,6 +41,8 @@
 			{
 				"name": "ForEach1",
 				"type": "ForEach",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Get Metadata1",
@@ -58,6 +62,8 @@
 						{
 							"name": "If Condition1",
 							"type": "IfCondition",
+							"state": "Inactive",
+							"onInactiveMarkAs": "Succeeded",
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
@@ -316,6 +322,9 @@
 					"sales Rep.csv"
 				]
 			}
+		},
+		"folder": {
+			"name": "workshop"
 		},
 		"annotations": []
 	}
