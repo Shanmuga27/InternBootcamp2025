@@ -270,13 +270,190 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "DF_Src_Edl",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"srcCustomers": {
+								"directory": "IN1677/workshop/src_",
+								"file": "Customers.xlsx"
+							},
+							"srcLocations": {
+								"directory": "IN1677/workshop/src_",
+								"file": "Locations.xlsx"
+							},
+							"srcItems": {
+								"directory": "IN1677/workshop/src_",
+								"file": "Products.xlsx"
+							},
+							"srcSalesreps": {
+								"directory": "IN1677/workshop/src_",
+								"file": "sales Rep.xlsx"
+							},
+							"srcEstimate": {
+								"directory": "IN1677/workshop/src_",
+								"file": "Estimate.xlsx"
+							},
+							"EdlCustomers": {
+								"container": "boootcamp25",
+								"directory": "IN1677/workshop/edl",
+								"file": "EDL_Customers"
+							},
+							"sink2": {
+								"container": "boootcamp25",
+								"directory": "IN1677/workshop/edl",
+								"file": "EDL_Locations"
+							},
+							"sink3": {
+								"container": "boootcamp25",
+								"directory": "IN1677/workshop/edl",
+								"file": "EDL_Products"
+							},
+							"sink4": {
+								"container": "boootcamp25",
+								"directory": "IN1677/workshop/edl",
+								"file": "EDL_SalesReps"
+							},
+							"sink5": {
+								"container": "boootcamp25",
+								"directory": "IN1677/workshop/edl",
+								"file": "EDL_Estimate"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
 					},
 					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Get Metadata1",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "Data flow1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference",
+						"parameters": {
+							"directory": "IN1677/workshop/edl",
+							"file": "*"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "SqlServerSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"tableOption": "autoCreate"
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_Blob_IN1677_Src",
+									"type": "DatasetReference",
+									"parameters": {
+										"directory": "IN1677/workshop/edl",
+										"file": {
+											"value": "@item().Name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_SqlServer",
+									"type": "DatasetReference",
+									"parameters": {
+										"schema": "JSivakum",
+										"table": {
+											"value": "@item().Name",
+											"type": "Expression"
+										},
+										"db": "ADF_Training"
+									}
+								}
+							]
+						}
+					]
 				}
 			}
 		],
