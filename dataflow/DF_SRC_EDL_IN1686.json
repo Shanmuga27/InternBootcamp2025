@@ -33,6 +33,9 @@
 				}
 			],
 			"scriptLines": [
+				"parameters{",
+				"     filename as string",
+				"}",
 				"source(output(",
 				"          Customer_Key as integer,",
 				"          Customer_Id as integer,",
@@ -60,8 +63,10 @@
 				"     stepValue: 1L) ~> CustomerKey",
 				"AduitColumn sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:[($filename)],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> W2CustomersEDLIN1686"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> W2CustomersEDLIN1686"
 			]
 		}
 	}
