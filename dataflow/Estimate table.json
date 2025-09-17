@@ -1,0 +1,24 @@
+{
+	"name": "Estimate table",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_excel",
+						"type": "DatasetReference"
+					},
+					"name": "Estimate"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Estimate"
+			]
+		}
+	}
+}
