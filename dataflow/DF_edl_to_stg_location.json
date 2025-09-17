@@ -1,0 +1,98 @@
+{
+	"name": "DF_edl_to_stg_location",
+	"properties": {
+		"folder": {
+			"name": "edl_to_stg"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     filename as string",
+				"}",
+				"source(output(",
+				"          Location_Id as integer,",
+				"          Name as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          State as string,",
+				"          Zipcode as string,",
+				"          Location_key as integer,",
+				"          Delete_flag as string,",
+				"          Created_by as string,",
+				"          Created_timestamp as timestamp,",
+				"          Last_updated_by as string,",
+				"          Last_updated_timestamp as timestamp,",
+				"          Active_flag as string,",
+				"          Date_last_modified as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive(each(match(type == 'string'), $$ = replace(iifNull($$, \"UNK\"),'NULL','UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$, 0)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01', 'yyyy-MM-dd'))),",
+				"          Created_date = currentTimestamp()) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          Location_Id,",
+				"          Location_Name = Name,",
+				"          Location_City = City,",
+				"          Location_Country = Country,",
+				"          Location_State = State,",
+				"          Location_Zipcode = Zipcode,",
+				"          Location_key,",
+				"          Delete_flag,",
+				"          Created_by,",
+				"          Created_timestamp,",
+				"          Last_updated_by,",
+				"          Last_updated_timestamp,",
+				"          Active_flag,",
+				"          Date_last_modified",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          anime_id as string,",
+				"          name as string,",
+				"          genre as string,",
+				"          type as string,",
+				"          episodes as string,",
+				"          rating as string,",
+				"          members as string",
+				"     ),",
+				"     partitionFileNames:[($filename)],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
