@@ -5,14 +5,52 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"name": "source1"
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcCustomers"
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "RemoveKeyColumn"
+				},
+				{
+					"name": "AuditColumns"
+				},
+				{
+					"name": "CustomerKey"
+				}
+			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source1"
+				"source(output(",
+				"          Customer_Key as integer,",
+				"          Customer_Id as integer,",
+				"          Company_Name as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcCustomers",
+				"SrcCustomers select(mapColumn(",
+				"          Customer_Id,",
+				"          Company_Name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RemoveKeyColumn",
+				"CustomerKey derive(Delete_Flag = 'N',",
+				"          Create_Date = toTimestamp(currentDate()),",
+				"          Date_Last_Modified = toTimestamp(null()),",
+				"          Created_by = 'IN1675',",
+				"          Created_Timestamp = currentTimestamp(),",
+				"          Last_Updated_by = toString(null()),",
+				"          Last_Update_Timestamp = toTimestamp(null()),",
+				"          Active_Flag = 'Y'\r",
+				") ~> AuditColumns",
+				"RemoveKeyColumn keyGenerate(output(Customer_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> CustomerKey"
 			]
 		}
 	}

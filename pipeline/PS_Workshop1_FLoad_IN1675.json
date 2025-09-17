@@ -117,7 +117,10 @@
 									"parameters": {
 										"ContainerName": "boootcamp25",
 										"FolderName": "IN1675/Workshop/Src_Files",
-										"FileName": "@concat('source_', replace(item().name, '.xlsx', 'csv'))"
+										"FileName": {
+											"value": "@concat('source_', replace(item().name, '.xlsx', '.csv'))",
+											"type": "Expression"
+										}
 									}
 								}
 							]
