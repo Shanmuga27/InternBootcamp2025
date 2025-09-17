@@ -50,9 +50,6 @@
 					"name": "ESTjoinPROD"
 				},
 				{
-					"name": "select1"
-				},
-				{
 					"name": "ESTjoinLOC"
 				},
 				{
@@ -66,6 +63,9 @@
 				},
 				{
 					"name": "selectSALESREP"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -238,6 +238,31 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> ESTjoinPROD",
+				"ESTjoinPROD, selectLOCATIONS join(derivedColumn2@Location_Id == selectLOCATIONS@Location_Id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> ESTjoinLOC",
+				"ESTjoinLOC, selectSALESREP join(derivedColumn2@Sales_Rep_Id == selectSALESREP@Sales_Rep_Id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> ESTjoinSALESREP",
+				"sourceEDLProducts select(mapColumn(",
+				"          Item_Id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectPROD",
+				"sourceLOCATIONS select(mapColumn(",
+				"          Location_Id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectLOCATIONS",
+				"sourceSALESREP select(mapColumn(",
+				"          Sales_Rep_Id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSALESREP",
 				"ESTjoinSALESREP select(mapColumn(",
 				"          Estimate_S_Key,",
 				"          Transaction_Id,",
@@ -281,35 +306,12 @@
 				"          Last_Modified_Time,",
 				"          Last_Updated_By,",
 				"          Last_Modified_GMT,",
-				"          Item_KEYID = sourceEDLProducts@Item_Id",
+				"          Item_Id_Key = selectPROD@Item_Id,",
+				"          Location_Id_Key = selectLOCATIONS@Location_Id,",
+				"          Sales_Rep_Id_Key = selectSALESREP@Sales_Rep_Id",
 				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"ESTjoinPROD, selectLOCATIONS join(derivedColumn2@Location_Id == selectLOCATIONS@Location_Id,",
-				"     joinType:'inner',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> ESTjoinLOC",
-				"ESTjoinLOC, selectSALESREP join(derivedColumn2@Sales_Rep_Id == selectSALESREP@Sales_Rep_Id,",
-				"     joinType:'inner',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> ESTjoinSALESREP",
-				"sourceEDLProducts select(mapColumn(",
-				"          Item_Id",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> selectPROD",
-				"sourceLOCATIONS select(mapColumn(",
-				"          Location_Id",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> selectLOCATIONS",
-				"sourceSALESREP select(mapColumn(",
-				"          Sales_Rep_Id",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> selectSALESREP"
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> select1"
 			]
 		}
 	}
