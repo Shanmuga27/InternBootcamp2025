@@ -1,0 +1,27 @@
+{
+	"name": "DS_ExcelFiles",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Azure_Blob_Storage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"filename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Customers.xlsx",
+				"folderPath": "IN1689/workshop-sttm",
+				"container": "boootcamp25"
+			},
+			"sheetIndex": 0,
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	}
+}
