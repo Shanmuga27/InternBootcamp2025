@@ -58,6 +58,16 @@
 								"container": "boootcamp25",
 								"folder": "IN1689/workshop_sttm",
 								"filename": "EDL_Products"
+							},
+							"sink4": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop_sttm",
+								"filename": "EDL_SalesReps"
+							},
+							"sink5": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop_sttm",
+								"filename": "EDL_Estimate"
 							}
 						},
 						"linkedServiceParameters": {
