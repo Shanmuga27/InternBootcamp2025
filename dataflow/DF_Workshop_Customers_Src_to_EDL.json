@@ -10,18 +10,118 @@
 						"type": "DatasetReference"
 					},
 					"name": "SrcCustomers"
-				}
-			],
-			"sinks": [],
-			"transformations": [
-				{
-					"name": "RemoveKeyColumn"
 				},
 				{
-					"name": "AuditColumns"
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcLocations"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcItems"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcSalesReps"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcEstimate"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "EDLcustomers"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "EDLLocations"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "EDLItems"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "EDLSales"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "EDLEstimate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "RemoveCustomerKey"
+				},
+				{
+					"name": "CusAuditColumns"
 				},
 				{
 					"name": "CustomerKey"
+				},
+				{
+					"name": "RemoveLocationKey"
+				},
+				{
+					"name": "LocationKey"
+				},
+				{
+					"name": "LocAuditColumns"
+				},
+				{
+					"name": "RemoveItemKey"
+				},
+				{
+					"name": "ItemKey"
+				},
+				{
+					"name": "ItemAuditColumns"
+				},
+				{
+					"name": "RemoveSalesKey"
+				},
+				{
+					"name": "SalesKey"
+				},
+				{
+					"name": "salesAuditColumns"
+				},
+				{
+					"name": "RemoveEstimateKey"
+				},
+				{
+					"name": "EstimateKey"
+				},
+				{
+					"name": "EstimateAuditColumns"
 				}
 			],
 			"scriptLines": [
@@ -33,12 +133,111 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SrcCustomers",
+				"source(output(",
+				"          Location_Key as short,",
+				"          Location_Id as short,",
+				"          Name as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          State as string,",
+				"          Zipcode as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcLocations",
+				"source(output(",
+				"          Item_key as integer,",
+				"          Item_Id as integer,",
+				"          Generic_Description as string,",
+				"          PurchaseDescription as string,",
+				"          Artwork as string,",
+				"          Color as string,",
+				"          Package_Type as string,",
+				"          Special_Requirements as string,",
+				"          Case_Pack as string,",
+				"          Full_Name as string,",
+				"          Display_Name as string,",
+				"          Account_Manager_Name as string,",
+				"          Brand_Name as string,",
+				"          Brand_Manager_Name as string,",
+				"          Item_Status as string,",
+				"          Item_Type as string,",
+				"          Maker_Name as string,",
+				"          Product_Manager_Name as string,",
+				"          Master_Carton_Rqmnts as string,",
+				"          Trade_Partner_Name as string,",
+				"          Part_Of_Assembly_Item as string,",
+				"          Type_Name as string,",
+				"          Trade_Partner_Code as string,",
+				"          VendorName as string,",
+				"          UPC as string,",
+				"          QunatityOnHand as string,",
+				"          SSCC14 as string,",
+				"          Master_Carton_Markings_Item_N as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcItems",
+				"source(output(",
+				"          Sales_Key as short,",
+				"          Sales_Rep_Id as short,",
+				"          Sales_Rep_Name as string,",
+				"          LoginAccess as boolean,",
+				"          Email as string,",
+				"          Phone as string,",
+				"          Address as string,",
+				"          City as string,",
+				"          Country as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcSalesReps",
+				"source(output(",
+				"          Estimate_Key as integer,",
+				"          Transaction_Id as integer,",
+				"          Transaction_Line_Id as short,",
+				"          Memo as string,",
+				"          Sticker_Requirements as string,",
+				"          Inner_Requirements as string,",
+				"          Customer_Requirements as string,",
+				"          Sales_Program as string,",
+				"          Buyer_Dept as string,",
+				"          Buyer_Confirmed_On as string,",
+				"          Dept_Program as string,",
+				"          Program_0 as string,",
+				"          Cancelled as string,",
+				"          Confidence_Factor_Id as string,",
+				"          Company_Id as integer,",
+				"          Item_Id as string,",
+				"          Location_Id as string,",
+				"          Sales_Rep_Id as string,",
+				"          TranId as string,",
+				"          Price_Sticker_Id as string,",
+				"          Po as string,",
+				"          Release_Order_Number as string,",
+				"          Cntnr_ as string,",
+				"          Etd_Ship_Date as string,",
+				"          Ship_Date_Outbound as string,",
+				"          Cancel_Date_Outbound as string,",
+				"          Expiration_Date as string,",
+				"          Item_Count as string,",
+				"          Inner_Qty as string,",
+				"          Release_Quantity as string,",
+				"          Quantity_Received_In_Shipment as string,",
+				"          Item_Unit_Price as string,",
+				"          Amount as string,",
+				"          Eta_Arrival_Date as string,",
+				"          Closed_Script as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcEstimate",
 				"SrcCustomers select(mapColumn(",
 				"          Customer_Id,",
 				"          Company_Name",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> RemoveKeyColumn",
+				"     skipDuplicateMapOutputs: true) ~> RemoveCustomerKey",
 				"CustomerKey derive(Delete_Flag = 'N',",
 				"          Create_Date = toTimestamp(currentDate()),",
 				"          Date_Last_Modified = toTimestamp(null()),",
@@ -47,10 +246,173 @@
 				"          Last_Updated_by = toString(null()),",
 				"          Last_Update_Timestamp = toTimestamp(null()),",
 				"          Active_Flag = 'Y'\r",
-				") ~> AuditColumns",
-				"RemoveKeyColumn keyGenerate(output(Customer_Key as long),",
+				") ~> CusAuditColumns",
+				"RemoveCustomerKey keyGenerate(output(Customer_Key as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> CustomerKey"
+				"     stepValue: 1L) ~> CustomerKey",
+				"SrcLocations select(mapColumn(",
+				"          Location_Id,",
+				"          Name,",
+				"          City,",
+				"          Country,",
+				"          State,",
+				"          Zipcode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RemoveLocationKey",
+				"RemoveLocationKey keyGenerate(output(Location_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> LocationKey",
+				"LocationKey derive(Delete_Flag = 'N',",
+				"          Active_Flag = 'Y',",
+				"          Date_Last_Modified = toTimestamp(null()),",
+				"          Created_By = 'IN1675',",
+				"          Created_Timestamp = currentTimestamp(),",
+				"          Last_Updated_By = toString(null()),",
+				"          Last_Update_Timestamp = toTimestamp(null())) ~> LocAuditColumns",
+				"SrcItems select(mapColumn(",
+				"          Item_Id,",
+				"          Generic_Description,",
+				"          PurchaseDescription,",
+				"          Artwork,",
+				"          Color,",
+				"          Package_Type,",
+				"          Special_Requirements,",
+				"          Case_Pack,",
+				"          Full_Name,",
+				"          Display_Name,",
+				"          Account_Manager_Name,",
+				"          Brand_Name,",
+				"          Brand_Manager_Name,",
+				"          Item_Status,",
+				"          Item_Type,",
+				"          Maker_Name,",
+				"          Product_Manager_Name,",
+				"          Master_Carton_Rqmnts,",
+				"          Trade_Partner_Name,",
+				"          Type_Name,",
+				"          Trade_Partner_Code,",
+				"          VendorName,",
+				"          UPC,",
+				"          QunatityOnHand,",
+				"          SSCC14,",
+				"          Master_Carton_Markings_Item_N,",
+				"          Part_Of_Assembly_Item",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RemoveItemKey",
+				"RemoveItemKey keyGenerate(output(Item_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> ItemKey",
+				"ItemKey derive(Delete_Flag = 'N',",
+				"          Active_Flag = 'Y',",
+				"          Create_Date = toTimestamp(currentDate()),",
+				"          Date_last_Modified = toTimestamp(null()),",
+				"          Created_By = 'IN1675',",
+				"          Created_Timestamp = currentTimestamp(),",
+				"          Last_Updated_By = toString(null()),",
+				"          Last_Update_Timestamp = toTimestamp(null())) ~> ItemAuditColumns",
+				"SrcSalesReps select(mapColumn(",
+				"          Sales_Rep_Id,",
+				"          Sales_Rep_Name,",
+				"          Address,",
+				"          City,",
+				"          Country,",
+				"          Email,",
+				"          LoginAccess,",
+				"          Phone",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RemoveSalesKey",
+				"RemoveSalesKey keyGenerate(output(Sales_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SalesKey",
+				"SalesKey derive(Delete_Flag = 'N',",
+				"          Active_Flag = 'Y',",
+				"          Create_Date = toTimestamp(currentDate()),",
+				"          Date_Last_Modified = toTimestamp(null()),",
+				"          Created_By = 'IN1675',",
+				"          Created_Timestamp = currentTimestamp(),",
+				"          Last_Updated_By = toString(null()),",
+				"          Last_Update_Timestamp = toTimestamp(null())) ~> salesAuditColumns",
+				"SrcEstimate select(mapColumn(",
+				"          Transaction_Id,",
+				"          Transaction_Line_Id,",
+				"          Memo,",
+				"          Sticker_Requirements,",
+				"          Inner_Requirements,",
+				"          Customer_Requirements,",
+				"          Sales_Program,",
+				"          Buyer_Dept,",
+				"          Buyer_Confirmed_On,",
+				"          Dept_Program,",
+				"          Program_0,",
+				"          Cancelled,",
+				"          Confidence_Factor_Id,",
+				"          Company_Id,",
+				"          Item_Id,",
+				"          Location_Id,",
+				"          Sales_Rep_Id,",
+				"          TranId,",
+				"          Price_Sticker_Id,",
+				"          Po,",
+				"          Release_Order_Number,",
+				"          Quantity_Received_In_Shipment,",
+				"          Cntnr_,",
+				"          Etd_Ship_Date,",
+				"          Ship_Date_Outbound,",
+				"          Cancel_Date_Outbound,",
+				"          Expiration_Date,",
+				"          Item_Count,",
+				"          Inner_Qty,",
+				"          Release_Quantity,",
+				"          Item_Unit_Price,",
+				"          Amount,",
+				"          Eta_Arrival_Date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> RemoveEstimateKey",
+				"RemoveEstimateKey keyGenerate(output(Estimate_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> EstimateKey",
+				"EstimateKey derive(Delete_Flag = 'N',",
+				"          Create_Date = currentTimestamp(),",
+				"          Date_Created = currentTimestamp(),",
+				"          Date_Last_Modified_Gmt = toTimestamp(null()),",
+				"          Created_By = 'IN1675',",
+				"          Created_Timestamp = toTimestamp(currentDate()),",
+				"          Last_Updated_By = toString(null()),",
+				"          column1 = toTimestamp(null())) ~> EstimateAuditColumns",
+				"CusAuditColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['EDL_customers.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> EDLcustomers",
+				"LocAuditColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['EDL_Locations.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> EDLLocations",
+				"ItemAuditColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['EDL_Items.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> EDLItems",
+				"salesAuditColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['EDL_Sales_Rep.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> EDLSales",
+				"EstimateAuditColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['EDL_Estimate.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> EDLEstimate"
 			]
 		}
 	}

@@ -5,6 +5,8 @@
 			{
 				"name": "Get Metadata1",
 				"type": "GetMetadata",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -37,6 +39,8 @@
 			{
 				"name": "ForEach1",
 				"type": "ForEach",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Get Metadata1",
@@ -126,6 +130,82 @@
 							]
 						}
 					]
+				}
+			},
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Workshop_Customers_Src_to_EDL",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcCustomers": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/Src_Files",
+								"FileName": "source_Customers.csv"
+							},
+							"SrcLocations": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/Src_Files",
+								"FileName": "source_Locations.csv"
+							},
+							"SrcItems": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/Src_Files",
+								"FileName": "source_Products.csv"
+							},
+							"SrcSalesReps": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/Src_Files",
+								"FileName": "source_sales Rep.csv"
+							},
+							"SrcEstimate": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/Src_Files",
+								"FileName": "source_Estimate.csv"
+							},
+							"EDLcustomers": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/Src_to_EDL",
+								"FileName": "EDL_customers.csv"
+							},
+							"EDLLocations": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/Src_to_EDL",
+								"FileName": "EDL_Locations.csv"
+							},
+							"EDLItems": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/Src_to_EDL",
+								"FileName": "EDL_Items.csv"
+							},
+							"EDLSales": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/Src_to_EDL",
+								"FileName": "EDL_Sales_Rep.csv"
+							},
+							"EDLEstimate": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/Src_to_EDL",
+								"FileName": "EDL_Estimate.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
 				}
 			}
 		],
