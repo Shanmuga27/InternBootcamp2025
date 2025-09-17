@@ -1,0 +1,27 @@
+{
+	"name": "DF_EDL_STG_SalesRep",
+	"properties": {
+		"folder": {
+			"name": "workshop/EDL_STG"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sourceEDLSalesRep"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceEDLSalesRep"
+			]
+		}
+	}
+}

@@ -2,7 +2,7 @@
 	"name": "DF_SRC_EDL_Products",
 	"properties": {
 		"folder": {
-			"name": "workshop"
+			"name": "workshop/SRC_EDL"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
