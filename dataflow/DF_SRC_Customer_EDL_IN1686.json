@@ -1,5 +1,5 @@
 {
-	"name": "DF_SRC_EDL_IN1686",
+	"name": "DF_SRC_Customer_EDL_IN1686",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -10,13 +10,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "SrcCustomers"
-				},
-				{
-					"dataset": {
-						"referenceName": "DS_Excel_IN1686",
-						"type": "DatasetReference"
-					},
-					"name": "SrcLocations"
 				}
 			],
 			"sinks": [
@@ -37,21 +30,11 @@
 				},
 				{
 					"name": "CustomerKey"
-				},
-				{
-					"name": "select2"
-				},
-				{
-					"name": "LocationKey"
 				}
 			],
 			"scriptLines": [
 				"parameters{",
-				"     filename1 as string,",
-				"     filename2 as string,",
-				"     filename3 as string,",
-				"     filename4 as string,",
-				"     filename5 as string",
+				"     filename1 as string",
 				"}",
 				"source(output(",
 				"          Customer_Key as integer,",
@@ -61,9 +44,6 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SrcCustomers",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> SrcLocations",
 				"CustomerKey derive(Delete_Flag = \"N\",",
 				"          Create_Date = currentDate(),",
 				"          Date_Last_Modified = toTimestamp(\"1990-01-01\", \"dd-MM-yyyy hh:mm:ss\"),",
@@ -81,11 +61,6 @@
 				"select1 keyGenerate(output(Customer_Key as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> CustomerKey",
-				"SrcLocations select(skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2",
-				"select2 keyGenerate(output(Location_key as long),",
-				"     startAt: 1L,",
-				"     stepValue: 1L) ~> LocationKey",
 				"AduitColumn sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:[($filename1)],",
