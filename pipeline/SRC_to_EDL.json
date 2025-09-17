@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "SRC_to_EDL",
 	"properties": {
 		"activities": [
 			{
@@ -49,6 +49,12 @@
 								"file": "Products.xlsx",
 								"sheetindex": 0
 							},
+							"Sales": {
+								"container": "boootcamp25",
+								"folder": "IN1674/Workshop_Files",
+								"file": "sales Rep.xlsx",
+								"sheetindex": 0
+							},
 							"sink1": {
 								"filename": {
 									"value": "Customers.csv",
@@ -69,6 +75,11 @@
 							},
 							"sink4": {
 								"filename": "Products.csv",
+								"folder": "IN1674/Workshop_Target_File",
+								"container": "boootcamp25"
+							},
+							"sink5": {
+								"filename": "Sales.csv",
 								"folder": "IN1674/Workshop_Target_File",
 								"container": "boootcamp25"
 							}
