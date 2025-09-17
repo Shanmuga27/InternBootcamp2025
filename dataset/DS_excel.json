@@ -24,18 +24,9 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": {
-					"value": "@dataset().file",
-					"type": "Expression"
-				},
-				"folderPath": {
-					"value": "@dataset().folder",
-					"type": "Expression"
-				},
-				"container": {
-					"value": "@dataset().container",
-					"type": "Expression"
-				}
+				"fileName": "Estimate.xlsx",
+				"folderPath": "IN1674/Workshop_Files",
+				"container": "boootcamp25"
 			},
 			"sheetIndex": {
 				"value": "@dataset().sheetindex",
