@@ -31,6 +31,11 @@
 								"file": "Customers.xlsx",
 								"sheetindex": 0
 							},
+							"Estimate": {
+								"container": "boootcamp25",
+								"folder": "IN1674/Workshop_Files",
+								"file": "Estimate.xlsx"
+							},
 							"sink1": {
 								"filename": {
 									"value": "Customers.csv",
@@ -38,6 +43,11 @@
 								},
 								"folder": "IN1674/Workshop_Target_File",
 								"container": "boootcamp25"
+							},
+							"sink2": {
+								"filename": "Estimate.csv",
+								"folder": "IN1674/Workshop_Target_File",
+								"container": "IN1674/Workshop_Target_File"
 							}
 						}
 					},
