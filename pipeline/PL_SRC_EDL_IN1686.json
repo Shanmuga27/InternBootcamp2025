@@ -120,27 +120,11 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_SRC_EDL_IN1686",
+						"referenceName": "DF_SRC_Customer_EDL_IN1686",
 						"type": "DataFlowReference",
 						"parameters": {
 							"filename1": {
 								"value": "'@{pipeline().parameters.filename1}'",
-								"type": "Expression"
-							},
-							"filename2": {
-								"value": "'@{pipeline().parameters.filename2}'",
-								"type": "Expression"
-							},
-							"filename3": {
-								"value": "'@{pipeline().parameters.filename3}'",
-								"type": "Expression"
-							},
-							"filename4": {
-								"value": "'@{pipeline().parameters.filename4}'",
-								"type": "Expression"
-							},
-							"filename5": {
-								"value": "'@{pipeline().parameters.filename5}'",
 								"type": "Expression"
 							}
 						},
