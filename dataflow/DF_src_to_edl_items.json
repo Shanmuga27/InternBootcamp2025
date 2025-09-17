@@ -1,5 +1,5 @@
 {
-	"name": "DF_src_to_edl_customers",
+	"name": "DF_src_to_edl_items",
 	"properties": {
 		"folder": {
 			"name": "src_to_edl"
@@ -45,7 +45,7 @@
 				"     validateSchema: false,",
 				"     inferDriftedColumnTypes: true,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 keyGenerate(output(cutomer_key as long),",
+				"source1 keyGenerate(output(Item_key as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L,",
 				"     partitionBy('hash', 1)) ~> surrogateKey1",

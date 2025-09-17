@@ -1,5 +1,5 @@
 {
-	"name": "PL_src_to_edl_customers",
+	"name": "PL_src_to_edl_sales_rep",
 	"properties": {
 		"activities": [
 			{
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_src_to_edl_customers",
+						"referenceName": "DF_src_to_edl_sales_rep",
 						"type": "DataFlowReference",
 						"parameters": {
 							"filename": {
@@ -28,13 +28,13 @@
 							"source1": {
 								"container": "boootcamp25",
 								"folder": "IN1680/workshop",
-								"file": "Customers.xlsx",
+								"file": "sales Rep.xlsx",
 								"sheetindex": 0
 							},
 							"sink1": {
 								"container": "boootcamp25",
 								"folder": "IN1680/workshop_edl",
-								"file": "customers.csv"
+								"file": "salesrep.csv"
 							}
 						}
 					},

@@ -1,5 +1,5 @@
 {
-	"name": "DF_src_to_edl_customers",
+	"name": "DF_src_to_edl_estimate",
 	"properties": {
 		"folder": {
 			"name": "src_to_edl"
@@ -45,7 +45,7 @@
 				"     validateSchema: false,",
 				"     inferDriftedColumnTypes: true,",
 				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 keyGenerate(output(cutomer_key as long),",
+				"source1 keyGenerate(output(estimate_key as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L,",
 				"     partitionBy('hash', 1)) ~> surrogateKey1",
@@ -54,9 +54,9 @@
 				"          Created_timestamp = currentTimestamp(),",
 				"          Last_updated_by = \"IN1680\",",
 				"          Last_updated_timestamp = currentTimestamp(),",
-				"          Active_flag = \"Y\",",
 				"          Created_date = currentTimestamp(),",
-				"          Date_last_modified = currentTimestamp()) ~> derivedColumn1",
+				"          Date_created = currentTimestamp(),",
+				"          Date_last_modified_gmt = currentTimestamp()) ~> derivedColumn1",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
