@@ -1,0 +1,103 @@
+{
+	"name": "DF_edl_to_stg_sales_rep",
+	"properties": {
+		"folder": {
+			"name": "edl_to_stg"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     filename as string",
+				"}",
+				"source(output(",
+				"          Sales_Rep_Id as integer,",
+				"          Sales_Rep_Name as string,",
+				"          LoginAccess as string,",
+				"          Email as string,",
+				"          Phone as string,",
+				"          Address as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          Sales_key as integer,",
+				"          Delete_flag as string,",
+				"          Created_by as string,",
+				"          Created_timestamp as timestamp,",
+				"          Last_updated_by as string,",
+				"          Last_updated_timestamp as timestamp,",
+				"          Active_flag as string,",
+				"          Created_date as timestamp,",
+				"          Date_last_modified as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive(each(match(type == 'string'), $$ = replace(iifNull($$, \"UNK\"),'NULL','UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($$, 0)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01', 'yyyy-MM-dd')))) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          Sales_Rep_Id,",
+				"          Sales_Rep_Name,",
+				"          Sales_Rep_LoginAccess = LoginAccess,",
+				"          Sales_Rep_Email = Email,",
+				"          Sales_Rep_Phone = Phone,",
+				"          Sales_Rep_Address = Address,",
+				"          Sales_Rep_City = City,",
+				"          Sales_Rep_Country = Country,",
+				"          Sales_key,",
+				"          Delete_flag,",
+				"          Created_by,",
+				"          Created_timestamp,",
+				"          Last_updated_by,",
+				"          Last_updated_timestamp,",
+				"          Active_flag,",
+				"          Created_date,",
+				"          Date_last_modified",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          anime_id as string,",
+				"          name as string,",
+				"          genre as string,",
+				"          type as string,",
+				"          episodes as string,",
+				"          rating as string,",
+				"          members as string",
+				"     ),",
+				"     partitionFileNames:[($filename)],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
