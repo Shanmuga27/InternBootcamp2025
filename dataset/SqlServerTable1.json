@@ -10,10 +10,6 @@
 		},
 		"annotations": [],
 		"type": "SqlServerTable",
-		"schema": [],
-		"typeProperties": {
-			"schema": "VSri",
-			"table": "All_Unioned_IN1689"
-		}
+		"schema": []
 	}
 }

@@ -21,18 +21,9 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": {
-					"value": "@dataset().filename",
-					"type": "Expression"
-				},
-				"folderPath": {
-					"value": "@dataset().folder",
-					"type": "Expression"
-				},
-				"container": {
-					"value": "@dataset().container",
-					"type": "Expression"
-				}
+				"fileName": "Customers.xlsx",
+				"folderPath": "IN1689/workshop-sttm",
+				"container": "boootcamp25"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
