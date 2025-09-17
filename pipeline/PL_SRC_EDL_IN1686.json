@@ -1,6 +1,219 @@
 {
 	"name": "PL_SRC_EDL_IN1686",
 	"properties": {
+		"activities": [
+			{
+				"name": "Customers_SRC_TO_EDL",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"additionalColumns": [
+							{
+								"name": "Delete_Flg",
+								"value": {
+									"value": "\"N\"",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Create_Date",
+								"value": ""
+							},
+							{
+								"name": "Date_Last_Modified",
+								"value": "$$FILEPATH"
+							},
+							{
+								"name": "Created_By",
+								"value": "$$FILEPATH"
+							},
+							{
+								"name": "Created_Timestamp",
+								"value": "$$FILEPATH"
+							},
+							{
+								"name": "Last_Updated_By",
+								"value": "$$FILEPATH"
+							},
+							{
+								"name": "Last_Update_Timestamp",
+								"value": "$$FILEPATH"
+							},
+							{
+								"name": "Active_Flag",
+								"value": "$$FILEPATH"
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Excel_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"DatasetSheetName": 0,
+							"Folder": "IN1686/WORKSHOP",
+							"FileName": "Customers.xlsx"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "boootcamp25",
+							"Folder": "IN1686/WORKSHOP/SRC_EDL",
+							"File": "Customers.csv"
+						}
+					}
+				]
+			},
+			{
+				"name": "W2_Customers_EDL_IN1686",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_SRC_EDL_IN1686",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcCustomers": {
+								"DatasetSheetName": 0,
+								"Folder": "IN1686/WORKSHOP",
+								"FileName": "Customers.xlsx"
+							},
+							"W2CustomersEDLIN1686": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": "W2_Customers_EDL_IN1686"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "W2_Customers_EDL_IN1686_SQL",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "W2_Customers_EDL_IN1686",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "boootcamp25",
+							"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+							"File": "W2_Customers_EDL_IN1686"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Tablename": "W2_Customers_EDL_IN1686",
+							"DB_Name": "ADF_Training"
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"Filename": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }
