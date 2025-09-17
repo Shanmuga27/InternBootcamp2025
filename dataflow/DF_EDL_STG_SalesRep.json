@@ -31,6 +31,10 @@
 				},
 				{
 					"name": "derivedColumn2"
+				},
+				{
+					"name": "select1",
+					"description": "Renaming columns"
 				}
 			],
 			"scriptLines": [
@@ -61,7 +65,28 @@
 				"          each(match(type=='timestamp'), $$ = iifNull($$, currentTimestamp()))) ~> derivedColumn1",
 				"sourceEDLSalesRep derive(Last_Modified_Time = currentTimestamp(),",
 				"          Last_Updated_By = 'IN1685') ~> derivedColumn2",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"derivedColumn1 select(mapColumn(",
+				"          Sales_S_Key,",
+				"          Sales_Rep_Id,",
+				"          Sales_Rep_Name,",
+				"          Sales_Rep_LoginAccess = LoginAccess,",
+				"          Sales_Rep_Email = Email,",
+				"          Sales_Rep_Phone = Phone,",
+				"          Sales_Rep_Address = Address,",
+				"          Sales_Rep_City = City,",
+				"          Sales_Rep_Country = Country,",
+				"          Created_Date,",
+				"          Last_Modified_Date,",
+				"          Delete_Flag,",
+				"          Active_Flag,",
+				"          Created_Time,",
+				"          Created_By,",
+				"          Last_Modified_Time,",
+				"          Last_Updated_By",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['STG_SalesRep.csv'],",
 				"     skipDuplicateMapInputs: true,",
