@@ -12,7 +12,7 @@
 						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference"
 					},
-					"name": "sourceSALESREP"
+					"name": "sourceCUST"
 				}
 			],
 			"sinks": [
@@ -52,8 +52,8 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> sourceSALESREP",
-				"sourceSALESREP derive(Created_Date = currentTimestamp(),",
+				"     ignoreNoFilesFound: false) ~> sourceCUST",
+				"sourceCUST derive(Created_Date = currentTimestamp(),",
 				"          Last_Modified_Date = toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss', 'IST'),",
 				"          Delete_Flag = 'N',",
 				"          Active_Flag = 'Y',",

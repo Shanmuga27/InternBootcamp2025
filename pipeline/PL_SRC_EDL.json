@@ -1,9 +1,47 @@
 {
-	"name": "pipeline1",
+	"name": "PL_SRC_EDL",
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_SRC-EDL_sales-rep",
+				"name": "DF_SRC_EDL_customers",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_SRC_EDL_sales_rep",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"sourceCUST": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/SRC_workshop",
+								"Param_File": "sales Rep.csv"
+							},
+							"sink1": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/EDL_workshop",
+								"Param_File": "EDL_SalesRep.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "DF_SRC-EDL_sales-rep_copy1",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -19,7 +57,7 @@
 						"referenceName": "DF_SRC_EDL_sales_rep",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"sourceSALESREP": {
+							"sourceCUST": {
 								"Param_Container": "boootcamp25",
 								"Param_Folder": "IN1685/SRC_workshop",
 								"Param_File": "sales Rep.csv"
@@ -39,6 +77,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "workshop"
+		},
 		"annotations": []
 	}
 }

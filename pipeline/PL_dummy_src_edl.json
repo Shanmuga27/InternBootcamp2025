@@ -1,5 +1,5 @@
 {
-	"name": "PL_SRC_EDL_sales_rep",
+	"name": "PL_dummy_src_edl",
 	"properties": {
 		"activities": [
 			{
@@ -328,11 +328,6 @@
 						"referenceName": "DF_SRC_EDL_sales_rep",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"sourceSALESREP": {
-								"Param_Container": "boootcamp25",
-								"Param_Folder": "IN1685/SRC_workshop",
-								"Param_File": "sales Rep.csv"
-							},
 							"sink1": {
 								"Param_Container": "boootcamp25",
 								"Param_Folder": "IN1685/EDL_workshop",
