@@ -267,7 +267,7 @@
 						"parameters": {
 							"directory": "IN1684/Books",
 							"Filename": "*",
-							"sheetName": "0"
+							"sheetNo": 0
 						}
 					},
 					"fieldList": [
@@ -348,7 +348,7 @@
 											"value": "@item().name",
 											"type": "Expression"
 										},
-										"sheetName": "0"
+										"sheetNo": 0
 									}
 								}
 							],
@@ -395,6 +395,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -662,7 +663,7 @@
 									"parameters": {
 										"directory": "IN1684/Books",
 										"Filename": "Book1.xlsx",
-										"sheetName": {
+										"sheetNo": {
 											"value": "@item().SheetName",
 											"type": "Expression"
 										}

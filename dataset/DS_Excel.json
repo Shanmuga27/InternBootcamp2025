@@ -12,17 +12,14 @@
 			"Filename": {
 				"type": "string"
 			},
-			"sheetName": {
-				"type": "string"
+			"sheetNo": {
+				"type": "int",
+				"defaultValue": 0
 			}
 		},
 		"annotations": [],
 		"type": "Excel",
 		"typeProperties": {
-			"sheetName": {
-				"value": "@dataset().sheetName",
-				"type": "Expression"
-			},
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
@@ -34,6 +31,10 @@
 					"type": "Expression"
 				},
 				"container": "boootcamp25"
+			},
+			"sheetIndex": {
+				"value": "@dataset().sheetNo",
+				"type": "Expression"
 			},
 			"firstRowAsHeader": true
 		},

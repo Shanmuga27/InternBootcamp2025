@@ -1,0 +1,130 @@
+{
+	"name": "PL_Src_EDL",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get all files",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_Excel",
+						"type": "DatasetReference",
+						"parameters": {
+							"directory": "IN1684/Workshop/src",
+							"Filename": "*",
+							"sheetNo": 0
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "Loop and Load",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get all files",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get all files').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "CP_Blob_Server",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "ExcelSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									}
+								},
+								"sink": {
+									"type": "SqlServerSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"tableOption": "autoCreate"
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_Excel",
+									"type": "DatasetReference",
+									"parameters": {
+										"directory": "IN1684/Workshop/src",
+										"Filename": {
+											"value": "@item().name",
+											"type": "Expression"
+										},
+										"sheetNo": 0
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_SQL_Server_IN1684",
+									"type": "DatasetReference",
+									"parameters": {
+										"PR_Tablename": {
+											"value": "@concat('src_',item().name)",
+											"type": "Expression"
+										},
+										"PR_Schema": "PMahendi",
+										"PR_Database": "ADF_Training"
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "Workshop"
+		},
+		"annotations": []
+	}
+}
