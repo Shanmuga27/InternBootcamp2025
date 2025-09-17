@@ -1,0 +1,58 @@
+{
+	"name": "PL_edl_to_stg_customers",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_edl_to_stg_customers",
+						"type": "DataFlowReference",
+						"parameters": {
+							"filename": {
+								"value": "'@{pipeline().parameters.filename}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"source1": {
+								"container": "boootcamp25",
+								"folder": "IN1680/workshop_edl",
+								"file": "customers.csv"
+							},
+							"sink1": {
+								"container": "boootcamp25",
+								"folder": "IN1680/workshop_stg",
+								"file": "customers.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"filename": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "edl_to_stg"
+		},
+		"annotations": []
+	}
+}
