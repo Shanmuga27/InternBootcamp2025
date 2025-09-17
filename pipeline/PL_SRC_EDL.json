@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_SRC_EDL_customers",
+				"name": "DF_SRC_EDL_Locations",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,15 +16,8 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_SRC_EDL_sales_rep",
-						"type": "DataFlowReference",
-						"datasetParameters": {
-							"sourceCUST": {
-								"Param_Container": "boootcamp25",
-								"Param_Folder": "IN1685/SRC_workshop",
-								"Param_File": "sales Rep.csv"
-							}
-						}
+						"referenceName": "DF_SRC_EDL_Locations",
+						"type": "DataFlowReference"
 					},
 					"compute": {
 						"coreCount": 8,
