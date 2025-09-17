@@ -1,0 +1,37 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          Sales_Key as integer,",
+				"          Sales_Rep_Id as integer,",
+				"          Sales_Rep_Name as string,",
+				"          LoginAccess as boolean,",
+				"          Email as string,",
+				"          Phone as string,",
+				"          Address as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          created_date as timestamp,",
+				"          last_modified_date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1"
+			]
+		}
+	}
+}

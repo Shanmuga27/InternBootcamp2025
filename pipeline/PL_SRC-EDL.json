@@ -1,10 +1,10 @@
 {
-	"name": "pipeline1",
+	"name": "PL_SRC-EDL",
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
-				"type": "Copy",
+				"name": "Get Metadata1",
+				"type": "GetMetadata",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -15,64 +15,190 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "ExcelSource",
-						"additionalColumns": [
-							{
-								"name": "last_modified_date",
-								"value": {
-									"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
-									"type": "Expression"
-								}
-							}
-						],
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						}
-					},
-					"sink": {
-						"type": "SqlServerSink",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false,
-						"tableOption": "autoCreate"
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "DS_Excel",
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference",
 						"parameters": {
 							"Param_Container": "boootcamp25",
-							"Param_Folder": "IN1685/workshop",
-							"Param_File": "Locations.xlsx",
-							"Param_Sheet_Index": 0
+							"Param_Folder": "IN1685/SRC_workshop",
+							"Param_File": "*"
 						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
-				"outputs": [
-					{
-						"referenceName": "DS_OnPrem_SQLServer",
-						"type": "DatasetReference",
-						"parameters": {
-							"Par_SchemaName": "RRamesh",
-							"Par_TableName": "Locations.xlsx",
-							"Param_DB_name": "ADF_Training"
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "If Condition1",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@contains(item().name, variables('var'))",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "Copy 5files AUDIT",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "DelimitedTextSource",
+												"additionalColumns": [
+													{
+														"name": "Delete_Flag",
+														"value": {
+															"value": "'N'",
+															"type": "Expression"
+														}
+													},
+													{
+														"name": "Active_Flag",
+														"value": {
+															"value": "'Y'",
+															"type": "Expression"
+														}
+													},
+													{
+														"name": "Created_Time",
+														"value": {
+															"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+															"type": "Expression"
+														}
+													},
+													{
+														"name": "Created_By",
+														"value": {
+															"value": "'IN1685'",
+															"type": "Expression"
+														}
+													},
+													{
+														"name": "Last_Modified_Time",
+														"value": {
+															"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+															"type": "Expression"
+														}
+													},
+													{
+														"name": "Last_Updated_By",
+														"value": {
+															"value": "'IN1685'",
+															"type": "Expression"
+														}
+													}
+												],
+												"storeSettings": {
+													"type": "AzureBlobStorageReadSettings",
+													"recursive": true,
+													"enablePartitionDiscovery": false
+												},
+												"formatSettings": {
+													"type": "DelimitedTextReadSettings"
+												}
+											},
+											"sink": {
+												"type": "DelimitedTextSink",
+												"storeSettings": {
+													"type": "AzureBlobStorageWriteSettings"
+												},
+												"formatSettings": {
+													"type": "DelimitedTextWriteSettings",
+													"quoteAllText": true,
+													"fileExtension": ".txt"
+												}
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_CSV_IN1685",
+												"type": "DatasetReference",
+												"parameters": {
+													"Param_Container": "boootcamp25",
+													"Param_Folder": "IN1685/SRC_workshop",
+													"Param_File": {
+														"value": "@item().name",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_CSV_IN1685",
+												"type": "DatasetReference",
+												"parameters": {
+													"Param_Container": "boootcamp25",
+													"Param_Folder": "IN1685/EDL_workshop"
+												}
+											}
+										]
+									}
+								]
+							}
 						}
-					}
-				]
+					]
+				}
 			}
 		],
+		"variables": {
+			"var": {
+				"type": "Array",
+				"defaultValue": [
+					"Customers.csv",
+					"Locations.csv",
+					"Products.csv",
+					"Release_PO.csv",
+					"sales Rep.csv"
+				]
+			}
+		},
 		"annotations": []
 	}
 }
