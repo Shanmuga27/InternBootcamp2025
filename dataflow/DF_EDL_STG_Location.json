@@ -12,7 +12,7 @@
 						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference"
 					},
-					"name": "sourceEDLCust"
+					"name": "sourceEDLLocations"
 				}
 			],
 			"sinks": [
@@ -30,35 +30,61 @@
 					"description": "NULL & transf"
 				},
 				{
-					"name": "derivedColumn2"
+					"name": "derivedColumn2",
+					"description": "Last modified values"
+				},
+				{
+					"name": "select1",
+					"description": "Renaming columns"
 				}
 			],
 			"scriptLines": [
 				"source(output(",
-				"          Customer_S_Key as integer,",
-				"          Customer_Id as integer,",
-				"          Company_Name as string,",
-				"          Created_Date as timestamp,",
-				"          Last_Modified_Date as string,",
+				"          Locations_S_Key as integer,",
+				"          Location_Id as integer,",
+				"          Name as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          State as string,",
+				"          Zipcode as string,",
+				"          Last_Modified_Date as timestamp,",
 				"          Delete_Flag as string,",
 				"          Active_Flag as string,",
 				"          Created_Time as timestamp,",
 				"          Created_By as string,",
-				"          Last_Modified_Time as string,",
+				"          Last_Modified_Time as timestamp,",
 				"          Last_Updated_By as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> sourceEDLCust",
+				"     ignoreNoFilesFound: false) ~> sourceEDLLocations",
 				"derivedColumn2 derive(each(match(type=='string'), $$ = replace(iifNull($$, \"UNK\"),'NULL', 'UNK')),",
 				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> derivedColumn1",
-				"sourceEDLCust derive(Last_Modified_Time = currentTimestamp(),",
+				"sourceEDLLocations derive(Last_Modified_Time = currentTimestamp(),",
 				"          Last_Updated_By = 'IN1685',",
 				"          Last_Modified_Date = currentTimestamp()) ~> derivedColumn2",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"derivedColumn1 select(mapColumn(",
+				"          Locations_S_Key,",
+				"          Location_Id,",
+				"          Location_Name = Name,",
+				"          Location_City = City,",
+				"          Location_Country = Country,",
+				"          Location_State = State,",
+				"          Location_Zipcode = Zipcode,",
+				"          Last_Modified_Date,",
+				"          Delete_Flag,",
+				"          Active_Flag,",
+				"          Created_Time,",
+				"          Created_By,",
+				"          Last_Modified_Time,",
+				"          Last_Updated_By",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['STG_Customers.csv'],",
+				"     partitionFileNames:['STG_Locations.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sink1"
