@@ -6,9 +6,6 @@
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"Container": {
-				"type": "string"
-			},
 			"directory": {
 				"type": "string"
 			},
@@ -29,10 +26,7 @@
 					"value": "@dataset().directory",
 					"type": "Expression"
 				},
-				"container": {
-					"value": "@dataset().Container",
-					"type": "Expression"
-				}
+				"container": "boootcamp25"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",

@@ -5,6 +5,8 @@
 			{
 				"name": "customers",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -16,43 +18,73 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "SqlServerSource",
+						"type": "DelimitedTextSource",
 						"additionalColumns": [
 							{
 								"name": "Delete_Flg",
-								"value": "$$COLUMN:"
+								"value": {
+									"value": "'N'",
+									"type": "Expression"
+								}
 							},
 							{
 								"name": "Create_Date",
-								"value": "$$COLUMN:"
+								"value": {
+									"value": "@formatDateTime(utcNow())",
+									"type": "Expression"
+								}
 							},
 							{
 								"name": "Date_Last_Modified",
-								"value": "$$COLUMN:"
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
 							},
 							{
 								"name": "Created_By",
-								"value": "$$COLUMN:"
+								"value": {
+									"value": "'IN1677'",
+									"type": "Expression"
+								}
 							},
 							{
 								"name": "Created_Timestamp",
-								"value": "$$COLUMN:"
+								"value": {
+									"value": "@formatDateTime(utcNow())",
+									"type": "Expression"
+								}
 							},
 							{
 								"name": "Last_Updated_By",
-								"value": "$$COLUMN:"
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
 							},
 							{
 								"name": "Last_Updated_Timestamp",
-								"value": "$$COLUMN:"
+								"value": {
+									"value": "null",
+									"type": "Expression"
+								}
 							},
 							{
 								"name": "Active_Flag",
-								"value": "$$COLUMN:"
+								"value": {
+									"value": "'Y'",
+									"type": "Expression"
+								}
 							}
 						],
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
 					},
 					"sink": {
 						"type": "DelimitedTextSink",
@@ -68,6 +100,132 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Customer_Key",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Customer_Key",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Customer_Id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Customer_Id",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Company_Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Company_Name",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Delete_Flg",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Delete_Flg",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Create_Date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Create_Date",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Date_Last_Modified",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Date_Last_Modified",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Created_By",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Created_By",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Created_Timestamp",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Created_Timestamp",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Last_Updated_By",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Last_Updated_By",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Last_Updated_Timestamp",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Last_Updated_Timestamp",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Active_Flag",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Active_Flag",
+									"type": "String",
+									"physicalType": "String"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
@@ -77,12 +235,11 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_SqlServer",
+						"referenceName": "DS_Blob_IN1677_Src",
 						"type": "DatasetReference",
 						"parameters": {
-							"schema": "JSivakum",
-							"table": "Customers.xlsx",
-							"db": "ADF_Training"
+							"directory": "IN1677/workshop/src_",
+							"file": "Customers.xlsx"
 						}
 					}
 				],
@@ -97,6 +254,30 @@
 						}
 					}
 				]
+			},
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Src_Edl",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"folder": {

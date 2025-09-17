@@ -20,7 +20,6 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"IncomingSrcOrders": {
-								"Container": "boootcamp25",
 								"directory": "IN1677/src_orders",
 								"file": "orders_11092025.csv"
 							},

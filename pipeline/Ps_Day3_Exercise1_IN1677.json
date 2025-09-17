@@ -55,7 +55,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Container": "boootcamp25",
-							"File": "anime 1.csv"
+							"file": "anime 1.csv"
 						}
 					}
 				],
@@ -119,7 +119,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Container": "boootcamp25",
-							"File": "anime 1.csv"
+							"file": "anime 1.csv"
 						}
 					}
 				],

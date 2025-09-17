@@ -53,12 +53,10 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"SrcOrders": {
-								"Container": "boootcamp25",
 								"directory": "Exercise 4 src files",
 								"file": "Orders.csv"
 							},
 							"sink1": {
-								"Container": "boootcamp25",
 								"directory": "IN1677/tgt_orders",
 								"file": "AllOrders_Unioned_IN1677.csv"
 							}
@@ -364,12 +362,10 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"SrcCustomers": {
-								"Container": "boootcamp25",
 								"directory": "Exercise 4 src files",
 								"file": "Customers.csv"
 							},
 							"SrcOrders": {
-								"Container": "boootcamp25",
 								"directory": "Exercise 4 src files",
 								"file": "Orders.csv"
 							},
