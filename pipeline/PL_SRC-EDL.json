@@ -65,9 +65,123 @@
 									"value": "@contains(item().name, variables('var'))",
 									"type": "Expression"
 								},
+								"ifFalseActivities": [
+									{
+										"name": "Copy EST_EDL_AUDIT",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "DelimitedTextSource",
+												"additionalColumns": [
+													{
+														"name": "Delete_Flag",
+														"value": {
+															"value": "'N'",
+															"type": "Expression"
+														}
+													},
+													{
+														"name": "Created_Time",
+														"value": {
+															"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+															"type": "Expression"
+														}
+													},
+													{
+														"name": "Created_By",
+														"value": {
+															"value": "'IN1685'",
+															"type": "Expression"
+														}
+													},
+													{
+														"name": "Last_Modified_Time",
+														"value": {
+															"value": "@formatDateTime('1900-01-01 00:00:00')",
+															"type": "Expression"
+														}
+													},
+													{
+														"name": "Last_Updated_By",
+														"value": {
+															"value": "'IN1685'",
+															"type": "Expression"
+														}
+													},
+													{
+														"name": "Last_Modified_GMT",
+														"value": {
+															"value": "@formatDateTime(utcNow())",
+															"type": "Expression"
+														}
+													}
+												],
+												"storeSettings": {
+													"type": "AzureBlobStorageReadSettings",
+													"recursive": true,
+													"enablePartitionDiscovery": false
+												},
+												"formatSettings": {
+													"type": "DelimitedTextReadSettings"
+												}
+											},
+											"sink": {
+												"type": "DelimitedTextSink",
+												"storeSettings": {
+													"type": "AzureBlobStorageWriteSettings"
+												},
+												"formatSettings": {
+													"type": "DelimitedTextWriteSettings",
+													"quoteAllText": true,
+													"fileExtension": ".txt"
+												}
+											},
+											"enableStaging": false,
+											"translator": {
+												"type": "TabularTranslator",
+												"typeConversion": true,
+												"typeConversionSettings": {
+													"allowDataTruncation": true,
+													"treatBooleanAsNumber": false
+												}
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "DS_CSV_IN1685",
+												"type": "DatasetReference",
+												"parameters": {
+													"Param_Container": "boootcamp25",
+													"Param_Folder": "IN1685/SRC_workshop",
+													"Param_File": "Estimate.csv"
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "DS_CSV_IN1685",
+												"type": "DatasetReference",
+												"parameters": {
+													"Param_Container": "boootcamp25",
+													"Param_Folder": "IN1685/EDL_workshop",
+													"Param_File": "EDL_Estimate.csv"
+												}
+											}
+										]
+									}
+								],
 								"ifTrueActivities": [
 									{
-										"name": "Copy 5files AUDIT",
+										"name": "Copy 5files EDL AUDIT",
 										"type": "Copy",
 										"dependsOn": [],
 										"policy": {
@@ -175,7 +289,11 @@
 												"type": "DatasetReference",
 												"parameters": {
 													"Param_Container": "boootcamp25",
-													"Param_Folder": "IN1685/EDL_workshop"
+													"Param_Folder": "IN1685/EDL_workshop",
+													"Param_File": {
+														"value": "@concat('EDL_', item().name, '.csv')",
+														"type": "Expression"
+													}
 												}
 											}
 										]
