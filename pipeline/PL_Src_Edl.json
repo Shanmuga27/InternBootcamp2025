@@ -17,7 +17,58 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "SRC_EDL",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcCustomers": {
+								"FolderName": "IN1689/workshop_sttm",
+								"FileName": "EDL_Customers",
+								"SheetNo": 0
+							},
+							"SrcLocations": {
+								"FolderName": "IN1689/workshop_sttm",
+								"FileName": "EDL_Locations",
+								"SheetNo": 0
+							},
+							"SrcProducts": {
+								"FolderName": "IN1689/workshop_sttm",
+								"FileName": "EDL_Products",
+								"SheetNo": 0
+							},
+							"SrcSalesReps": {
+								"FolderName": "IN1689/workshop_sttm",
+								"FileName": "EDL_SalesReps",
+								"SheetNo": 0
+							},
+							"SrcEstimate": {
+								"FolderName": "IN1689/workshop_sttm",
+								"FileName": "EDL_Estimate",
+								"SheetNo": 0
+							},
+							"sink1": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop_sttm",
+								"filename": "EDL_Customers"
+							},
+							"sink2": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop_sttm",
+								"filename": "EDL_Locations"
+							},
+							"sink3": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop_sttm",
+								"filename": "EDL_Products"
+							}
+						},
+						"linkedServiceParameters": {
+							"SrcLocations": {
+								"schemaLinkedService": {
+									"FolderName": "IN1689/workshop_sttm",
+									"FileName": "EDL_Locations",
+									"SheetNo": 0
+								}
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
