@@ -9,17 +9,36 @@
 						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "sourceSALESREP"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1",
+					"description": "Sales rep audit"
+				},
+				{
+					"name": "surrogateKey1"
+				},
+				{
+					"name": "select1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          Sales_Key as integer,",
 				"          Sales_Rep_Id as integer,",
 				"          Sales_Rep_Name as string,",
-				"          LoginAccess as boolean,",
+				"          LoginAccess as string,",
 				"          Email as string,",
 				"          Phone as string,",
 				"          Address as string,",
@@ -30,7 +49,43 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1"
+				"     ignoreNoFilesFound: false) ~> sourceSALESREP",
+				"sourceSALESREP derive(Created_Date = currentTimestamp(),",
+				"          Last_Modified_Date = toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss', 'IST'),",
+				"          Delete_Flag = 'N',",
+				"          Active_Flag = 'Y',",
+				"          Created_Time = currentTimestamp(),",
+				"          Created_By = 'IN1685',",
+				"          Last_Modified_Time = toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss', 'IST'),",
+				"          Last_Updated_By = toString(null())) ~> derivedColumn1",
+				"derivedColumn1 keyGenerate(output(Sales_S_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"surrogateKey1 select(mapColumn(",
+				"          Sales_S_Key,",
+				"          Sales_Rep_Id,",
+				"          Sales_Rep_Name,",
+				"          LoginAccess,",
+				"          Email,",
+				"          Phone,",
+				"          Address,",
+				"          City,",
+				"          Country,",
+				"          Created_Date = derivedColumn1@Created_Date,",
+				"          Last_Modified_Date = derivedColumn1@Last_Modified_Date,",
+				"          Delete_Flag,",
+				"          Active_Flag,",
+				"          Created_Time,",
+				"          Created_By,",
+				"          Last_Modified_Time,",
+				"          Last_Updated_By",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
