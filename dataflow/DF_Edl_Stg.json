@@ -1,0 +1,348 @@
+{
+	"name": "DF_Edl_Stg",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference"
+					},
+					"name": "EdlCustomers"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference"
+					},
+					"name": "EdlLocation"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference"
+					},
+					"name": "EdlProduct"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference"
+					},
+					"name": "EdlSalesReps"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference"
+					},
+					"name": "EdlEstimateToStgEstimate"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference"
+					},
+					"name": "EdlEstimateToStgPurchasrorder"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "StgCustomer"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "StgLocation"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "StgProduct"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "StgSalesRep"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "derivedColumn4"
+				},
+				{
+					"name": "derivedColumn5"
+				},
+				{
+					"name": "derivedColumn6"
+				},
+				{
+					"name": "derivedColumn7"
+				},
+				{
+					"name": "derivedColumn8"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Customer_Id as integer,",
+				"          Customer_key as integer,",
+				"          Company_Name as string,",
+				"          Delete_Flg as string,",
+				"          Create_Date as timestamp,",
+				"          Date_Last_Modified as timestamp,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp,",
+				"          Active_Flag as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EdlCustomers",
+				"source(output(",
+				"          Location_Id as integer,",
+				"          Location_key as integer,",
+				"          Name as string,",
+				"          Country as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Zipcode as integer,",
+				"          Delete_Flg as string,",
+				"          Active_Flag as string,",
+				"          Date_Last_Modified as string,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EdlLocation",
+				"source(output(",
+				"          Item_Id as integer,",
+				"          Items_key as integer,",
+				"          Generic_Description as string,",
+				"          PurchaseDescription as string,",
+				"          Artwork as string,",
+				"          Color as string,",
+				"          Package_Type as string,",
+				"          Special_Requirements as string,",
+				"          Case_Pack as string,",
+				"          Full_Name as string,",
+				"          Display_Name as string,",
+				"          Account_Manager_Name as string,",
+				"          Brand_Name as string,",
+				"          Brand_Manager_Name as string,",
+				"          Item_Status as string,",
+				"          Item_Type as string,",
+				"          Maker_Name as string,",
+				"          Product_Manager_Name as string,",
+				"          Master_Carton_Rqmnts as string,",
+				"          Trade_Partner_Name as string,",
+				"          Type_Name as string,",
+				"          Trade_Partner_Code as string,",
+				"          VendorName as string,",
+				"          UPC as string,",
+				"          QunatityOnHand as string,",
+				"          SSCC14 as string,",
+				"          Master_Carton_Markings_Item_N as string,",
+				"          Part_Of_Assembly_Item as string,",
+				"          Delete_flg as string,",
+				"          Active_Flag as string,",
+				"          Create_Date as timestamp,",
+				"          Date_last_modified as timestamp,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as timestamp,",
+				"          Last_Update_Timestamp as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EdlProduct",
+				"source(output(",
+				"          Sales_Rep_Id as integer,",
+				"          SalesReps_key as integer,",
+				"          Sales_Rep_Name as string,",
+				"          Address as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          Email as string,",
+				"          LoginAccess as boolean,",
+				"          Phone as string,",
+				"          Delete_flg as string,",
+				"          Active_Flag as string,",
+				"          Create_Date as timestamp,",
+				"          Date_Last_Modified as timestamp,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EdlSalesReps",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EdlEstimateToStgEstimate",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EdlEstimateToStgPurchasrorder",
+				"derivedColumn2 derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null', 'UNK', $$)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00'))),",
+				"          each(match(type=='integer'), $$ = iifNull($$, 0, $$))) ~> derivedColumn1",
+				"EdlCustomers derive(Date_Last_Modified = toTimestamp(currentDate()),",
+				"          Last_Updated_By = 'IN1677',",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn2",
+				"EdlLocation derive(Date_Last_Modified = toTimestamp(currentDate()),",
+				"          Last_Updated_By = 'IN1677',",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn3",
+				"derivedColumn3 derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null', 'UNK', $$)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00'))),",
+				"          each(match(type=='integer'), $$ = iifNull($#, 0))) ~> derivedColumn4",
+				"EdlProduct derive(Date_last_modified = toTimestamp(currentDate()),",
+				"          Last_Updated_By = 'IN1677',",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn5",
+				"derivedColumn5 derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null', 'UNK', $$)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00'))),",
+				"          each(match(type=='integer'), $$ = iifNull($#, 0))) ~> derivedColumn6",
+				"EdlSalesReps derive(Date_Last_Modified = toTimestamp(currentDate()),",
+				"          Last_Updated_By = 'IN1677',",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn7",
+				"derivedColumn7 derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null', 'UNK', $$)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00'))),",
+				"          each(match(type=='integer'), $$ = iifNull($#, 0))) ~> derivedColumn8",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['STG_Customer'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Customer_Id,",
+				"          Customer_key,",
+				"          Company_Name,",
+				"          Delete_Flg,",
+				"          Create_Date,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp,",
+				"          Active_Flag",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> StgCustomer",
+				"derivedColumn4 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['STG_Location'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Location_Id,",
+				"          Location_key,",
+				"          Location_Name = Name,",
+				"          Location_Country = Country,",
+				"          Location_City = City,",
+				"          Location_State = State,",
+				"          Location_Zipcode = Zipcode,",
+				"          Delete_Flg,",
+				"          Active_Flag,",
+				"          Created_Date = Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> StgLocation",
+				"derivedColumn6 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['STG_Product'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Item_Id,",
+				"          Item_key = Items_key,",
+				"          Items_Descr = Generic_Description,",
+				"          Brand_descr = PurchaseDescription,",
+				"          Artwork_descr = Artwork,",
+				"          Color_descr = Color,",
+				"          Package_Type_descr = Package_Type,",
+				"          Special_Req_descr = Special_Requirements,",
+				"          Case_Pack_descr = Case_Pack,",
+				"          Full_Name_descr = Full_Name,",
+				"          Display_Name_descr = Display_Name,",
+				"          Account_Manager_Name,",
+				"          Brand_Name,",
+				"          Brand_Manager_Name,",
+				"          Item_Status_descr = Item_Status,",
+				"          Item_Type_descr = Item_Type,",
+				"          Maker_Name,",
+				"          Product_Manager_Name,",
+				"          Master_Carton_req_descr = Master_Carton_Rqmnts,",
+				"          Trade_Partner_Name,",
+				"          Type_Name,",
+				"          Trade_Partner_Name = Trade_Partner_Code,",
+				"          VendorName,",
+				"          UPC_nbr = UPC,",
+				"          ON_Hand_Quality = QunatityOnHand,",
+				"          SSCC14_nbr = SSCC14,",
+				"          Master_Carton_Item_nbr = Master_Carton_Markings_Item_N,",
+				"          Part_Of_Assembly_Item,",
+				"          Delete_flg,",
+				"          Active_Flag,",
+				"          Create_Date,",
+				"          Date_last_modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> StgProduct",
+				"derivedColumn8 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['STG_SalesRep'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Sales_Rep_Id,",
+				"          SalesReps_key,",
+				"          Sales_Rep_Name,",
+				"          Sales_Rep_Address = Address,",
+				"          Sales_Rep_City = City,",
+				"          Sales_Rep_Country = Country,",
+				"          Sales_Rep_Email = Email,",
+				"          Sales_Rep_Loginaccess = LoginAccess,",
+				"          Sales_Rep_Phone = Phone,",
+				"          Delete_Flg = Delete_flg,",
+				"          Active_Flag,",
+				"          Create_Date,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> StgSalesRep"
+			]
+		}
+	}
+}

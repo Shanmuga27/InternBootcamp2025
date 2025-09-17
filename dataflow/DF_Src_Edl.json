@@ -523,7 +523,6 @@
 				"          Expiration_Date,",
 				"          Item_Count,",
 				"          Inner_Qty,",
-				"          Closed_Script,",
 				"          Release_Quantity,",
 				"          Item_Unit_Price,",
 				"          Amount,",
