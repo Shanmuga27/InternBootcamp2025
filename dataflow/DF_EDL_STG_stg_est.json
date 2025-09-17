@@ -39,11 +39,11 @@
 			"sinks": [],
 			"transformations": [
 				{
-					"name": "derivedColumn1",
+					"name": "LastModDerived",
 					"description": "last modified values"
 				},
 				{
-					"name": "derivedColumn2",
+					"name": "NullDerived",
 					"description": "NULL"
 				},
 				{
@@ -68,7 +68,7 @@
 					"name": "select1"
 				},
 				{
-					"name": "derivedColumn3"
+					"name": "derived"
 				}
 			],
 			"scriptLines": [
@@ -86,7 +86,7 @@
 				"          Dept_Program as string,",
 				"          Program_0 as string,",
 				"          Cancelled as string,",
-				"          Confidence_Factor_Id as string,",
+				"          Confidence_Factor_Id as integer,",
 				"          Company_Id as integer,",
 				"          Item_Id as integer,",
 				"          Location_Id as integer,",
@@ -232,21 +232,21 @@
 				"sourceEDLestimate derive(Last_Modified_Date = currentTimestamp(),",
 				"          Last_Modified_Time = currentTimestamp(),",
 				"          Last_Modified_GMT = currentUTC(),",
-				"          Last_Updated_By = 'IN1685') ~> derivedColumn1",
-				"derivedColumn1 derive(each(match(type=='string'), $$ = replace(iifNull($$, \"UNK\"),'NULL', 'UNK')),",
+				"          Last_Updated_By = 'IN1685') ~> LastModDerived",
+				"LastModDerived derive(each(match(type=='string'), $$ = replace(iifNull($$, \"UNK\"),'NULL', 'UNK')),",
 				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
-				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> derivedColumn2",
-				"derivedColumn2, selectPROD join(derivedColumn2@Item_Id == selectPROD@Item_Id,",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> NullDerived",
+				"NullDerived, selectPROD join(NullDerived@Item_Id == selectPROD@Item_Id,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> ESTjoinPROD",
-				"ESTjoinPROD, selectLOCATIONS join(derivedColumn2@Location_Id == selectLOCATIONS@Location_Id,",
+				"ESTjoinPROD, selectLOCATIONS join(NullDerived@Location_Id == selectLOCATIONS@Location_Id,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> ESTjoinLOC",
-				"ESTjoinLOC, selectSALESREP join(derivedColumn2@Sales_Rep_Id == selectSALESREP@Sales_Rep_Id,",
+				"ESTjoinLOC, selectSALESREP join(NullDerived@Sales_Rep_Id == selectSALESREP@Sales_Rep_Id,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -282,9 +282,9 @@
 				"          Cancelled,",
 				"          Confidence_Factor_Id,",
 				"          Company_Id,",
-				"          Item_Id = derivedColumn2@Item_Id,",
-				"          Location_Id = derivedColumn2@Location_Id,",
-				"          Sales_Rep_Id = derivedColumn2@Sales_Rep_Id,",
+				"          Item_Id = NullDerived@Item_Id,",
+				"          Location_Id = NullDerived@Location_Id,",
+				"          Sales_Rep_Id = NullDerived@Sales_Rep_Id,",
 				"          TranId,",
 				"          Price_Sticker_Id,",
 				"          Po,",
@@ -315,7 +315,8 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> select1",
-				"select1 derive(Sticker_Requirement_Purchase_descr = ERROR_FUNCTION('')) ~> derivedColumn3"
+				"select1 derive(Sticker_Requirement_Purchase_descr = iif(Sticker_Requirements=='NULL', 'No stickers', iif(Inner_Requirements=='NULL' && Customer_Requirements=='NULL', Sticker_Requirements, Sticker_Requirements)),",
+				"          Confidence_Factor_descr = iif(Confidence_Factor_Id==1, '25%', iif(Confidence_Factor_Id==2, '50%', iif(Confidence_Factor_Id==3, '75%', iif(Confidence_Factor_Id==4, '90%', iif(Confidence_Factor_Id==5, 'Dropped', iif(Confidence_Factor_Id==6, 'Actual', iif(Confidence_Factor_Id==7, '90%-Pre', iif(Confidence_Factor_Id==8, '90%-Releases', 'Invalid'))))))))) ~> derived"
 			]
 		}
 	}
