@@ -1,6 +1,9 @@
 {
 	"name": "DF_SRC-EDL_sales-rep",
 	"properties": {
+		"folder": {
+			"name": "workshop"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
