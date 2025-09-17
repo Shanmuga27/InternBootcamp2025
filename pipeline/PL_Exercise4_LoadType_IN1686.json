@@ -117,7 +117,7 @@
 										}
 									},
 									{
-										"name": "Copy data2",
+										"name": "Truncate Load",
 										"type": "Copy",
 										"dependsOn": [
 											{
@@ -231,7 +231,7 @@
 										}
 									},
 									{
-										"name": "Copy data1",
+										"name": "Full Load",
 										"type": "Copy",
 										"dependsOn": [
 											{
