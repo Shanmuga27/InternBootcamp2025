@@ -52,7 +52,7 @@
 				"     ignoreNoFilesFound: false) ~> sourceEDLCust",
 				"derivedColumn2 derive(each(match(type=='string'), $$ = replace(iifNull($$, \"UNK\"),'NULL', 'UNK')),",
 				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
-				"          each(match(type=='timestamp'), $$ = iifNull($$, currentTimestamp()))) ~> derivedColumn1",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> derivedColumn1",
 				"sourceEDLCust derive(Last_Modified_Time = currentTimestamp(),",
 				"          Last_Updated_By = 'IN1685',",
 				"          Last_Modified_Date = currentTimestamp()) ~> derivedColumn2",
