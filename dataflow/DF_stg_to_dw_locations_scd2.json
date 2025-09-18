@@ -59,9 +59,30 @@
 				},
 				{
 					"name": "select3"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select4"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "alterRow2"
+				},
+				{
+					"name": "union1"
 				}
 			],
 			"scriptLines": [
+				"parameters{",
+				"     filename as string",
+				"}",
 				"source(output(",
 				"          Location_Id as integer,",
 				"          Location_Name as string,",
@@ -145,9 +166,8 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"join1 split(isNull(Location_Id),",
-				"     !isNull(Location_Id) && (src_Location_Country!=Location_Country || src_Location_City!=Location_City),",
-				"     disjoint: false) ~> split1@(insert, update)",
+				"join1 split( isNull(Location_Id) || !isNull(Location_Id) && (src_Location_Country!=Location_Country || src_Location_City!=Location_City),",
+				"     disjoint: false) ~> split1@(insert)",
 				"source3 select(mapColumn(",
 				"          src_Location_Id = Location_Id,",
 				"          src_Location_Name = Location_Name,",
@@ -194,7 +214,35 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select3",
-				"select3 sink(allowSchemaDrift: true,",
+				"select3 derive(effective_start_date = currentTimestamp(),",
+				"          isCurrent = 'Y') ~> derivedColumn1",
+				"split2@updateOldRecord select(mapColumn(",
+				"          Location_Id,",
+				"          Location_Name,",
+				"          Location_City,",
+				"          Location_Country,",
+				"          Location_State,",
+				"          Location_Zipcode,",
+				"          Location_key,",
+				"          Delete_flag,",
+				"          Created_by,",
+				"          Created_timestamp,",
+				"          Last_updated_by,",
+				"          Last_updated_timestamp,",
+				"          Active_flag,",
+				"          Date_last_modified,",
+				"          effective_end_date,",
+				"          isCurrent,",
+				"          effective_start_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4",
+				"select4 derive(effective_end_date = currentTimestamp(),",
+				"          isCurrent = 'N') ~> derivedColumn2",
+				"derivedColumn1 alterRow(insertIf(true())) ~> alterRow1",
+				"derivedColumn2 alterRow(updateIf(true())) ~> alterRow2",
+				"alterRow1, alterRow2 union(byName: true)~> union1",
+				"union1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          anime_id as string,",
@@ -205,8 +253,10 @@
 				"          rating as string,",
 				"          members as string",
 				"     ),",
+				"     partitionFileNames:[($filename)],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}
