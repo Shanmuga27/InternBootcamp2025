@@ -5,6 +5,8 @@
 			{
 				"name": "EDCustomerSTG",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -41,6 +43,8 @@
 			{
 				"name": "EDL_Locations_STG",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -60,10 +64,46 @@
 								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
 								"File": "W2_Locations_EDL_IN1686.csv"
 							},
-							"STGCustomers": {
+							"STGLocations": {
 								"Container": "boootcamp25",
 								"Folder": "IN1686/WORKSHOP/W2_STG_IN1686",
 								"File": "W2_Locations_STG_IN1686.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "EDL_Products_STG",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_EDL_LOCATION_STG_IN1686",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"EDLLocation": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": "W2_Item_EDL_IN1686.csv"
+							},
+							"STGLocations": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_STG_IN1686",
+								"File": "W2_Product_STG_IN1686.csv"
 							}
 						}
 					},
