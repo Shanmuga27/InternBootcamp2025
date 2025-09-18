@@ -1,0 +1,17 @@
+{
+	"name": "estSTG",
+	"properties": {
+		"folder": {
+			"name": "Workshop_answers"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				""
+			]
+		}
+	}
+}

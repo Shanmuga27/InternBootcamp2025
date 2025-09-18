@@ -12,13 +12,6 @@
 						"referenceName": "Ds_blob_IN1674",
 						"type": "DatasetReference"
 					},
-					"name": "STGCustomer"
-				},
-				{
-					"dataset": {
-						"referenceName": "Ds_blob_IN1674",
-						"type": "DatasetReference"
-					},
 					"name": "STGestimate"
 				},
 				{
@@ -56,20 +49,10 @@
 						"referenceName": "Ds_blob_IN1674",
 						"type": "DatasetReference"
 					},
-					"name": "STGSINKcus"
-				},
-				{
-					"dataset": {
-						"referenceName": "Ds_blob_IN1674",
-						"type": "DatasetReference"
-					},
 					"name": "estsink"
 				}
 			],
 			"transformations": [
-				{
-					"name": "filter1"
-				},
 				{
 					"name": "select1"
 				},
@@ -108,22 +91,6 @@
 				"parameters{",
 				"     filename as string",
 				"}",
-				"source(output(",
-				"          Customer_Id as integer,",
-				"          Company_Name as string,",
-				"          Customer_Key as short,",
-				"          Delete_Flag as string,",
-				"          Create_Date as timestamp,",
-				"          Date_Last_Modified as timestamp,",
-				"          {Created_By } as string,",
-				"          Created_Timestamp as timestamp,",
-				"          Last_Updated_By as string,",
-				"          Last_Update_Timestamp as timestamp,",
-				"          Active_Flag as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> STGCustomer",
 				"source(output(",
 				"          Transaction_Id as integer,",
 				"          Transaction_Line_Id as integer,",
@@ -267,7 +234,6 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> locationsrc",
-				"STGCustomer filter(Active_Flag == 'Y') ~> filter1",
 				"STGestimate select(mapColumn(",
 				"          Transaction_ID = Transaction_Id,",
 				"          Transaction_Line_ID = Transaction_Line_Id,",
@@ -419,12 +385,6 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join4",
-				"filter1 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     partitionFileNames:[($filename)],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> STGSINKcus",
 				"join4 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:[($filename)],",
