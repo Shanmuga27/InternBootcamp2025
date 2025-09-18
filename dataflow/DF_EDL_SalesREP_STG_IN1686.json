@@ -59,7 +59,7 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> EDLSalesREP",
 				"ActiveY derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
-				"          each(match(type=='integer'), $$ = iif(isNull($$),0,$$))) ~> NullHandling",
+				"          each(match(type=='integer'), $$ = iif(isNull($$),0,$#))) ~> NullHandling",
 				"NullHandling select(mapColumn(",
 				"          Sales_Key,",
 				"          Sales_Rep_Id,",
