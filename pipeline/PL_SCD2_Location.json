@@ -68,6 +68,8 @@
 			{
 				"name": "Data flow1",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -153,11 +155,12 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_Blob_IN1677_Src",
+						"referenceName": "DS_Blob_IN1677_Tgt",
 						"type": "DatasetReference",
 						"parameters": {
+							"container": "boootcamp25",
 							"directory": "IN1677/workshop/tgt/loc",
-							"file": "tgt_loc_1"
+							"file": "tgt_loc1"
 						}
 					}
 				],
