@@ -68,10 +68,12 @@
 					"name": "select1"
 				},
 				{
-					"name": "derived1"
+					"name": "derived1",
+					"description": "derived columns tranf"
 				},
 				{
-					"name": "derived2"
+					"name": "derived2",
+					"description": "derived columns tranf"
 				}
 			],
 			"scriptLines": [
@@ -308,7 +310,8 @@
 				"    subDays(toDate(Ship_Date_Outbound,'MM/dd/yy', 'en-US'),45)\r",
 				")))))\r",
 				") ~> derived1",
-				"derived1 derive(Level_Descr = iif(Confidence_Factor_descr=='25%', '', iif(Confidence_Factor_descr=='50%', '', iif(Confidence_Factor_descr=='Dropped', '', iif(Confidence_Factor_descr=='75%', 'Pending Confirmation', iif(Confidence_Factor_descr=='90%', 'Pending Approval', iif(Confidence_Factor_descr=='Actual', 'Confirmed', iif(Confidence_Factor_descr=='90%-Pre', 'Confirmed', iif(Confidence_Factor_descr=='90%-Releases', 'Confirmed', 'Invalid'))))))))) ~> derived2"
+				"derived1 derive(Level_Descr = iif(Confidence_Factor_descr=='25%', '', iif(Confidence_Factor_descr=='50%', '', iif(Confidence_Factor_descr=='Dropped', '', iif(Confidence_Factor_descr=='75%', 'Pending Confirmation', iif(Confidence_Factor_descr=='90%', 'Pending Approval', iif(Confidence_Factor_descr=='Actual', 'Confirmed', iif(Confidence_Factor_descr=='90%-Pre', 'Confirmed', iif(Confidence_Factor_descr=='90%-Releases', 'Confirmed', 'Invalid')))))))),",
+				"          Month_ETD_date = concat(toString(year(ETD_dt)),'-',toString(month(ETD_dt)))) ~> derived2"
 			]
 		}
 	}
