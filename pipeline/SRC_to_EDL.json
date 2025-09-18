@@ -117,11 +117,6 @@
 							}
 						},
 						"datasetParameters": {
-							"STGCustomer": {
-								"filename": "Customers.csv",
-								"folder": "IN1674/Workshop_Target_File",
-								"container": "boootcamp25"
-							},
 							"STGestimate": {
 								"filename": "Estimate.csv",
 								"folder": "IN1674/Workshop_Target_File",
@@ -147,11 +142,6 @@
 								"folder": "IN1674/Workshop_Target_File",
 								"container": "boootcamp25"
 							},
-							"STGSINKcus": {
-								"filename": "STG_Customer",
-								"folder": "IN1674/STG_FILES",
-								"container": "boootcamp25"
-							},
 							"estsink": {
 								"filename": "STG_Estimate",
 								"folder": "IN1674/STG_FILES",
@@ -169,7 +159,8 @@
 		],
 		"parameters": {
 			"filename": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "\"\""
 			}
 		},
 		"annotations": []
