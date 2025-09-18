@@ -1,0 +1,138 @@
+{
+	"name": "DF_EDL_SalesREP_STG_IN1686",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "EDLSalesREP"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "STGSalesRep"
+				}
+			],
+			"transformations": [
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "ModifiedColumnName"
+				},
+				{
+					"name": "LastModifiedDate"
+				},
+				{
+					"name": "ActiveY"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Item_Id as integer,",
+				"          Generic_Description as string,",
+				"          PurchaseDescription as string,",
+				"          Artwork as string,",
+				"          Color as string,",
+				"          Package_Type as string,",
+				"          Special_Requirements as string,",
+				"          Case_Pack as string,",
+				"          Full_Name as string,",
+				"          Display_Name as string,",
+				"          Account_Manager_Name as string,",
+				"          Brand_Name as string,",
+				"          Brand_Manager_Name as string,",
+				"          Item_Status as string,",
+				"          Item_Type as string,",
+				"          Maker_Name as string,",
+				"          Product_Manager_Name as string,",
+				"          Master_Carton_Rqmnts as string,",
+				"          Trade_Partner_Name as string,",
+				"          Part_Of_Assembly_Item as string,",
+				"          Type_Name as string,",
+				"          Trade_Partner_Code as string,",
+				"          VendorName as string,",
+				"          UPC as string,",
+				"          QunatityOnHand as integer,",
+				"          SSCC14 as integer,",
+				"          Master_Carton_Markings_Item_N as integer,",
+				"          Item_Key as short,",
+				"          Delete_Flag as string,",
+				"          Create_Date as date,",
+				"          Date_Last_Modified as timestamp,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp,",
+				"          Active_Flag as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EDLSalesREP",
+				"ActiveY derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type == 'integer'), $$ = iif(isNull($$),0,$$)),",
+				"          each(match(type == 'timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss'),$$))) ~> NullHandling",
+				"NullHandling select(mapColumn(",
+				"          Item_Key,",
+				"          Item_Descr = Item_Id,",
+				"          Brand_descr = Generic_Description,",
+				"          Purchase_descr = PurchaseDescription,",
+				"          Artwork_descr = Artwork,",
+				"          Color_descr = Color,",
+				"          Package_Type_descr = Package_Type,",
+				"          Special_Req_descr = Special_Requirements,",
+				"          Case_Pack_descr = Case_Pack,",
+				"          Full_Name_descr = Full_Name,",
+				"          Display_name_descr = Display_Name,",
+				"          Account_Manager_Name,",
+				"          Brand_Name,",
+				"          Brand_Manager_Name,",
+				"          Item_status_descr = Item_Status,",
+				"          item_type_descr = Item_Type,",
+				"          Maker_Name,",
+				"          Product_Manager_Name,",
+				"          Master_Carton_req_descr = Master_Carton_Rqmnts,",
+				"          Trade_Partner_Name,",
+				"          Part_Of_Assembly_Item,",
+				"          Type_Name,",
+				"          Trade_Partner_Code,",
+				"          VendorName,",
+				"          UPC_nbr = UPC,",
+				"          On_Hand_Quantity = QunatityOnHand,",
+				"          SSCC14_nbr = SSCC14,",
+				"          Master_Carton_Item_nbr = Master_Carton_Markings_Item_N,",
+				"          Delete_Flag,",
+				"          Create_Date,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp,",
+				"          Active_Flag",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> ModifiedColumnName",
+				"EDLSalesREP derive(Create_Date = currentTimestamp(),",
+				"          Date_Last_Modified = currentTimestamp(),",
+				"          Created_Timestamp = currentTimestamp(),",
+				"          Last_Updated_By = \"IN1686 Sanjay Komala\",",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> LastModifiedDate",
+				"LastModifiedDate filter(toString(Active_Flag) == 'Y') ~> ActiveY",
+				"ModifiedColumnName sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['W2_SaleREP_STG_IN1686.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> STGSalesRep"
+			]
+		}
+	}
+}

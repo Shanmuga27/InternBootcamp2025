@@ -81,6 +81,8 @@
 			{
 				"name": "EDL_Products_STG",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -92,18 +94,18 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_EDL_LOCATION_STG_IN1686",
+						"referenceName": "DF_EDL_Product_STG_IN1686",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"EDLLocation": {
+							"EDLProducts": {
 								"Container": "boootcamp25",
 								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
 								"File": "W2_Item_EDL_IN1686.csv"
 							},
-							"STGLocations": {
+							"STGProducts": {
 								"Container": "boootcamp25",
 								"Folder": "IN1686/WORKSHOP/W2_STG_IN1686",
-								"File": "W2_Product_STG_IN1686.csv"
+								"File": "W2_Products_STG_IN1686.csv"
 							}
 						}
 					},
