@@ -1,0 +1,85 @@
+{
+	"name": "DF_Loc_SCD2",
+	"properties": {
+		"folder": {
+			"name": "workshop/STG_DW"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "srcLOC"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "tgtLOC"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "leftjoin",
+					"description": "Left join on 'srcLOC' and 'tgtLOC'"
+				},
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Locations_S_Key as integer,",
+				"          Location_Id as integer,",
+				"          Location_Name as string,",
+				"          Location_City as string,",
+				"          Location_Country as string,",
+				"          Location_State as string,",
+				"          Location_Zipcode as string,",
+				"          Last_Modified_Date as timestamp,",
+				"          Delete_Flag as string,",
+				"          Active_Flag as string,",
+				"          Created_Time as timestamp,",
+				"          Created_By as string,",
+				"          Last_Modified_Time as timestamp,",
+				"          Last_Updated_By as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcLOC",
+				"source(output(",
+				"          Locations_S_Key as integer,",
+				"          Location_Id as integer,",
+				"          Location_Name as string,",
+				"          Location_City as string,",
+				"          Location_Country as string,",
+				"          Location_State as string,",
+				"          Location_Zipcode as string,",
+				"          Last_Modified_Date as timestamp,",
+				"          Delete_Flag as string,",
+				"          Active_Flag as string,",
+				"          Created_Time as timestamp,",
+				"          Created_By as string,",
+				"          Last_Modified_Time as timestamp,",
+				"          Last_Updated_By as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> tgtLOC",
+				"srcLOC, tgtLOC join(srcLOC@Location_Id == tgtLOC@Location_Id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> leftjoin",
+				"leftjoin split(isNull(tgtLOC@Location_Id) || (srcLOC@Location_Id == tgtLOC@Location_Id || srcLOC@Location_City != tgtLOC@Location_City || srcLOC@Location_Country != tgtLOC@Location_Country),",
+				"     (srcLOC@Location_Id == tgtLOC@Location_Id || srcLOC@Location_City != tgtLOC@Location_City || srcLOC@Location_Country != tgtLOC@Location_Country),",
+				"     disjoint: true) ~> split1@(InsertStream, UpdateStream)"
+			]
+		}
+	}
+}
