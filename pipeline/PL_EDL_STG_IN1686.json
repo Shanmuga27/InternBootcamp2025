@@ -115,6 +115,42 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "EDL_SaleREP_STG",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_EDL_SalesREP_STG_IN1686",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"EDLSalesREP": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": "W2_SaleREP_EDL_IN1686.csv"
+							},
+							"STGSalesRep": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_STG_IN1686",
+								"File": "W2_SaleREP_STG_IN1686.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"annotations": []
