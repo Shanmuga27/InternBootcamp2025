@@ -95,6 +95,14 @@
 				},
 				{
 					"name": "ESTjoinCUST"
+				},
+				{
+					"name": "surrogateKey1",
+					"description": "Primary ID for Estimate"
+				},
+				{
+					"name": "derivedNULL",
+					"description": "NULL"
 				}
 			],
 			"scriptLines": [
@@ -283,7 +291,6 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectSALESREP",
 				"ESTjoinCUST select(mapColumn(",
-				"          Sales_Estimate_S_Key = Estimate_S_Key,",
 				"          Transaction_Id,",
 				"          Transaction_Line_Id,",
 				"          Memo_descr = Memo,",
@@ -361,7 +368,11 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> ESTjoinCUST",
-				"derived2 sink(allowSchemaDrift: true,",
+				"derived2 keyGenerate(output(Sales_Estimate_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"surrogateKey1 derive(each(match(type=='string'), $$ = replace(iifNull($$, \"UNK\"),'NULL', 'UNK'))) ~> derivedNULL",
+				"derivedNULL sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['STG_Estimate.csv'],",
 				"     skipDuplicateMapInputs: true,",
