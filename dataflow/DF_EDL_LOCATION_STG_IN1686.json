@@ -1,0 +1,92 @@
+{
+	"name": "DF_EDL_LOCATION_STG_IN1686",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "EDLLocation"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "STGCustomers"
+				}
+			],
+			"transformations": [
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "ModifiedColumnName"
+				},
+				{
+					"name": "LastModifiedDate"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Location_Id as short,",
+				"          Name as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          State as string,",
+				"          Zipcode as string,",
+				"          Location_Key as short,",
+				"          Delete_Flag as string,",
+				"          Create_Date as date,",
+				"          Date_Last_Modified as string,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as string,",
+				"          Active_Flag as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EDLLocation",
+				"LastModifiedDate derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type == 'integer'), $$ = iif(isNull($$),0,$$)),",
+				"          each(match(type == 'timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss'),$$))) ~> NullHandling",
+				"NullHandling select(mapColumn(",
+				"          Location_Id,",
+				"          Location_Name = Name,",
+				"          Location_Key,",
+				"          Location_City = City,",
+				"          Location_Country = Country,",
+				"          Location_State = State,",
+				"          Location_Zipcode = Zipcode,",
+				"          Delete_Flag,",
+				"          Create_Date,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp,",
+				"          Active_Flag",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> ModifiedColumnName",
+				"EDLLocation derive(Create_Date = currentTimestamp(),",
+				"          Date_Last_Modified = currentTimestamp(),",
+				"          Created_Timestamp = currentTimestamp(),",
+				"          Last_Updated_By = \"IN1686 Sanjay Komala\",",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> LastModifiedDate",
+				"ModifiedColumnName sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['W2_Customer_STG_IN1686.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> STGCustomers"
+			]
+		}
+	}
+}
