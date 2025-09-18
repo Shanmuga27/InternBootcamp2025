@@ -108,42 +108,16 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "EDL_TO_STG",
+						"referenceName": "product",
 						"type": "DataFlowReference",
-						"parameters": {
-							"filename": {
-								"value": "'@{pipeline().parameters.filename}'",
-								"type": "Expression"
-							}
-						},
 						"datasetParameters": {
-							"STGestimate": {
-								"filename": "Estimate.csv",
-								"folder": "IN1674/Workshop_Target_File",
-								"container": "boootcamp25"
-							},
-							"locationsource": {
-								"filename": "Locations",
-								"folder": "IN1674/Workshop_Target_File",
-								"container": "boootcamp25"
-							},
-							"customersrc": {
-								"filename": "Customers.csv",
-								"folder": "IN1674/Workshop_Target_File",
-								"container": "boootcamp25"
-							},
-							"productsrc": {
+							"EDLProducts": {
 								"filename": "products.csv",
 								"folder": "IN1674/Workshop_Target_File",
 								"container": "boootcamp25"
 							},
-							"locationsrc": {
-								"filename": "Locations",
-								"folder": "IN1674/Workshop_Target_File",
-								"container": "boootcamp25"
-							},
-							"estsink": {
-								"filename": "STG_Estimate",
+							"productsink": {
+								"filename": "STG_Product.csv",
 								"folder": "IN1674/STG_FILES",
 								"container": "boootcamp25"
 							}
