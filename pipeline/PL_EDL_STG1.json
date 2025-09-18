@@ -1,0 +1,211 @@
+{
+	"name": "PL_EDL_STG1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Edl_Stg",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"EdlCustomers": {
+								"directory": "IN1677/workshop/edl",
+								"file": "EDL_Customers"
+							},
+							"EdlLocation": {
+								"directory": "IN1677/workshop/edl",
+								"file": "EDL_Locations"
+							},
+							"EdlProduct": {
+								"directory": "IN1677/workshop/edl",
+								"file": "EDL_Products"
+							},
+							"EdlSalesReps": {
+								"directory": "IN1677/workshop/edl",
+								"file": "EDL_SalesReps"
+							},
+							"EdlEstimateToStgEstimate": {
+								"directory": "IN1677/workshop/edl",
+								"file": "EDL_Estimate"
+							},
+							"StgCustomer": {
+								"container": "boootcamp25",
+								"directory": "IN1677/workshop/staging",
+								"file": "STG_Customer"
+							},
+							"StgLocation": {
+								"container": "boootcamp25",
+								"directory": "IN1677/workshop/staging",
+								"file": "STG_Location"
+							},
+							"StgProduct": {
+								"container": "boootcamp25",
+								"directory": "IN1677/workshop/staging",
+								"file": "STG_Product"
+							},
+							"StgSalesRep": {
+								"container": "boootcamp25",
+								"directory": "IN1677/workshop/staging",
+								"file": "STG_SalesRep"
+							},
+							"StgEstimate": {
+								"container": "boootcamp25",
+								"directory": "IN1677/workshop/staging",
+								"file": "STG_Estimate"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Get Metadata1",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "Data flow1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference",
+						"parameters": {
+							"directory": "IN1677/workshop/staging",
+							"file": "*"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "SqlServerSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"tableOption": "autoCreate"
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_Blob_IN1677_Src",
+									"type": "DatasetReference",
+									"parameters": {
+										"directory": "IN1677/workshop/staging",
+										"file": {
+											"value": "@item().Name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_SqlServer",
+									"type": "DatasetReference",
+									"parameters": {
+										"schema": "JSivakum",
+										"table": {
+											"value": "@item().Name",
+											"type": "Expression"
+										},
+										"db": "ADF_Training"
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "workshop"
+		},
+		"annotations": []
+	}
+}

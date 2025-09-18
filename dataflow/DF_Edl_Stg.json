@@ -606,6 +606,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
+				"          Sales_Estimate_key = Estimate_key,",
 				"          Transaction_Id,",
 				"          Transaction_Line_Id,",
 				"          Memo_descr = Memo,",
