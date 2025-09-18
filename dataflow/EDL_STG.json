@@ -1,0 +1,43 @@
+{
+	"name": "EDL_STG",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "sEDLcustomers"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {_col0_} as integer,",
+				"          {_col1_} as short,",
+				"          {_col2_} as string,",
+				"          {_col3_} as boolean,",
+				"          {_col4_} as timestamp,",
+				"          {_col5_} as string,",
+				"          {_col6_} as string,",
+				"          {_col7_} as timestamp,",
+				"          {_col8_} as string,",
+				"          {_col9_} as string,",
+				"          {_col10_} as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sEDLcustomers",
+				"sEDLcustomers select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1"
+			]
+		}
+	}
+}

@@ -20,63 +20,54 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"SrcCustomers": {
-								"FolderName": "IN1689/workshop_sttm",
-								"FileName": "EDL_Customers",
+								"FolderName": "IN1689/workshop-sttm",
+								"FileName": "Customers.xlsx",
 								"SheetNo": 0
 							},
 							"SrcLocations": {
-								"FolderName": "IN1689/workshop_sttm",
-								"FileName": "EDL_Locations",
+								"FolderName": "IN1689/workshop-sttm",
+								"FileName": "Locations.xlsx",
 								"SheetNo": 0
 							},
 							"SrcProducts": {
-								"FolderName": "IN1689/workshop_sttm",
-								"FileName": "EDL_Products",
+								"FolderName": "IN1689/workshop-sttm",
+								"FileName": "Products.xlsx",
 								"SheetNo": 0
 							},
 							"SrcSalesReps": {
-								"FolderName": "IN1689/workshop_sttm",
-								"FileName": "EDL_SalesReps",
+								"FolderName": "IN1689/workshop-sttm",
+								"FileName": "sales Rep.xlsx",
 								"SheetNo": 0
 							},
 							"SrcEstimate": {
-								"FolderName": "IN1689/workshop_sttm",
-								"FileName": "EDL_Estimate",
+								"FolderName": "IN1689/workshop-sttm",
+								"FileName": "Estimate.xlsx",
 								"SheetNo": 0
 							},
 							"sink1": {
 								"container": "boootcamp25",
-								"folder": "IN1689/workshop_sttm",
+								"folder": "IN1689/workshop-sttm/EDL",
 								"filename": "EDL_Customers"
 							},
 							"sink2": {
 								"container": "boootcamp25",
-								"folder": "IN1689/workshop_sttm",
+								"folder": "IN1689/workshop-sttm/EDL",
 								"filename": "EDL_Locations"
 							},
 							"sink3": {
 								"container": "boootcamp25",
-								"folder": "IN1689/workshop_sttm",
+								"folder": "IN1689/workshop-sttm/EDL",
 								"filename": "EDL_Products"
 							},
 							"sink4": {
 								"container": "boootcamp25",
-								"folder": "IN1689/workshop_sttm",
+								"folder": "IN1689/workshop-sttm/EDL",
 								"filename": "EDL_SalesReps"
 							},
 							"sink5": {
 								"container": "boootcamp25",
-								"folder": "IN1689/workshop_sttm",
+								"folder": "IN1689/workshop-sttm/EDL",
 								"filename": "EDL_Estimate"
-							}
-						},
-						"linkedServiceParameters": {
-							"SrcLocations": {
-								"schemaLinkedService": {
-									"FolderName": "IN1689/workshop_sttm",
-									"FileName": "EDL_Locations",
-									"SheetNo": 0
-								}
 							}
 						}
 					},
