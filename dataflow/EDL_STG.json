@@ -5,6 +5,10 @@
 		"typeProperties": {
 			"sources": [
 				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
 					"name": "source1"
 				}
 			],
@@ -15,8 +19,22 @@
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source1",
+				"source(output(",
+				"          {274896} as integer,",
+				"          {Wallet Hard Case RFID} as string,",
+				"          {1} as short,",
+				"          N as boolean,",
+				"          {2025-09-18 00:00:00} as timestamp,",
+				"          {_c5} as string,",
+				"          IN1689 as string,",
+				"          {2025-09-18 06:36:24} as timestamp,",
+				"          {_c8} as string,",
+				"          {_c9} as string,",
+				"          Y as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
 				"source1 derive() ~> derivedColumn1"
 			]
 		}

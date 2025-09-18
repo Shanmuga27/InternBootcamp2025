@@ -22,7 +22,8 @@
 			"sheetIndex": {
 				"value": "@dataset().sheet_no",
 				"type": "Expression"
-			}
+			},
+			"firstRowAsHeader": true
 		},
 		"schema": []
 	}
