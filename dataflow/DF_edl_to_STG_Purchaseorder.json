@@ -1,5 +1,5 @@
 {
-	"name": "DF_edl_to_stg_estimate",
+	"name": "DF_edl_to_STG_Purchaseorder",
 	"properties": {
 		"folder": {
 			"name": "edl_to_stg"
@@ -301,7 +301,6 @@
 				"          Amount,",
 				"          ETA_Arrival_Date = Eta_Arrival_Date,",
 				"          Closed_Script,",
-				"          Sales_Estimate_key = Estimate_key,",
 				"          Delete_flag,",
 				"          Created_by,",
 				"          Created_timestamp,",
