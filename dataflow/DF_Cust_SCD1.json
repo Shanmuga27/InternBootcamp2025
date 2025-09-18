@@ -1,0 +1,106 @@
+{
+	"name": "DF_Cust_SCD1",
+	"properties": {
+		"folder": {
+			"name": "workshop/STG_DW"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "srcCUST"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "tgtCUST"
+				}
+			],
+			"sinks": [
+				{
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "LeftJoin"
+				},
+				{
+					"name": "alterRowUPDATE"
+				},
+				{
+					"name": "alterRowINSERT"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Customer_S_Key as integer,",
+				"          Customer_Id as integer,",
+				"          Company_Name as string,",
+				"          Created_Date as timestamp,",
+				"          Last_Modified_Date as timestamp,",
+				"          Delete_Flag as string,",
+				"          Active_Flag as string,",
+				"          Created_Time as timestamp,",
+				"          Created_By as string,",
+				"          Last_Modified_Time as timestamp,",
+				"          Last_Updated_By as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcCUST",
+				"source(output(",
+				"          Customer_S_Key as integer,",
+				"          Customer_Id as integer,",
+				"          Company_Name as string,",
+				"          Created_Date as timestamp,",
+				"          Last_Modified_Date as timestamp,",
+				"          Delete_Flag as string,",
+				"          Active_Flag as string,",
+				"          Created_Time as timestamp,",
+				"          Created_By as string,",
+				"          Last_Modified_Time as timestamp,",
+				"          Last_Updated_By as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> tgtCUST",
+				"srcCUST, tgtCUST join(srcCUST@Customer_Id == tgtCUST@Customer_Id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LeftJoin",
+				"alterRowINSERT alterRow(updateIf(srcCUST@Customer_Id == tgtCUST@Customer_Id && srcCUST@Company_Name != tgtCUST@Company_Name)) ~> alterRowUPDATE",
+				"LeftJoin alterRow(insertIf(isNull(tgtCUST@Customer_Id))) ~> alterRowINSERT",
+				"alterRowUPDATE select(mapColumn(",
+				"          Customer_S_Key = tgtCUST@Customer_S_Key,",
+				"          Customer_Id = tgtCUST@Customer_Id,",
+				"          Company_Name = tgtCUST@Company_Name,",
+				"          Created_Date = tgtCUST@Created_Date,",
+				"          Last_Modified_Date = tgtCUST@Last_Modified_Date,",
+				"          Delete_Flag = tgtCUST@Delete_Flag,",
+				"          Active_Flag = tgtCUST@Active_Flag,",
+				"          Created_Time = tgtCUST@Created_Time,",
+				"          Created_By = tgtCUST@Created_By,",
+				"          Last_Modified_Time = tgtCUST@Last_Modified_Time,",
+				"          Last_Updated_By = tgtCUST@Last_Updated_By",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
