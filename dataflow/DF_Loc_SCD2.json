@@ -89,7 +89,8 @@
 				"split1@UpdateStream derive(Last_Modified_Date = currentTimestamp(),",
 				"          Delete_Flag = 'Y',",
 				"          Active_Flag = 'N') ~> derivedColumn1",
-				"srcLOC derive(Location_Zipcode = iif(length(Location_Zipcode)==6, Location_Zipcode, iif(length(Location_Zipcode)>6, rtrim(Location_Zipcode), rpad(Location_Zipcode,6,'0')))) ~> derivedColumn2"
+				"srcLOC derive(Location_Zipcode = regexReplace(Location_Zipcode, '[A-Za-z]', '') && iif(length(Location_Zipcode)==6, Location_Zipcode, iif(length(Location_Zipcode)>6, rtrim(Location_Zipcode), lpad(Location_Zipcode,6,'0')))\r",
+				") ~> derivedColumn2"
 			]
 		}
 	}
