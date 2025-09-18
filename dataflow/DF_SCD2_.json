@@ -19,7 +19,15 @@
 					"name": "TgtLocation"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "join1"
@@ -29,6 +37,27 @@
 				},
 				{
 					"name": "split1"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "alterRow2"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "select3"
 				}
 			],
 			"scriptLines": [
@@ -40,7 +69,7 @@
 				"          Location_City as string,",
 				"          Location_State as string,",
 				"          Location_Zipcode as integer,",
-				"          Delete_Flg as boolean,",
+				"          Delete_Flg as string,",
 				"          Active_Flag as string,",
 				"          Created_Date as timestamp,",
 				"          Created_By as string,",
@@ -53,7 +82,7 @@
 				"     ignoreNoFilesFound: false) ~> SrcLocation",
 				"source(output(",
 				"          Location_key as integer,",
-				"          Location_ID as integer,",
+				"          Location_Id as integer,",
 				"          Location_Name as string,",
 				"          Location_Country as string,",
 				"          Location_City as string,",
@@ -62,14 +91,14 @@
 				"          Created_Timestamp as timestamp,",
 				"          Last_Updated_By as string,",
 				"          Last_Update_Timestamp as timestamp,",
-				"          Location_Zipcode as integer,",
+				"          Location_Zipcode as string,",
 				"          Date_Last_Modified as timestamp,",
 				"          Delete_Flg as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> TgtLocation",
-				"select1, TgtLocation join(select1@Location_Id == TgtLocation@Location_ID,",
+				"select1, TgtLocation join(select1@Location_Id == TgtLocation@Location_Id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -91,8 +120,80 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"join1 split(ERROR_FUNCTION(''),",
-				"     disjoint: false) ~> split1@(, )"
+				"join1 split(isNull(TgtLocation@Location_Id) || (select1@Location_Country!=TgtLocation@Location_Country || select1@Location_City!=TgtLocation@Location_City)\r",
+				"\r",
+				",",
+				"     (select1@Location_Id == TgtLocation@Location_Id) && (select1@Location_Country!=TgtLocation@Location_Country || select1@Location_City!=TgtLocation@Location_City),",
+				"     disjoint: false) ~> split1@(insert, update)",
+				"split1@insert alterRow(insertIf(true())) ~> alterRow1",
+				"split1@update alterRow(updateIf(true())) ~> alterRow2",
+				"alterRow1 derive(Created_By = 'IN1677',",
+				"          Created_Timestamp = currentTimestamp(),",
+				"          Last_Updated_By = toString(null()),",
+				"          Last_Update_Timestamp = toTimestamp(null()),",
+				"          Date_Last_Modified = toDate(null()),",
+				"          Delete_Flg = 'N') ~> derivedColumn1",
+				"alterRow2 derive(Last_Updated_By = 'IN1677',",
+				"          Last_Update_Timestamp = currentTimestamp(),",
+				"          Date_Last_Modified = currentDate(),",
+				"          Delete_Flg = 'Y') ~> derivedColumn2",
+				"select2, select3 union(byName: true)~> union1",
+				"derivedColumn1 select(mapColumn(",
+				"          Location_key = split1@insert@Location_key,",
+				"          Location_Id = split1@insert@Location_Id,",
+				"          Location_Name = split1@insert@Location_Name,",
+				"          Location_Country = split1@insert@Location_Country,",
+				"          Location_City = split1@insert@Location_City,",
+				"          Location_State = split1@insert@Location_State,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp,",
+				"          Location_Zipcode = split1@insert@Location_Zipcode,",
+				"          Date_Last_Modified,",
+				"          Delete_Flg,",
+				"          Location_key = split1@insert@Location_key,",
+				"          Location_Id = split1@insert@Location_Id,",
+				"          Location_Name = split1@insert@Location_Name,",
+				"          Location_Country = split1@insert@Location_Country,",
+				"          Location_City = split1@insert@Location_City,",
+				"          Location_State = split1@insert@Location_State,",
+				"          Location_Zipcode = split1@insert@Location_Zipcode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"derivedColumn2 select(mapColumn(",
+				"          Location_key = split1@update@Location_key,",
+				"          Location_Id = split1@update@Location_Id,",
+				"          Location_Name = split1@update@Location_Name,",
+				"          Location_Country = split1@update@Location_Country,",
+				"          Location_City = split1@update@Location_City,",
+				"          Location_State = split1@update@Location_State,",
+				"          Created_By = split1@update@Created_By,",
+				"          Created_Timestamp = split1@update@Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp,",
+				"          Location_Zipcode = split1@update@Location_Zipcode,",
+				"          Date_Last_Modified,",
+				"          Delete_Flg,",
+				"          Location_key = split1@update@Location_key,",
+				"          Location_Id = split1@update@Location_Id,",
+				"          Location_Name = split1@update@Location_Name,",
+				"          Location_Country = split1@update@Location_Country,",
+				"          Location_City = split1@update@Location_City,",
+				"          Location_State = split1@update@Location_State,",
+				"          Created_By = split1@update@Created_By,",
+				"          Created_Timestamp = split1@update@Created_Timestamp,",
+				"          Location_Zipcode = split1@update@Location_Zipcode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"union1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_Location'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}

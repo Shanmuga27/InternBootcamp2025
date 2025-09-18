@@ -107,7 +107,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
 				"split1@Insert alterRow(insertIf(true())) ~> alterRow1",
-				"split1@Update alterRow() ~> alterRow2",
+				"split1@Update alterRow(updateIf(true())) ~> alterRow2",
 				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['tgt_cus_1'],",
