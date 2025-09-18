@@ -297,9 +297,17 @@
 				"select1 derive(Sticker_Requirement_Purchase_descr = iif(Sticker_Requirements=='NULL', 'No stickers', iif(Inner_Requirements=='NULL' && Customer_Requirements=='NULL', Sticker_Requirements, Sticker_Requirements)),",
 				"          Confidence_Factor_descr = iif(Confidence_Factor_Id==1, '25%', iif(Confidence_Factor_Id==2, '50%', iif(Confidence_Factor_Id==3, '75%', iif(Confidence_Factor_Id==4, '90%', iif(Confidence_Factor_Id==5, 'Dropped', iif(Confidence_Factor_Id==6, 'Actual', iif(Confidence_Factor_Id==7, '90%-Pre', iif(Confidence_Factor_Id==8, '90%-Releases', 'Invalid')))))))),",
 				"          Final_Destination_Container = concat(Location_Name, Location_City),",
-				"          PRICE_STICKER_descr = case(like(Sticker_Requirements,'price sticker'), concat(Sticker_Requirements ,'$',Price_Sticker_Id), 'No sticker')\r",
-				",",
-				"          Month_Ship_Date = ERROR_FUNCTION('')) ~> derived1",
+				"          PRICE_STICKER_descr = case(like(Sticker_Requirements,'price sticker'), concat(Sticker_Requirements ,'$',Price_Sticker_Id), 'No sticker'),",
+				"          Month_Ship_Date = concat(toString(year(Ship_Date_Outbound)),'-',toString(month(Ship_Date_Outbound))),",
+				"          ETD_date = iif(\r",
+				"    like(Location_Name,'%DotCom Distribution - Edison NJ%'), subDays(toDate(Ship_Date_Outbound,'MM/dd/yy', 'en-US'),66),\r",
+				"    iif(like(Location_Name,'%Berkley%'), subDays(toDate(Ship_Date_Outbound,'MM/dd/yy', 'en-US'),59),\r",
+				"    iif(like(Location_Name,'%POE China%'), subDays(toDate(Ship_Date_Outbound,'MM/dd/yy', 'en-US'),14),\r",
+				"    iif(like(Location_Name,'%POE OAK%'), subDays(toDate(Ship_Date_Outbound,'MM/dd/yy', 'en-US'),59),\r",
+				"    iif(like(Location_Name,'%POE Vietnam%'), subDays(toDate(Ship_Date_Outbound,'MM/dd/yy', 'en-US'),14),\r",
+				"    subDays(toDate(Ship_Date_Outbound,'MM/dd/yy', 'en-US'),45)\r",
+				")))))\r",
+				") ~> derived1",
 				"derived1 derive(Level_Descr = iif(Confidence_Factor_descr=='25%', '', iif(Confidence_Factor_descr=='50%', '', iif(Confidence_Factor_descr=='Dropped', '', iif(Confidence_Factor_descr=='75%', 'Pending Confirmation', iif(Confidence_Factor_descr=='90%', 'Pending Approval', iif(Confidence_Factor_descr=='Actual', 'Confirmed', iif(Confidence_Factor_descr=='90%-Pre', 'Confirmed', iif(Confidence_Factor_descr=='90%-Releases', 'Confirmed', 'Invalid'))))))))) ~> derived2"
 			]
 		}
