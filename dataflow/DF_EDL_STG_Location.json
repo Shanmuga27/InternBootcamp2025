@@ -26,13 +26,16 @@
 			],
 			"transformations": [
 				{
-					"name": "HandleEmpty2"
+					"name": "HandleEmpty"
 				},
 				{
-					"name": "NullHandling2"
+					"name": "NullHandling"
 				},
 				{
 					"name": "select"
+				},
+				{
+					"name": "ActiveFlag"
 				}
 			],
 			"scriptLines": [
@@ -57,11 +60,11 @@
 				"     ignoreNoFilesFound: false) ~> EDLLocation",
 				"EDLLocation derive(Date_Last_Modified = toTimestamp(currentDate()),",
 				"          Last_Updated_By = \"IN1684\",",
-				"          Last_Update_Timestamp = currentTimestamp()) ~> HandleEmpty2",
-				"HandleEmpty2 derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> HandleEmpty",
+				"HandleEmpty derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
 				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
-				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> NullHandling2",
-				"NullHandling2 select(mapColumn(",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> NullHandling",
+				"NullHandling select(mapColumn(",
 				"          Location_Id,",
 				"          Location_key = Loation_key,",
 				"          Location_Name = Name,",
@@ -79,7 +82,8 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select",
-				"select sink(allowSchemaDrift: true,",
+				"select filter(Active_Flag == 'Y') ~> ActiveFlag",
+				"ActiveFlag sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['STG_Location'],",
 				"     skipDuplicateMapInputs: true,",

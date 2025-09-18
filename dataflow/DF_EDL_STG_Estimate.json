@@ -26,10 +26,13 @@
 			],
 			"transformations": [
 				{
-					"name": "HandleEmpty5"
+					"name": "HandleEmpty"
 				},
 				{
-					"name": "NullHandling5"
+					"name": "NullHandling"
+				},
+				{
+					"name": "StickerReqPurchaseDesc"
 				}
 			],
 			"scriptLines": [
@@ -83,11 +86,31 @@
 				"     ignoreNoFilesFound: false) ~> EDLEstimate",
 				"EDLEstimate derive(Date_Last_Modified_Gmt = toTimestamp(currentDate()),",
 				"          Last_Updated_By = \"IN1684\",",
-				"          Last_Update_Timestamp = currentTimestamp()) ~> HandleEmpty5",
-				"HandleEmpty5 derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> HandleEmpty",
+				"StickerReqPurchaseDesc derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
 				"          each(match(type=='integer'), trim($$) = iifNull($$, 0)),",
-				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> NullHandling5",
-				"NullHandling5 sink(allowSchemaDrift: true,",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> NullHandling",
+				"HandleEmpty derive(Sticker_Requirement_Purchase_descr = case(Sticker_Requirements=='NULL' || Sticker_Requirements == '0','No Stickers' ,\r",
+				"    (Inner_Requirements=='NULL' || Inner_Requirements == '0') && (Customer_Requirements=='NULL' || Customer_Requirements == '0'),Sticker_Requirements ,\r",
+				"        Customer_Requirements=='NULL' || Customer_Requirements == '0', Sticker_Requirements, 'unk'),",
+				"          Confidence_Factor_Id = toString( case(Confidence_Factor_Id == 1, '25%',\r",
+				"    Confidence_Factor_Id == 2, '50%',\r",
+				"        Confidence_Factor_Id == 3, '75%',\r",
+				"            Confidence_Factor_Id == 4, '90%',\r",
+				"                Confidence_Factor_Id == 5, 'Dropped',\r",
+				"                    Confidence_Factor_Id == 6, 'Actual',\r",
+				"                        Confidence_Factor_Id == 7, '90%-Pre',\r",
+				"                            Confidence_Factor_Id == 8, '90%-Releases', 'unk')),",
+				"          Level_Descr = case(\r",
+				"    Confidence_Factor_descr=='25%', '',\r",
+				"    Confidence_Factor_descr=='50%','',\r",
+				"    Confidence_Factor_descr=='Dropped','',\r",
+				"    Confidence_Factor_descr=='75%','Pending Confirmation',\r",
+				"    Confidence_Factor_descr=='90%','Pending Approval%',\r",
+				"    Confidence_Factor_descr=='Actual','Confirmed',\r",
+				"    Confidence_Factor_descr=='90%-pre','Confirmed',\r",
+				"    Confidence_Factor_descr=='90%-Releases','Confirmed','unk')) ~> StickerReqPurchaseDesc",
+				"NullHandling sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['STG_Estimate'],",
 				"     skipDuplicateMapInputs: true,",
