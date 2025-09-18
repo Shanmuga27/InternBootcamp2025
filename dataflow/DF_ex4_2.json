@@ -1,6 +1,9 @@
 {
 	"name": "DF_ex4_2",
 	"properties": {
+		"folder": {
+			"name": "training exercise"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
