@@ -1,0 +1,130 @@
+{
+	"name": "DF_EDL_STG_Product",
+	"properties": {
+		"folder": {
+			"name": "Workshop/EDL - STG"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "EDLItem"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "STGItem"
+				}
+			],
+			"transformations": [
+				{
+					"name": "HandleEmpty3"
+				},
+				{
+					"name": "NullHandling3"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Item_Id as integer,",
+				"          Item_Key as short,",
+				"          Generic_Description as string,",
+				"          PurchaseDescription as string,",
+				"          Artwork as string,",
+				"          Color as string,",
+				"          Package_Type as string,",
+				"          Special_Requirements as string,",
+				"          Case_Pack as integer,",
+				"          Full_Name as string,",
+				"          Display_Name as string,",
+				"          Account_Manager_Name as string,",
+				"          Brand_Name as string,",
+				"          Brand_Manager_Name as string,",
+				"          Item_Status as string,",
+				"          Item_Type as string,",
+				"          Maker_Name as string,",
+				"          Product_Manager_Name as string,",
+				"          Master_Carton_Rqmnts as string,",
+				"          Trade_Partner_Name as string,",
+				"          Type_Name as string,",
+				"          Trade_Partner_Code as string,",
+				"          VendorName as string,",
+				"          UPC as string,",
+				"          QunatityOnHand as string,",
+				"          SSCC14 as string,",
+				"          Master_Carton_Markings_Item_N as string,",
+				"          Part_Of_Assembly_Item as string,",
+				"          Delete_Flg as string,",
+				"          Active_Flag as string,",
+				"          Create_Date as timestamp,",
+				"          Date_Last_Modified as string,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EDLItem",
+				"EDLItem derive(Date_Last_Modified = toTimestamp(currentDate()),",
+				"          Last_Updated_By = \"IN1684\",",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> HandleEmpty3",
+				"HandleEmpty3 derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type=='integer'), trim($$) = iifNull($$, 0)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> NullHandling3",
+				"NullHandling3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['STG_Product'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Item_ID = Item_Id,",
+				"          Item_Key,",
+				"          { Brand_descr} = Generic_Description,",
+				"          Brand_descr = PurchaseDescription,",
+				"          Artwork_descr = Artwork,",
+				"          Color,",
+				"          Package_Type,",
+				"          Special_Requirements,",
+				"          Case_Pack,",
+				"          Full_Name,",
+				"          Display_Name,",
+				"          Account_Manager_Name,",
+				"          Brand_Name,",
+				"          Brand_Manager_Name,",
+				"          Item_Status,",
+				"          Item_Type,",
+				"          Maker_Name,",
+				"          Product_Manager_Name,",
+				"          Master_Carton_Rqmnts,",
+				"          Trade_Partner_Name,",
+				"          Type_Name,",
+				"          Trade_Partner_Code,",
+				"          VendorName,",
+				"          UPC,",
+				"          QunatityOnHand,",
+				"          SSCC14,",
+				"          Master_Carton_Markings_Item_N,",
+				"          Part_Of_Assembly_Item,",
+				"          Delete_Flg,",
+				"          Active_Flag,",
+				"          Create_Date,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> STGItem"
+			]
+		}
+	}
+}

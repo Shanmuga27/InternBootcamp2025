@@ -1,0 +1,107 @@
+{
+	"name": "DF_EDL_STG_Location",
+	"properties": {
+		"folder": {
+			"name": "Workshop/EDL - STG"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "EDLLocation"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "STGLocation"
+				}
+			],
+			"transformations": [
+				{
+					"name": "HandleEmpty2"
+				},
+				{
+					"name": "NullHandling2"
+				},
+				{
+					"name": "select"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Location_Id as short,",
+				"          Name as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          State as string,",
+				"          Zipcode as string,",
+				"          Loation_key as short,",
+				"          Delete_Flg as string,",
+				"          Active_Flag as string,",
+				"          Date_Last_Modified as string,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EDLLocation",
+				"EDLLocation derive(Date_Last_Modified = toTimestamp(currentDate()),",
+				"          Last_Updated_By = \"IN1684\",",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> HandleEmpty2",
+				"HandleEmpty2 derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> NullHandling2",
+				"NullHandling2 select(mapColumn(",
+				"          Location_Id,",
+				"          Location_key = Loation_key,",
+				"          Location_Name = Name,",
+				"          Location_City = City,",
+				"          Location_Country = Country,",
+				"          Location_State = State,",
+				"          Location_Zipcode = Zipcode,",
+				"          Delete_Flg,",
+				"          Active_Flag,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select",
+				"select sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['STG_Location'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Location_Id,",
+				"          Location_key,",
+				"          Location_Name,",
+				"          Location_City,",
+				"          Location_Country,",
+				"          Location_State,",
+				"          Location_Zipcode,",
+				"          Delete_Flg,",
+				"          Active_Flag,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> STGLocation"
+			]
+		}
+	}
+}
