@@ -34,6 +34,16 @@
 				{
 					"name": "derivedColumn1",
 					"description": "Adding extra columns for scd3"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn2",
+					"description": "derivedUPD"
+				},
+				{
+					"name": "derivedColumn3"
 				}
 			],
 			"scriptLines": [
@@ -79,8 +89,8 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SRCprod",
 				"source(output(",
-				"          Item_S_Key as string,",
-				"          Item_Id as string,",
+				"          Item_S_Key as integer,",
+				"          Item_Id as integer,",
 				"          Item_Descr as string,",
 				"          Brand_Descr as string,",
 				"          Artwork_Descr as string,",
@@ -108,22 +118,22 @@
 				"          Trade_Partner_Code as string,",
 				"          Vendor_Name as string,",
 				"          UPC_nbr as string,",
-				"          On_Hand_Quantity as string,",
-				"          SSCC14_nbr as string,",
-				"          Master_Carton_Item_Nbr as string,",
-				"          Created_Date as string,",
-				"          Last_Modified_Date as string,",
+				"          On_Hand_Quantity as integer,",
+				"          SSCC14_nbr as integer,",
+				"          Master_Carton_Item_Nbr as integer,",
+				"          Created_Date as timestamp,",
+				"          Last_Modified_Date as timestamp,",
 				"          Delete_Flag as string,",
 				"          Active_Flag as string,",
-				"          Created_Time as string,",
+				"          Created_Time as timestamp,",
 				"          Created_By as string,",
-				"          Last_Modified_Time as string,",
+				"          Last_Modified_Time as timestamp,",
 				"          Last_Updated_By as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> TGTprod",
-				"derivedColumn1 join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"derivedColumn1, selectTGT join(SRCprod@Item_Id == selectTGT@Item_Id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -142,9 +152,9 @@
 				"          Display_Name_Descr,",
 				"          Account_Manager_Name,",
 				"          Brand_Name,",
-				"          Brand_Manager_Name,",
-				"          Previous_Brand_Manager_Name,",
-				"          Current_Brand_Manager_Name,",
+				"          T_Brand_Manager_Name = Brand_Manager_Name,",
+				"          T_Previous_Brand_Manager_Name = Previous_Brand_Manager_Name,",
+				"          T_Current_Brand_Manager_Name = Current_Brand_Manager_Name,",
 				"          Item_Status_Descr,",
 				"          Item_Type_Descr,",
 				"          Maker_Name,",
@@ -175,7 +185,17 @@
 				"SRCprod derive(Previous_Brand_Manager_Name = toString(null()),",
 				"          Current_Brand_Manager_Name = toString(null()),",
 				"          Previous_Product_Manager_Name = toString(null()),",
-				"          Current_Product_Manager_Name = toString(null())) ~> derivedColumn1"
+				"          Current_Product_Manager_Name = toString(null())) ~> derivedColumn1",
+				"leftjoin1 split(isNull(selectTGT@Item_Id),",
+				"     (SRCprod@Item_Id == selectTGT@Item_Id) && ((Brand_Manager_Name != T_Brand_Manager_Name) || (Product_Manager_Name != T_Product_Manager_Name)),",
+				"     disjoint: true) ~> split1@(InsertStream, UpdateStream)",
+				"split1@UpdateStream derive(Current_Brand_Manager_Name = Brand_Manager_Name,",
+				"          Previous_Brand_Manager_Name = Current_Brand_Manager_Name,",
+				"          Brand_Manager_Name = T_Previous_Product_Manager_Name,",
+				"          Current_Product_Manager_Name = Product_Manager_Name,",
+				"          Previous_Product_Manager_Name = Current_Product_Manager_Name,",
+				"          Product_Manager_Name = T_Previous_Product_Manager_Name) ~> derivedColumn2",
+				"split1@InsertStream derive(Current_Brand_Manager_Name = Brand_Manager_Name) ~> derivedColumn3"
 			]
 		}
 	}
