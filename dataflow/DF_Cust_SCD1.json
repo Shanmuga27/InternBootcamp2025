@@ -31,6 +31,10 @@
 					"name": "sink1"
 				},
 				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
 					"name": "sink2"
 				}
 			],
@@ -92,7 +96,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> LeftJoin",
-				"split1@InsertStream alterRow(insertIf(isNull(split1@InsertStream@Customer_Id))) ~> alterRowINSERT",
+				"split1@InsertStream alterRow(insertIf(true())) ~> alterRowINSERT",
 				"alterRowINSERT select(mapColumn(",
 				"          Customer_S_Key = split1@InsertStream@Customer_S_Key,",
 				"          Customer_Id = split1@InsertStream@Customer_Id,",
@@ -111,7 +115,7 @@
 				"LeftJoin split(isNull(tgtCUST@Customer_Id),",
 				"     (srcCUST@Customer_Id==tgtCUST@Customer_Id) && (srcCUST@Company_Name!=tgtCUST@Company_Name),",
 				"     disjoint: true) ~> split1@(InsertStream, UpdateStream)",
-				"split1@UpdateStream alterRow(updateIf((split1@UpdateStream@Customer_Id == split1@UpdateStream@Customer_Id) && (split1@UpdateStream@Company_Name != split1@UpdateStream@Company_Name))) ~> alterRowUPDATE",
+				"split1@UpdateStream alterRow(updateIf(true())) ~> alterRowUPDATE",
 				"alterRowUPDATE select(mapColumn(",
 				"          Customer_S_Key = split1@UpdateStream@Customer_S_Key,",
 				"          Customer_Id = split1@UpdateStream@Customer_Id,",
@@ -133,8 +137,10 @@
 				"     skipDuplicateMapOutputs: true) ~> sink1",
 				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['SCD1_Customers2.csv'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink2"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink2"
 			]
 		}
 	}
