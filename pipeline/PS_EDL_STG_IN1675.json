@@ -1,5 +1,5 @@
 {
-	"name": "PS_EDL_to_STG",
+	"name": "PS_EDL_STG_IN1675",
 	"properties": {
 		"activities": [
 			{
@@ -73,6 +73,8 @@
 			{
 				"name": "DF_Estimate_EDL_STG",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -116,6 +118,62 @@
 								"ContainerName": "boootcamp25",
 								"FolderName": "IN1675/Workshop/EDL_to_STG",
 								"FileName": "STG_Estimate.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "DF_Purchaseorder_EDL_STG",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_EDL_to_STG_PurchaseOrder_IN1675_copy1",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"EDLEstimate": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/Src_to_EDL",
+								"FileName": "EDL_Estimate.csv"
+							},
+							"StgLocations": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/EDL_to_STG",
+								"FileName": "STG_Location.csv"
+							},
+							"StgCustomers": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/EDL_to_STG",
+								"FileName": "STG_Customer.csv"
+							},
+							"StgItems": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/EDL_to_STG",
+								"FileName": "STG_Product.csv"
+							},
+							"StgSalesRep": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/EDL_to_STG",
+								"FileName": "STG_SalesRep.csv"
+							},
+							"StgPurchaseorder": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/EDL_to_STG",
+								"FileName": "STG_Purchaseorder.csv"
 							}
 						}
 					},
