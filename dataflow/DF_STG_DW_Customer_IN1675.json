@@ -1,0 +1,17 @@
+{
+	"name": "DF_STG_DW_Customer_IN1675",
+	"properties": {
+		"folder": {
+			"name": "Workshop_IN1675/STG_DW_IN1675"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				""
+			]
+		}
+	}
+}
