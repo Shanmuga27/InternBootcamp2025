@@ -5,6 +5,8 @@
 			{
 				"name": "Copy data1",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -169,7 +171,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"ContainerName": "boootcamp25",
-							"FolderName": "IN1675/Workshop/DW_files",
+							"FolderName": "IN1675/Workshop/DWFiles",
 							"FileName": "DW_Customer.csv"
 						}
 					}
@@ -215,9 +217,9 @@
 								"FolderName": "IN1675/Workshop/TargetFiles",
 								"FileName": "Dim_Customer.csv"
 							},
-							"DWCustomers": {
+							"DWCustomer": {
 								"ContainerName": "boootcamp25",
-								"FolderName": "IN1675/Workshop/DW_files",
+								"FolderName": "IN1675/Workshop/DWFiles",
 								"FileName": "DW_Customer.csv"
 							}
 						}

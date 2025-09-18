@@ -1,0 +1,43 @@
+{
+	"name": "DF_STG_DW_Locations_IN1675",
+	"properties": {
+		"folder": {
+			"name": "Workshop_IN1675/STG_DW_IN1675"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcLocations"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          Location_ID as integer,",
+				"          Location_Name as string,",
+				"          Location_Country as string,",
+				"          Location_City as string,",
+				"          Location_State as string,",
+				"          Location_Zipcode as string,",
+				"          Location_Key as integer,",
+				"          Delete_Flg as string,",
+				"          Active_Flg as string,",
+				"          Date_Last_Modified as timestamp,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcLocations"
+			]
+		}
+	}
+}

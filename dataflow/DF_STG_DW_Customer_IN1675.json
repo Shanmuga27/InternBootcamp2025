@@ -28,7 +28,7 @@
 						"referenceName": "DS_CSV_IN1675",
 						"type": "DatasetReference"
 					},
-					"name": "DWCustomers"
+					"name": "DWCustomer"
 				}
 			],
 			"transformations": [
@@ -49,9 +49,6 @@
 				},
 				{
 					"name": "select3"
-				},
-				{
-					"name": "select4"
 				},
 				{
 					"name": "union1"
@@ -113,8 +110,7 @@
 				"     skipDuplicateMapOutputs: true) ~> select1",
 				"leftjoin split(isNull(tgtCustomer@Customer_Key),",
 				"     !isNull(tgtCustomer@Customer_Key)&& Transformation@Company_Name!=tgtCustomer@Company_Name,",
-				"     !isNull(select2@Customer_Key) && (Transformation@Company_Name == tgtCustomer@Company_Name),",
-				"     disjoint: false) ~> split1@(Insert, Update, Existing)",
+				"     disjoint: false) ~> split1@(Insert, Update)",
 				"SrcCustomer select(mapColumn(",
 				"          Customer_Key,",
 				"          Customer_Id,",
@@ -143,27 +139,13 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select3",
-				"split1@Existing select(mapColumn(",
-				"          Customer_Key = split1@Existing@Customer_Key,",
-				"          Customer_Id = split1@Existing@Customer_Id,",
-				"          Company_Name = split1@Existing@Company_Name,",
-				"          Delete_Flag = split1@Existing@Delete_Flag,",
-				"          Create_Date,",
-				"          Date_Last_Modified,",
-				"          Created_By = split1@Existing@Created_By,",
-				"          Created_Timestamp,",
-				"          Last_Updated_By = split1@Existing@Last_Updated_By,",
-				"          Last_Update_Timestamp",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select4",
-				"select1, select3, select4 union(byName: true)~> union1",
+				"select1, select3 union(byName: true)~> union1",
 				"union1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['DW_Customer.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> DWCustomers"
+				"     partitionBy('hash', 1)) ~> DWCustomer"
 			]
 		}
 	}
