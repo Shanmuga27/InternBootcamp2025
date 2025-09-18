@@ -57,6 +57,53 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "DF_EDL_STG_stg_PurchaseOrder",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_EDL_STG_stg_PurchaseOrder",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"sourceEDLestimate": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/EDL_workshop",
+								"Param_File": "EDL_Estimate.csv"
+							},
+							"sourceProducts": {
+								"Param_Folder": "IN1685/STG_workshop",
+								"Param_File": "STG_Products.csv"
+							},
+							"sourceLOCATIONS": {
+								"Param_File": "STG_Locations.csv"
+							},
+							"sourceSALESREP": {
+								"Param_File": "STG_SalesRep.csv"
+							},
+							"sourceCUST": {
+								"Param_File": "STG_Customers.csv"
+							},
+							"sink1": {
+								"Param_File": "STG_PurchaseOrder.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"folder": {
