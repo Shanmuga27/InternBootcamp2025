@@ -190,7 +190,7 @@
 				"     skipDuplicateMapOutputs: true) ~> select3",
 				"union1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['Dim_Location'],",
+				"     partitionFileNames:['tgt_loc1'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sink1"
