@@ -77,6 +77,8 @@
 			{
 				"name": "DF_EDL_STG_Product",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -98,6 +100,40 @@
 							"STGItem": {
 								"PR_Directory": "IN1684/Workshop/STG",
 								"PR_Filename": "STG_Product"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "DF_EDL_STG_SalesRep",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_EDL_STG_SalesReps",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"EDLSalesReps": {
+								"PR_Directory": "IN1684/Workshop/EDL",
+								"PR_Filename": "EDL_SalesReps"
+							},
+							"STGSalesReps": {
+								"PR_Directory": "IN1684/Workshop/STG",
+								"PR_Filename": "STG_SalesRep"
 							}
 						}
 					},
