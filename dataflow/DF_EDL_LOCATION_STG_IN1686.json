@@ -82,7 +82,7 @@
 				"          Last_Update_Timestamp = currentTimestamp()) ~> LastModifiedDate",
 				"ModifiedColumnName sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['W2_Customer_STG_IN1686.csv'],",
+				"     partitionFileNames:['W2_Locations_STG_IN1686.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> STGCustomers"
