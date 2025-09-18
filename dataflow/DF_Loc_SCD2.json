@@ -30,6 +30,13 @@
 				},
 				{
 					"name": "split1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2",
+					"description": "ZipCode"
 				}
 			],
 			"scriptLines": [
@@ -71,14 +78,18 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> tgtLOC",
-				"srcLOC, tgtLOC join(srcLOC@Location_Id == tgtLOC@Location_Id,",
+				"derivedColumn2, tgtLOC join(srcLOC@Location_Id == tgtLOC@Location_Id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> leftjoin",
 				"leftjoin split(isNull(tgtLOC@Location_Id) || (srcLOC@Location_Id == tgtLOC@Location_Id || srcLOC@Location_City != tgtLOC@Location_City || srcLOC@Location_Country != tgtLOC@Location_Country),",
 				"     (srcLOC@Location_Id == tgtLOC@Location_Id || srcLOC@Location_City != tgtLOC@Location_City || srcLOC@Location_Country != tgtLOC@Location_Country),",
-				"     disjoint: true) ~> split1@(InsertStream, UpdateStream)"
+				"     disjoint: true) ~> split1@(InsertStream, UpdateStream)",
+				"split1@UpdateStream derive(Last_Modified_Date = currentTimestamp(),",
+				"          Delete_Flag = 'Y',",
+				"          Active_Flag = 'N') ~> derivedColumn1",
+				"srcLOC derive(Location_Zipcode = iif(length(Location_Zipcode)==6, Location_Zipcode, iif(length(Location_Zipcode)>6, rtrim(Location_Zipcode), rpad(Location_Zipcode,6,'0')))) ~> derivedColumn2"
 			]
 		}
 	}
