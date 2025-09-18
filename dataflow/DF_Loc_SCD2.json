@@ -37,6 +37,12 @@
 				{
 					"name": "derivedColumn2",
 					"description": "ZipCode"
+				},
+				{
+					"name": "alterRowInsert"
+				},
+				{
+					"name": "alterRowUpdate"
 				}
 			],
 			"scriptLines": [
@@ -89,8 +95,10 @@
 				"split1@UpdateStream derive(Last_Modified_Date = currentTimestamp(),",
 				"          Delete_Flag = 'Y',",
 				"          Active_Flag = 'N') ~> derivedColumn1",
-				"srcLOC derive(Location_Zipcode = regexReplace(Location_Zipcode, '[A-Za-z]', '') && iif(length(Location_Zipcode)==6, Location_Zipcode, iif(length(Location_Zipcode)>6, rtrim(Location_Zipcode), lpad(Location_Zipcode,6,'0')))\r",
-				") ~> derivedColumn2"
+				"srcLOC derive(Location_Zipcode = iif(length(Location_Zipcode)==6, Location_Zipcode, iif(length(Location_Zipcode)>6, rtrim(Location_Zipcode), lpad(Location_Zipcode,6,'0')))\r",
+				") ~> derivedColumn2",
+				"split1@InsertStream alterRow(insertIf(true())) ~> alterRowInsert",
+				"derivedColumn1 alterRow(updateIf(true())) ~> alterRowUpdate"
 			]
 		}
 	}
