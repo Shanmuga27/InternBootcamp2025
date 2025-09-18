@@ -24,15 +24,15 @@
 								"PR_Filename": "STG_Customer"
 							},
 							"DimCustomer": {
-								"PR_Directory": "IN1684/Workshop/TGT",
+								"PR_Directory": "IN1684/Workshop/TGT/Customer",
 								"PR_Filename": "Dim_Customer"
 							},
 							"TGTCustomer": {
-								"PR_Directory": "IN1684/Workshop/TGT",
+								"PR_Directory": "IN1684/Workshop/TGT/Customer",
 								"PR_Filename": "Dim_Customer"
 							},
 							"TGTCustomerUpdate": {
-								"PR_Directory": "IN1684/Workshop/TGT",
+								"PR_Directory": "IN1684/Workshop/TGT/Customer",
 								"PR_Filename": "Dim_Customer2"
 							}
 						}
@@ -62,7 +62,27 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Workshop/TGT/Customer",
+							"PR_Filename": "*"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
 			},
 			{
 				"name": "ForEach1",
@@ -77,6 +97,11 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Child Items').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
 					"activities": [
 						{
 							"name": "Copy data1",
@@ -91,8 +116,56 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"enableStaging": false
-							}
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "SqlServerSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_Blob_IN1684",
+									"type": "DatasetReference",
+									"parameters": {
+										"PR_Directory": "IN1684/Workshop/TGT/Customer",
+										"PR_Filename": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_SQL_Server_IN1684",
+									"type": "DatasetReference",
+									"parameters": {
+										"PR_Tablename": "Dim_Customer",
+										"PR_Schema": "PMahendi",
+										"PR_Database": "ADF_Training"
+									}
+								}
+							]
 						}
 					]
 				}
