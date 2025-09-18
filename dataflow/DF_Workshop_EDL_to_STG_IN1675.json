@@ -2,7 +2,7 @@
 	"name": "DF_Workshop_EDL_to_STG_IN1675",
 	"properties": {
 		"folder": {
-			"name": "EDL_STG_IN1675"
+			"name": "Workshop_IN1675/EDL_STG_IN1675"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {

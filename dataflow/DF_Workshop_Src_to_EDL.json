@@ -1,6 +1,9 @@
 {
 	"name": "DF_Workshop_Src_to_EDL",
 	"properties": {
+		"folder": {
+			"name": "Workshop_IN1675"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
@@ -245,8 +248,7 @@
 				"          Created_Timestamp = currentTimestamp(),",
 				"          Last_Updated_by = toString(null()),",
 				"          Last_Update_Timestamp = toTimestamp(null()),",
-				"          Active_Flag = 'Y'\r",
-				") ~> CusAuditColumns",
+				"          Active_Flag = 'Y') ~> CusAuditColumns",
 				"RemoveCustomerKey keyGenerate(output(Customer_Key as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> CustomerKey",

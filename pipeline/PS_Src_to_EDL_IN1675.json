@@ -1,5 +1,5 @@
 {
-	"name": "PS_Workshop1_FLoad_IN1675",
+	"name": "PS_Src_to_EDL_IN1675",
 	"properties": {
 		"activities": [
 			{
@@ -32,6 +32,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					}
 				}
@@ -145,62 +146,6 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataflow": {
-						"referenceName": "DF_Workshop_Customers_Src_to_EDL",
-						"type": "DataFlowReference",
-						"datasetParameters": {
-							"SrcCustomers": {
-								"ContainerName": "boootcamp25",
-								"FolderName": "IN1675/Workshop/Src_Files",
-								"FileName": "source_Customers.csv"
-							},
-							"SrcLocations": {
-								"ContainerName": "boootcamp25",
-								"FolderName": "IN1675/Workshop/Src_Files",
-								"FileName": "source_Locations.csv"
-							},
-							"SrcItems": {
-								"ContainerName": "boootcamp25",
-								"FolderName": "IN1675/Workshop/Src_Files",
-								"FileName": "source_Products.csv"
-							},
-							"SrcSalesReps": {
-								"ContainerName": "boootcamp25",
-								"FolderName": "IN1675/Workshop/Src_Files",
-								"FileName": "source_sales Rep.csv"
-							},
-							"SrcEstimate": {
-								"ContainerName": "boootcamp25",
-								"FolderName": "IN1675/Workshop/Src_Files",
-								"FileName": "source_Estimate.csv"
-							},
-							"EDLcustomers": {
-								"ContainerName": "boootcamp25",
-								"FolderName": "IN1675/Workshop/Src_to_EDL",
-								"FileName": "EDL_customers.csv"
-							},
-							"EDLLocations": {
-								"ContainerName": "boootcamp25",
-								"FolderName": "IN1675/Workshop/Src_to_EDL",
-								"FileName": "EDL_Locations.csv"
-							},
-							"EDLItems": {
-								"ContainerName": "boootcamp25",
-								"FolderName": "IN1675/Workshop/Src_to_EDL",
-								"FileName": "EDL_Items.csv"
-							},
-							"EDLSales": {
-								"ContainerName": "boootcamp25",
-								"FolderName": "IN1675/Workshop/Src_to_EDL",
-								"FileName": "EDL_Sales_Rep.csv"
-							},
-							"EDLEstimate": {
-								"ContainerName": "boootcamp25",
-								"FolderName": "IN1675/Workshop/Src_to_EDL",
-								"FileName": "EDL_Estimate.csv"
-							}
-						}
-					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
@@ -209,6 +154,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "Workshop_IN1675"
+		},
 		"annotations": []
 	}
 }
