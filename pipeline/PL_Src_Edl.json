@@ -47,27 +47,27 @@
 							"sink1": {
 								"container": "boootcamp25",
 								"folder": "IN1689/workshop-sttm/EDL",
-								"filename": "EDL_Customers"
+								"filename": "EDL_Customers.csv"
 							},
 							"sink2": {
 								"container": "boootcamp25",
 								"folder": "IN1689/workshop-sttm/EDL",
-								"filename": "EDL_Locations"
+								"filename": "EDL_Locations.csv"
 							},
 							"sink3": {
 								"container": "boootcamp25",
 								"folder": "IN1689/workshop-sttm/EDL",
-								"filename": "EDL_Products"
+								"filename": "EDL_Products.csv"
 							},
 							"sink4": {
 								"container": "boootcamp25",
 								"folder": "IN1689/workshop-sttm/EDL",
-								"filename": "EDL_SalesReps"
+								"filename": "EDL_SalesReps.csv"
 							},
 							"sink5": {
 								"container": "boootcamp25",
 								"folder": "IN1689/workshop-sttm/EDL",
-								"filename": "EDL_Estimate"
+								"filename": "EDL_Estimate.csv"
 							}
 						}
 					},
