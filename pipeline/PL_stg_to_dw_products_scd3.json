@@ -87,6 +87,12 @@
 					"dataflow": {
 						"referenceName": "DF_stg_to_dw_products_scd3",
 						"type": "DataFlowReference",
+						"parameters": {
+							"filename": {
+								"value": "'@{pipeline().parameters.filename}'",
+								"type": "Expression"
+							}
+						},
 						"datasetParameters": {
 							"source1": {
 								"container": "boootcamp25",
@@ -180,70 +186,13 @@
 						}
 					}
 				]
-			},
-			{
-				"name": "Copy data1_copy2",
-				"type": "Copy",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "SqlServerSource",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "DS_SQL_Server_IN1680",
-						"type": "DatasetReference",
-						"parameters": {
-							"SchemaName": "KRavi",
-							"TableName": "Dm_product",
-							"DatabaseName": "ADF_Training"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "DS_Blob_1680",
-						"type": "DatasetReference",
-						"parameters": {
-							"container": "boootcamp25",
-							"folder": "IN1680/workshop_dw_src",
-							"file": "products.csv"
-						}
-					}
-				]
 			}
 		],
+		"parameters": {
+			"filename": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "stg_to_dw"
 		},

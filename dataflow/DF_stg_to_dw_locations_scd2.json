@@ -166,7 +166,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"join1 split( isNull(Location_Id) || !isNull(Location_Id) && (src_Location_Country!=Location_Country || src_Location_City!=Location_City),",
+				"join1 split(isNull(Location_Id) || !isNull(Location_Id) && (src_Location_Country!=Location_Country || src_Location_City!=Location_City) && (isCurrent == 1),",
 				"     disjoint: false) ~> split1@(insert)",
 				"source3 select(mapColumn(",
 				"          src_Location_Id = Location_Id,",

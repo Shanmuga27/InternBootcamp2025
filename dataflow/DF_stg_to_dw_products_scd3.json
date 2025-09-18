@@ -42,9 +42,6 @@
 					"name": "split1"
 				},
 				{
-					"name": "derivedColumn1"
-				},
-				{
 					"name": "select2"
 				},
 				{
@@ -61,6 +58,9 @@
 				}
 			],
 			"scriptLines": [
+				"parameters{",
+				"     filename as string",
+				"}",
 				"source(output(",
 				"          Item_Id as integer,",
 				"          Item_Descr as string,",
@@ -192,8 +192,6 @@
 				"join1 split(isNull(Item_Id),",
 				"     !isNull(Item_Id) && (current_Brand_Manager_Name !=src_brand_manager_name ||current_Product_Manager_Name!= product_manager_name),",
 				"     disjoint: false) ~> split1@(insert, update)",
-				"select2 derive(current_Brand_Manager_Name = brand_manager_name,",
-				"          current_Product_Manager_Name = product_manager_name) ~> derivedColumn1",
 				"split1@insert select(mapColumn(",
 				"          Item_Id = src_Item_Id,",
 				"          Item_Descr = src_Item_Descr,",
@@ -231,9 +229,11 @@
 				"          Created_date = src_Created_date,",
 				"          Date_last_modified = src_Date_last_modified,",
 				"          previous_Brand_Manager_Name,",
-				"          previous_Product_Manager_Name",
+				"          previous_Product_Manager_Name,",
+				"          current_Brand_Manager_Name = src_brand_manager_name,",
+				"          current_Product_Manager_Name = src_product_manager_name",
 				"     ),",
-				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
 				"split1@update select(mapColumn(",
 				"          current_Brand_Manager_Name = src_brand_manager_name,",
@@ -279,7 +279,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select3",
 				"select3 alterRow(updateIf(true())) ~> alterRow1",
-				"derivedColumn1 alterRow(insertIf(true())) ~> alterRow2",
+				"select2 alterRow(insertIf(true())) ~> alterRow2",
 				"alterRow2, alterRow1 union(byName: true)~> union1",
 				"union1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -292,8 +292,10 @@
 				"          rating as string,",
 				"          members as string",
 				"     ),",
+				"     partitionFileNames:[($filename)],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}
