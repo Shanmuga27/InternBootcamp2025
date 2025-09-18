@@ -214,17 +214,17 @@
 				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> NullDerived",
 				"NullDerived, selectPROD join(NullDerived@Item_Id == selectPROD@Item_Id,",
-				"     joinType:'inner',",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> ESTjoinPROD",
 				"ESTjoinPROD, selectLOCATIONS join(NullDerived@Location_Id == selectLOCATIONS@Location_Id,",
-				"     joinType:'inner',",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> ESTjoinLOC",
 				"ESTjoinLOC, selectSALESREP join(NullDerived@Sales_Rep_Id == selectSALESREP@Sales_Rep_Id,",
-				"     joinType:'inner',",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> ESTjoinSALESREP",
@@ -309,9 +309,11 @@
 				"    iif(like(Location_Name,'%POE Vietnam%'), subDays(toDate(Ship_Date_Outbound,'MM/dd/yy', 'en-US'),14),\r",
 				"    subDays(toDate(Ship_Date_Outbound,'MM/dd/yy', 'en-US'),45)\r",
 				")))))\r",
-				") ~> derived1",
+				",",
+				"          MS_Domestic_Ship_Date = subDays(Etd_Ship_Date,45),",
+				"          MS_Domestic_Cancel_Date = addDays(Etd_Ship_Date, 55)) ~> derived1",
 				"derived1 derive(Level_Descr = iif(Confidence_Factor_descr=='25%', '', iif(Confidence_Factor_descr=='50%', '', iif(Confidence_Factor_descr=='Dropped', '', iif(Confidence_Factor_descr=='75%', 'Pending Confirmation', iif(Confidence_Factor_descr=='90%', 'Pending Approval', iif(Confidence_Factor_descr=='Actual', 'Confirmed', iif(Confidence_Factor_descr=='90%-Pre', 'Confirmed', iif(Confidence_Factor_descr=='90%-Releases', 'Confirmed', 'Invalid')))))))),",
-				"          Month_ETD_date = concat(toString(year(ETD_dt)),'-',toString(month(ETD_dt)))) ~> derived2"
+				"          Month_ETD_date = concat(toString(year(ETD_date)),'-',toString(month(ETD_date)))) ~> derived2"
 			]
 		}
 	}
