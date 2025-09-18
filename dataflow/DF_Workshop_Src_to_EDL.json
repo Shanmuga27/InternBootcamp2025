@@ -384,7 +384,7 @@
 				"          Created_By = 'IN1675',",
 				"          Created_Timestamp = toTimestamp(currentDate()),",
 				"          Last_Updated_By = toString(null()),",
-				"          column1 = toTimestamp(null())) ~> EstimateAuditColumns",
+				"          Last_Update_Timestamp = toTimestamp(null())) ~> EstimateAuditColumns",
 				"CusAuditColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['EDL_customers.csv'],",

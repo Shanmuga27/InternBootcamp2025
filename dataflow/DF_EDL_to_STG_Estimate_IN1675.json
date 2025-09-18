@@ -1,0 +1,71 @@
+{
+	"name": "DF_EDL_to_STG_Estimate_IN1675",
+	"properties": {
+		"folder": {
+			"name": "Workshop_IN1675/EDL_STG_IN1675"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "EDLEstimate"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          Transaction_Id as integer,",
+				"          Transaction_Line_Id as short,",
+				"          Memo as string,",
+				"          Sticker_Requirements as string,",
+				"          Inner_Requirements as string,",
+				"          Customer_Requirements as string,",
+				"          Sales_Program as string,",
+				"          Buyer_Dept as string,",
+				"          Buyer_Confirmed_On as string,",
+				"          Dept_Program as string,",
+				"          Program_0 as string,",
+				"          Cancelled as string,",
+				"          Confidence_Factor_Id as string,",
+				"          Company_Id as integer,",
+				"          Item_Id as string,",
+				"          Location_Id as string,",
+				"          Sales_Rep_Id as string,",
+				"          TranId as string,",
+				"          Price_Sticker_Id as string,",
+				"          Po as string,",
+				"          Release_Order_Number as string,",
+				"          Quantity_Received_In_Shipment as string,",
+				"          Cntnr_ as string,",
+				"          Etd_Ship_Date as string,",
+				"          Ship_Date_Outbound as string,",
+				"          Cancel_Date_Outbound as string,",
+				"          Expiration_Date as string,",
+				"          Item_Count as string,",
+				"          Inner_Qty as string,",
+				"          Release_Quantity as string,",
+				"          Item_Unit_Price as string,",
+				"          Amount as string,",
+				"          Eta_Arrival_Date as string,",
+				"          Estimate_Key as short,",
+				"          Delete_Flag as boolean,",
+				"          Create_Date as timestamp,",
+				"          Date_Created as timestamp,",
+				"          Date_Last_Modified_Gmt as string,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          column1 as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EDLEstimate"
+			]
+		}
+	}
+}
