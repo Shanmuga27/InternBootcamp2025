@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Data flow1",
+				"name": "PS_DF_EDL_STG_IN1675",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
