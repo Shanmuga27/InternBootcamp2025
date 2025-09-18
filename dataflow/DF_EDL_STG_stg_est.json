@@ -367,7 +367,7 @@
 				"surrogateKey1 derive(each(match(type=='string'), $$ = replace(iifNull($$, \"UNK\"),'NULL', 'UNK')),",
 				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'yyyy-MM-dd HH:mm:ss'))),",
-				"          each(match(type=='date'), $$ = ERROR_FUNCTION(''))) ~> derivedNULL",
+				"          each(match(type=='date'), $$ = iifNull($$, toDate('1900-01-01', 'yyyy-MM-dd')))) ~> derivedNULL",
 				"derivedNULL sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['STG_Estimate.csv'],",
