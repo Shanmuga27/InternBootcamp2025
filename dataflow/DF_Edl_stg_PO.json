@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "DF_Edl_stg_PO",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -38,19 +38,9 @@
 						"type": "DatasetReference"
 					},
 					"name": "EdlEstimateToStgEstimate"
-				},
-				{
-					"name": "source1"
 				}
 			],
 			"sinks": [
-				{
-					"dataset": {
-						"referenceName": "DS_Blob_IN1677_Tgt",
-						"type": "DatasetReference"
-					},
-					"name": "StgCustomer"
-				},
 				{
 					"dataset": {
 						"referenceName": "DS_Blob_IN1677_Tgt",
@@ -61,28 +51,16 @@
 			],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
-				},
-				{
 					"name": "derivedColumn2"
 				},
 				{
 					"name": "derivedColumn3"
 				},
 				{
-					"name": "derivedColumn4"
-				},
-				{
 					"name": "derivedColumn5"
 				},
 				{
-					"name": "derivedColumn6"
-				},
-				{
 					"name": "derivedColumn7"
-				},
-				{
-					"name": "derivedColumn8"
 				},
 				{
 					"name": "Update"
@@ -258,32 +236,18 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> EdlEstimateToStgEstimate",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source1",
-				"derivedColumn2 derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null', 'UNK', $$)),",
-				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00'))),",
-				"          each(match(type=='integer'), $$ = iifNull($$, 0, $$))) ~> derivedColumn1",
 				"EdlCustomers derive(Date_Last_Modified = toTimestamp(currentDate()),",
 				"          Last_Updated_By = 'IN1677',",
 				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn2",
 				"EdlLocation derive(Date_Last_Modified = toTimestamp(currentDate()),",
 				"          Last_Updated_By = 'IN1677',",
 				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn3",
-				"derivedColumn3 derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null', 'UNK', $$)),",
-				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00'))),",
-				"          each(match(type=='integer'), $$ = iifNull($#, 0))) ~> derivedColumn4",
 				"EdlProduct derive(Date_last_modified = toTimestamp(currentDate()),",
 				"          Last_Updated_By = 'IN1677',",
 				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn5",
-				"derivedColumn5 derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null', 'UNK', $$)),",
-				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00'))),",
-				"          each(match(type=='integer'), $$ = iifNull($#, 0))) ~> derivedColumn6",
 				"EdlSalesReps derive(Date_Last_Modified = toTimestamp(currentDate()),",
 				"          Last_Updated_By = 'IN1677',",
 				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn7",
-				"derivedColumn7 derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null', 'UNK', $$)),",
-				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00'))),",
-				"          each(match(type=='integer'), $$ = iifNull($#, 0))) ~> derivedColumn8",
 				"select1 derive(Date_Last_Modified_Gmt = currentUTC(),",
 				"          Last_Updated_By = 'IN1677',",
 				"          Last_Update_Timestamp = currentTimestamp()) ~> Update",
@@ -472,31 +436,13 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> JoinSalesRep",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     partitionFileNames:['STG_Customer'],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     mapColumn(",
-				"          Customer_Id,",
-				"          Customer_key,",
-				"          Company_Name,",
-				"          Delete_Flg,",
-				"          Create_Date,",
-				"          Date_Last_Modified,",
-				"          Created_By,",
-				"          Created_Timestamp,",
-				"          Last_Updated_By,",
-				"          Last_Update_Timestamp,",
-				"          Active_Flag",
-				"     ),",
-				"     partitionBy('hash', 1)) ~> StgCustomer",
 				"NullHandling sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['STG_Estimate'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
+				"          Sales_Estimate_key = Estimate_key,",
 				"          Transaction_Id,",
 				"          Transaction_Line_Id,",
 				"          Memo_descr = Memo,",
