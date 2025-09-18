@@ -1,0 +1,50 @@
+{
+	"name": "DF_SCD2_",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference"
+					},
+					"name": "SrcLocation"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "TgtLocation"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          Location_Id as integer,",
+				"          Location_key as integer,",
+				"          Location_Name as string,",
+				"          Location_Country as string,",
+				"          Location_City as string,",
+				"          Location_State as string,",
+				"          Location_Zipcode as integer,",
+				"          Delete_Flg as boolean,",
+				"          Active_Flag as string,",
+				"          Created_Date as timestamp,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcLocation",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TgtLocation"
+			]
+		}
+	}
+}
