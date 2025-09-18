@@ -1,5 +1,5 @@
 {
-	"name": "DF_SalesRep_SCD3_copy1",
+	"name": "DF_SalesRep_SCD3",
 	"properties": {
 		"folder": {
 			"name": "workshop/STG_DW"
@@ -22,22 +22,7 @@
 					"name": "TGTsalesrep"
 				}
 			],
-			"sinks": [
-				{
-					"dataset": {
-						"referenceName": "DS_CSV_IN1685",
-						"type": "DatasetReference"
-					},
-					"name": "sink1"
-				},
-				{
-					"dataset": {
-						"referenceName": "DS_CSV_IN1685",
-						"type": "DatasetReference"
-					},
-					"name": "sink2"
-				}
-			],
+			"sinks": [],
 			"transformations": [
 				{
 					"name": "leftjoin1"
@@ -304,19 +289,7 @@
 				"          Current_Product_Manager_Name",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2",
-				"select1 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     partitionFileNames:['SCD3_prod_tgt1.csv'],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink1",
-				"select2 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     partitionFileNames:['SCD3_prod_t2.csv'],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink2"
+				"     skipDuplicateMapOutputs: true) ~> select2"
 			]
 		}
 	}

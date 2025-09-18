@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
+				"name": "Copy SQL_BLOB",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -16,21 +16,20 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"sink": {
-						"type": "SqlServerSink",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false,
-						"tableOption": "autoCreate"
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
 					},
 					"enableStaging": false,
 					"translator": {
@@ -44,17 +43,6 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_CSV_IN1685",
-						"type": "DatasetReference",
-						"parameters": {
-							"Param_Container": "boootcamp25",
-							"Param_Folder": "IN1685/STG_workshop",
-							"Param_File": "STG_SalesRep.csv"
-						}
-					}
-				],
-				"outputs": [
-					{
 						"referenceName": "DS_OnPrem_SQLServer",
 						"type": "DatasetReference",
 						"parameters": {
@@ -63,7 +51,56 @@
 							"Param_DB_name": "ADF_Training"
 						}
 					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"Param_Container": "boootcamp25",
+							"Param_Folder": "IN1685/TGT_workshop",
+							"Param_File": "salesrep_tgt1.csv"
+						}
+					}
 				]
+			},
+			{
+				"name": "DF_SalesRep_SCD3_copy1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Copy SQL_BLOB",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_SalesRep_SCD3",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"TGTsalesrep": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/TGT_workshop",
+								"Param_File": "salesrep_tgt1.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"folder": {
