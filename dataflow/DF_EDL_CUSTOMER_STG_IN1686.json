@@ -1,0 +1,83 @@
+{
+	"name": "DF_EDL_CUSTOMER_STG_IN1686",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "EDLCustomer"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "STGCustomers"
+				}
+			],
+			"transformations": [
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "ModifiedColumnName"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Customer_Id as integer,",
+				"          Company_Name as string,",
+				"          Customer_Key as short,",
+				"          Delete_Flag as string,",
+				"          Create_Date as timestamp,",
+				"          Date_Last_Modified as timestamp,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp,",
+				"          Active_Flag as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EDLCustomer",
+				"derivedColumn1 derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type == 'integer'), $$ = iif(isNull($$),0,$$))) ~> NullHandling",
+				"NullHandling select(mapColumn(",
+				"          Customer_Id,",
+				"          Customer_Key,",
+				"          Company_Name,",
+				"          Delete_Flag,",
+				"          Create_Date,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp,",
+				"          Active_Flag",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> ModifiedColumnName",
+				"EDLCustomer derive(Create_Date = currentTimestamp(),",
+				"          Date_Last_Modified = currentTimestamp(),",
+				"          Created_Timestamp = currentTimestamp(),",
+				"          Last_Updated_By = \"IN1686 Sanjay Komala\",",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn1",
+				"ModifiedColumnName sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['W2_Customer_STG_IN1686.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> STGCustomers"
+			]
+		}
+	}
+}
