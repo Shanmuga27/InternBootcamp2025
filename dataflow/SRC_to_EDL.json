@@ -1,6 +1,9 @@
 {
 	"name": "SRC_to_EDL",
 	"properties": {
+		"folder": {
+			"name": "Workshop_answers"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [

@@ -1,6 +1,9 @@
 {
 	"name": "EDL_TO_STG",
 	"properties": {
+		"folder": {
+			"name": "Workshop_answers"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
@@ -424,8 +427,10 @@
 				"     partitionBy('hash', 1)) ~> STGSINKcus",
 				"join4 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:[($filename)],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> estsink"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> estsink"
 			]
 		}
 	}
