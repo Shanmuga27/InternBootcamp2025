@@ -29,7 +29,7 @@
 					"name": "ModifiedColumnName"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "LastModifiedDate"
 				}
 			],
 			"scriptLines": [
@@ -49,7 +49,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> EDLCustomer",
-				"derivedColumn1 derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"LastModifiedDate derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
 				"          each(match(type == 'integer'), $$ = iif(isNull($$),0,$$))) ~> NullHandling",
 				"NullHandling select(mapColumn(",
 				"          Customer_Id,",
@@ -70,7 +70,7 @@
 				"          Date_Last_Modified = currentTimestamp(),",
 				"          Created_Timestamp = currentTimestamp(),",
 				"          Last_Updated_By = \"IN1686 Sanjay Komala\",",
-				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn1",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> LastModifiedDate",
 				"ModifiedColumnName sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['W2_Customer_STG_IN1686.csv'],",
