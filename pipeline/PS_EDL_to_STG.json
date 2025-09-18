@@ -15,6 +15,52 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Workshop_EDL_to_STG_IN1675",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcCustomers": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/Src_to_EDL",
+								"FileName": "EDL_customers.csv"
+							},
+							"SrcLocations": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/Src_to_EDL",
+								"FileName": "EDL_Locations.csv"
+							},
+							"SrcItems": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/Src_to_EDL",
+								"FileName": "EDL_Items.csv"
+							},
+							"SrcSalesRep": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/Src_to_EDL",
+								"FileName": "EDL_Sales_Rep.csv"
+							},
+							"StgCustomers": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/EDL_to_STG",
+								"FileName": "STG_Customer.csv"
+							},
+							"StgLocations": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/EDL_to_STG",
+								"FileName": "STG_Location.csv"
+							},
+							"StgItems": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/EDL_to_STG",
+								"FileName": "STG_Product.csv"
+							},
+							"StgSales": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/EDL_to_STG",
+								"FileName": "STG_SalesRep.csv"
+							}
+						}
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"

@@ -330,18 +330,22 @@
 				"     partitionBy('hash', 1)) ~> StgCustomers",
 				"LocColumnRename sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['STG_Locations.csv'],",
+				"     partitionFileNames:['STG_Location.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> StgLocations",
 				"ItemsColumnRename sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['STG_Product.csv'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> StgItems",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> StgItems",
 				"SalesRepColumnRename sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['STG_SalesRep.csv'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> StgSales"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> StgSales"
 			]
 		}
 	}
