@@ -1,5 +1,5 @@
 {
-	"name": "DF_Edl_Stg",
+	"name": "dataflow1",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -38,6 +38,9 @@
 						"type": "DatasetReference"
 					},
 					"name": "EdlEstimateToStgEstimate"
+				},
+				{
+					"name": "source1"
 				}
 			],
 			"sinks": [
@@ -276,6 +279,8 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> EdlEstimateToStgEstimate",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> source1",
 				"derivedColumn2 derive(each(match(type=='string'), $$ = iif(isNull($$)||lower($$)=='null', 'UNK', $$)),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00'))),",
 				"          each(match(type=='integer'), $$ = iifNull($$, 0, $$))) ~> derivedColumn1",
@@ -328,9 +333,7 @@
 				"    iif(like(Name,'%POE Vietnam%'), subDays(toDate(Ship_Date_Outbound),14)\r",
 				"    ,subDays(toDate(Ship_Date_Outbound),45)\r",
 				"\r",
-				")))))\r",
-				"\r",
-				",",
+				"))))),",
 				"          MS_Domestic_Ship_Date = subDays(Etd_Ship_Date, 45),",
 				"          MS_Domestic_Cancel_Date = addDays(Etd_Ship_Date, 55)) ~> DerivedCol1",
 				"DerivedCol1 derive(Level_Descr = case(\r",
