@@ -47,6 +47,12 @@
 				},
 				{
 					"name": "join1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "derivedColumn2"
 				}
 			],
 			"scriptLines": [
@@ -118,7 +124,7 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> STGestimate",
 				"source(output(",
-				"          Location_Id as short,",
+				"          Location_Id as string,",
 				"          Name as string,",
 				"          City as string,",
 				"          Country as string,",
@@ -156,7 +162,7 @@
 				"          Location_Id,",
 				"          Sales_Rep_Id,",
 				"          TranId,",
-				"          Price_Sticker_Id,",
+				"          Price_Sticker_descr = Price_Sticker_Id,",
 				"          Po,",
 				"          Release_Order_Number,",
 				"          Cntnr_,",
@@ -215,11 +221,21 @@
 				"iif(Confidence_Factor_descr == '90%-Pre', 'Confirmed',\r",
 				"iif(Confidence_Factor_descr == '90%-Releases', 'Confirmed', ''))))))))\r",
 				") ~> derivedColumn1",
-				"derivedColumn1 join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"derivedColumn1, select2 join(Location_Id == Location_key,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
+				"locationsource select(mapColumn(",
+				"          Location_key = Location_Id,",
+				"          Location_Name = Name,",
+				"          Loaction_City = City",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"join1 derive(Final_Destination_Container = concat(Loaction_City, ' - ',Location_Name)\r",
+				",",
+				"          Price_Sticker_descr = case(like(Sticker_Requirement_descr,'%$%price sticker'),replace(replace(Sticker_Requirement_descr,'$',''),' price sticker',''), 'No Sticker')) ~> derivedColumn2",
 				"filter1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:[($filename)],",
