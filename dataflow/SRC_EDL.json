@@ -379,7 +379,7 @@
 				"          Last_Update_Timestamp = toTimestamp(null())) ~> derivedColumn5",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['EDL_Customers'],",
+				"     partitionFileNames:['EDL_Customers.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sink1",
