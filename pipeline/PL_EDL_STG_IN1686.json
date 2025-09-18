@@ -18,18 +18,13 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_EDL_CUSTOMER_STG_IN1686",
+						"referenceName": "DF_EDL_Customer_STG_IN1686",
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"EDLCustomer": {
 								"Container": "boootcamp25",
 								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
 								"File": "W2_Customers_EDL_IN1686.csv"
-							},
-							"STGCustomers": {
-								"Container": "boootcamp25",
-								"Folder": "IN1686/WORKSHOP/W2_STG_IN1686",
-								"File": "W2_Customers_STG_IN1686.csv"
 							}
 						}
 					},
@@ -213,10 +208,8 @@
 				}
 			},
 			{
-				"name": "EDL_Estimate_STG_copy1",
+				"name": "EDL_Estimate_STG",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
