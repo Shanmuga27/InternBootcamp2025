@@ -149,6 +149,8 @@
 			{
 				"name": "DF_EDL_STG_Estimate",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -186,6 +188,58 @@
 							"STGEstimate": {
 								"PR_Directory": "IN1684/Workshop/STG",
 								"PR_Filename": "STG_Estimate"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "DF_EDL_STG_PurchaseOrder",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_EDL_STG_PurchaseOrder",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"EDLEstimate": {
+								"PR_Directory": "IN1684/Workshop/EDL",
+								"PR_Filename": "EDL_Estimate"
+							},
+							"STGLocation": {
+								"PR_Directory": "IN1684/Workshop/STG",
+								"PR_Filename": "STG_Location"
+							},
+							"STGCustomer": {
+								"PR_Directory": "IN1684/Workshop/STG",
+								"PR_Filename": "STG_Customer"
+							},
+							"STGProduct": {
+								"PR_Directory": "IN1684/Workshop/STG",
+								"PR_Filename": "STG_Product"
+							},
+							"STGSalesRep": {
+								"PR_Directory": "IN1684/Workshop/STG",
+								"PR_Filename": "STG_SalesRep"
+							},
+							"STGPurchaseOrder": {
+								"PR_Directory": "IN1684/Workshop/STG",
+								"PR_Filename": "STG_Purchaseorder"
 							}
 						}
 					},
