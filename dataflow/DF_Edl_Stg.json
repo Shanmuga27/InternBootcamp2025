@@ -650,6 +650,7 @@
 				"          Item_Unit_Price,",
 				"          Amount,",
 				"          Delete_Flag,",
+				"          Active_Flag,",
 				"          Create_Date,",
 				"          Date_Created,",
 				"          Date_Last_Modified_Gmt,",
