@@ -1,5 +1,5 @@
 {
-	"name": "DF_EDL_LOCATION_STG_IN1686",
+	"name": "DF_EDL_Product_STG_IN1686",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -53,8 +53,9 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> EDLLocation",
-				"LastModifiedDate derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
-				"          each(match(type=='integer'), $$ = iif(isNull($$),0,toInteger($$)))) ~> NullHandling",
+				"LastModifiedDate derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type == 'integer'), $$ = iif(isNull($$),0,$$)),",
+				"          each(match(type == 'timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss'),$$))) ~> NullHandling",
 				"NullHandling select(mapColumn(",
 				"          Location_Id,",
 				"          Location_Name = Name,",

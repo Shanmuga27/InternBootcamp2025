@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "EDL_Customer_STG",
-				"type": "Copy",
+				"name": "EDCustomerSTG",
+				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -15,60 +15,64 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
+					"dataflow": {
+						"referenceName": "DF_EDL_CUSTOMER_STG_IN1686",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"EDLCustomer": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": "W2_Customers_EDL_IN1686.csv"
+							},
+							"STGCustomers": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_STG_IN1686",
+								"File": "W2_Customers_STG_IN1686.csv"
+							}
 						}
 					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "EDL_Locations_STG",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
 				},
-				"inputs": [
-					{
-						"referenceName": "DS_CSV1_IN1686",
-						"type": "DatasetReference",
-						"parameters": {
-							"Container": "boootcamp25",
-							"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
-							"File": "W2_Customers_EDL_IN1686.csv"
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_EDL_LOCATION_STG_IN1686",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"EDLLocation": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": "W2_Locations_EDL_IN1686.csv"
+							},
+							"STGCustomers": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_STG_IN1686",
+								"File": "W2_Locations_STG_IN1686.csv"
+							}
 						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "DS_CSV1_IN1686",
-						"type": "DatasetReference",
-						"parameters": {
-							"Container": "boootcamp25",
-							"Folder": "IN1686/WORKSHOP/W2_STG_IN1686",
-							"File": "W2_Customers_STG_IN1686.csv"
-						}
-					}
-				]
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"annotations": []
