@@ -9,13 +9,34 @@
 						"referenceName": "DS_IN1689",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "EDLcust"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "EDLlocation"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "derivedColumn3"
 				}
 			],
 			"scriptLines": [
@@ -23,19 +44,47 @@
 				"          Customer_Id as integer,",
 				"          Company_Name as string,",
 				"          Customer_key as short,",
-				"          Delete_Flg as boolean,",
+				"          Delete_Flg as string,",
 				"          Create_Date as timestamp,",
 				"          Date_Last_Modified as string,",
 				"          Created_By as string,",
 				"          Created_Timestamp as timestamp,",
 				"          Last_Updated_By as string,",
 				"          Last_Update_Timestamp as string,",
-				"          Active_Flag as boolean",
+				"          Active_Flag as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
-				"source1 derive() ~> derivedColumn1"
+				"     ignoreNoFilesFound: false) ~> EDLcust",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EDLlocation",
+				"EDLcust derive(Date_Last_Modified = currentTimestamp(),",
+				"          Last_Updated_By = 'IN1689',",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn1",
+				"derivedColumn1 derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> derivedColumn2",
+				"EDLlocation derive(Date_Last_Modified = currentTimestamp(),",
+				"          Last_Updated_By = 'IN1689',",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn3",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Customer_Id,",
+				"          Company_Name,",
+				"          Customer_key,",
+				"          Delete_Flg,",
+				"          Create_Date,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp,",
+				"          Active_Flag",
+				"     )) ~> sink1"
 			]
 		}
 	}
