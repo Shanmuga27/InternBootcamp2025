@@ -158,7 +158,7 @@
 				"     partitionBy('hash', 1)) ~> sink1",
 				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['I_Customers_TGT_IN1686.csv'],",
+				"     partitionFileNames:['U_Customers_TGT_IN1686.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sink2"
