@@ -20,7 +20,17 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "split1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          Location_Id as integer,",
@@ -41,9 +51,48 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SrcLocation",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          Location_key as integer,",
+				"          Location_ID as integer,",
+				"          Location_Name as string,",
+				"          Location_Country as string,",
+				"          Location_City as string,",
+				"          Location_State as string,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp,",
+				"          Location_Zipcode as integer,",
+				"          Date_Last_Modified as timestamp,",
+				"          Delete_Flg as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> TgtLocation"
+				"     ignoreNoFilesFound: false) ~> TgtLocation",
+				"select1, TgtLocation join(select1@Location_Id == TgtLocation@Location_ID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"SrcLocation select(mapColumn(",
+				"          Location_key,",
+				"          Location_Id,",
+				"          Location_Name,",
+				"          Location_Country,",
+				"          Location_City,",
+				"          Location_State,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp,",
+				"          Location_Zipcode,",
+				"          Date_Last_Modified = Created_Date,",
+				"          Delete_Flg",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"join1 split(ERROR_FUNCTION(''),",
+				"     disjoint: false) ~> split1@(, )"
 			]
 		}
 	}

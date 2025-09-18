@@ -44,6 +44,12 @@
 				},
 				{
 					"name": "select1"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "alterRow2"
 				}
 			],
 			"scriptLines": [
@@ -100,13 +106,15 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"split1@Insert sink(allowSchemaDrift: true,",
+				"split1@Insert alterRow(insertIf(true())) ~> alterRow1",
+				"split1@Update alterRow() ~> alterRow2",
+				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['tgt_cus_1'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> NewCustomer",
-				"split1@Update sink(allowSchemaDrift: true,",
+				"alterRow2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['tgt_cus_2'],",
 				"     skipDuplicateMapInputs: true,",
