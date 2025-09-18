@@ -36,13 +36,16 @@
 					"name": "LeftJoin"
 				},
 				{
-					"name": "alterRowUPDATE"
-				},
-				{
 					"name": "alterRowINSERT"
 				},
 				{
 					"name": "select1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "alterRowUPDATE"
 				}
 			],
 			"scriptLines": [
@@ -83,23 +86,37 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> LeftJoin",
-				"alterRowINSERT alterRow(updateIf(srcCUST@Customer_Id==tgtCUST@Customer_Id && srcCUST@Company_Name!=tgtCUST@Company_Name)) ~> alterRowUPDATE",
-				"LeftJoin alterRow(insertIf(isNull(tgtCUST@Customer_Id))) ~> alterRowINSERT",
-				"alterRowUPDATE select(mapColumn(",
-				"          Customer_S_Key = srcCUST@Customer_S_Key,",
-				"          Customer_Id = srcCUST@Customer_Id,",
-				"          Company_Name = srcCUST@Company_Name,",
-				"          Created_Date = srcCUST@Created_Date,",
-				"          Last_Modified_Date = srcCUST@Last_Modified_Date,",
-				"          Delete_Flag = srcCUST@Delete_Flag,",
-				"          Active_Flag = srcCUST@Active_Flag,",
-				"          Created_Time = srcCUST@Created_Time,",
-				"          Created_By = srcCUST@Created_By,",
-				"          Last_Modified_Time = srcCUST@Last_Modified_Time,",
-				"          Last_Updated_By = srcCUST@Last_Updated_By",
+				"split1@InsertStream alterRow(insertIf(isNull(split1@InsertStream@Customer_Id))) ~> alterRowINSERT",
+				"alterRowINSERT select(mapColumn(",
+				"          Customer_S_Key = split1@InsertStream@Customer_S_Key,",
+				"          Customer_Id = split1@InsertStream@Customer_Id,",
+				"          Company_Name = split1@InsertStream@Company_Name,",
+				"          Created_Date = split1@InsertStream@Created_Date,",
+				"          Last_Modified_Date = split1@InsertStream@Last_Modified_Date,",
+				"          Delete_Flag = split1@InsertStream@Delete_Flag,",
+				"          Active_Flag = split1@InsertStream@Active_Flag,",
+				"          Created_Time = split1@InsertStream@Created_Time,",
+				"          Created_By = split1@InsertStream@Created_By,",
+				"          Last_Modified_Time = split1@InsertStream@Last_Modified_Time,",
+				"          Last_Updated_By = split1@InsertStream@Last_Updated_By,",
+				"          Customer_S_Key = split1@InsertStream@Customer_S_Key,",
+				"          Customer_Id = split1@InsertStream@Customer_Id,",
+				"          Company_Name = split1@InsertStream@Company_Name,",
+				"          Created_Date = split1@InsertStream@Created_Date,",
+				"          Last_Modified_Date = split1@InsertStream@Last_Modified_Date,",
+				"          Delete_Flag = split1@InsertStream@Delete_Flag,",
+				"          Active_Flag = split1@InsertStream@Active_Flag,",
+				"          Created_Time = split1@InsertStream@Created_Time,",
+				"          Created_By = split1@InsertStream@Created_By,",
+				"          Last_Modified_Time = split1@InsertStream@Last_Modified_Time,",
+				"          Last_Updated_By = split1@InsertStream@Last_Updated_By",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
+				"LeftJoin split(isNull(tgtCUST@Customer_Id),",
+				"     (srcCUST@Customer_Id==tgtCUST@Customer_Id) && (srcCUST@Company_Name!=tgtCUST@Company_Name),",
+				"     disjoint: true) ~> split1@(InsertStream, UpdateStream)",
+				"split1@UpdateStream alterRow(updateIf((split1@UpdateStream@Customer_Id == split1@UpdateStream@Customer_Id) && (split1@UpdateStream@Company_Name != split1@UpdateStream@Company_Name))) ~> alterRowUPDATE",
 				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
