@@ -1,0 +1,99 @@
+{
+	"name": "Sales",
+	"properties": {
+		"folder": {
+			"name": "workshop/EDL_STG"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SalesRep"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "salessink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1",
+					"description": "NULL & transf"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "select1",
+					"description": "Renaming columns"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Sales_Rep_Id as short,",
+				"          Sales_Rep_Name as string,",
+				"          LoginAccess as boolean,",
+				"          Email as string,",
+				"          Phone as string,",
+				"          Address as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          Sales_key as short,",
+				"          Delete_flg as boolean,",
+				"          Active_Flag as boolean,",
+				"          Create_Date as timestamp,",
+				"          Date_Last_Modified as timestamp,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SalesRep",
+				"derivedColumn2 derive(each(match(type=='string'), $$ = replace(iifNull($$, \"UNK\"),'NULL', 'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, currentTimestamp()))) ~> derivedColumn1",
+				"SalesRep derive(Last_Modified_Time = currentTimestamp(),",
+				"          Last_Updated_By = 'IN1674') ~> derivedColumn2",
+				"derivedColumn1 select(mapColumn(",
+				"          Sales_Rep_Id,",
+				"          Sales_Rep_Name,",
+				"          Sales_Rep_Loginaccess = LoginAccess,",
+				"          Sales_Rep_Email = Email,",
+				"          Sales_Rep_Phone = Phone,",
+				"          Sales_Rep_Address = Address,",
+				"          Sales_Rep_City = City,",
+				"          Sales_Rep_Country = Country,",
+				"          Sales_key,",
+				"          Delete_flg,",
+				"          Active_Flag,",
+				"          Create_Date,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp,",
+				"          Last_Modified_Time",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['STG_SalesRep.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> salessink"
+			]
+		}
+	}
+}
