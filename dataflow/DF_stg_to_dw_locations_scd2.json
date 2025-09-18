@@ -1,0 +1,17 @@
+{
+	"name": "DF_stg_to_dw_locations_scd2",
+	"properties": {
+		"folder": {
+			"name": "stg_to_dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				""
+			]
+		}
+	}
+}

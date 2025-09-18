@@ -1,0 +1,153 @@
+{
+	"name": "DF_stg_to_dw_customers_scd1",
+	"properties": {
+		"folder": {
+			"name": "stg_to_dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "select4"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     filename as string",
+				"}",
+				"source(output(",
+				"          Customer_Id as integer,",
+				"          Company_Name as string,",
+				"          Cutomer_key as integer,",
+				"          Delete_flag as string,",
+				"          Created_by as string,",
+				"          Created_timestamp as timestamp,",
+				"          Last_updated_by as string,",
+				"          Last_updated_timestamp as timestamp,",
+				"          Active_flag as string,",
+				"          Created_date as timestamp,",
+				"          Date_last_modified as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          Customer_Id as integer,",
+				"          Company_Name as string,",
+				"          Cutomer_key as string,",
+				"          Delete_flag as string,",
+				"          Created_by as string,",
+				"          Created_timestamp as timestamp,",
+				"          Last_updated_by as string,",
+				"          Last_updated_timestamp as timestamp,",
+				"          Active_flag as string,",
+				"          Created_date as timestamp,",
+				"          Date_last_modified as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source2",
+				"source1, select4 join(Customer_Id == Customer_Id_tgt,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 split(!isNull(Customer_Id_tgt) && (Company_Name!=Company_Name_tgt),",
+				"     isNull(Customer_Id_tgt),",
+				"     disjoint: true) ~> split1@(update, insert)",
+				"split1@insert select(mapColumn(",
+				"          Customer_Id,",
+				"          Company_Name,",
+				"          Cutomer_key,",
+				"          Delete_flag,",
+				"          Created_by,",
+				"          Created_timestamp,",
+				"          Last_updated_by,",
+				"          Last_updated_timestamp,",
+				"          Active_flag,",
+				"          Created_date,",
+				"          Date_last_modified",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"split1@update select(mapColumn(",
+				"          Customer_Id,",
+				"          Company_Name,",
+				"          Cutomer_key,",
+				"          Delete_flag,",
+				"          Created_by,",
+				"          Created_timestamp,",
+				"          Last_updated_by,",
+				"          Last_updated_timestamp,",
+				"          Active_flag,",
+				"          Created_date,",
+				"          Date_last_modified",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select3, select2 union(byName: true)~> union1",
+				"source2 select(mapColumn(",
+				"          Customer_Id_tgt = Customer_Id,",
+				"          Company_Name_tgt = Company_Name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4",
+				"union1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          anime_id as string,",
+				"          name as string,",
+				"          genre as string,",
+				"          type as string,",
+				"          episodes as string,",
+				"          rating as string,",
+				"          members as string",
+				"     ),",
+				"     partitionFileNames:[($filename)],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
