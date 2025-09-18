@@ -119,6 +119,8 @@
 			{
 				"name": "EDL_SaleREP_STG",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -142,6 +144,120 @@
 								"Container": "boootcamp25",
 								"Folder": "IN1686/WORKSHOP/W2_STG_IN1686",
 								"File": "W2_SaleREP_STG_IN1686.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "EDL_PurchaseOrde_STG",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_EDL_PurchaseOrder_STG_IN1686",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcPurchaseOrder": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": "W2_Estimate_EDL_IN1686.csv"
+							},
+							"sourceProducts": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": "W2_Item_EDL_IN1686.csv"
+							},
+							"sourceLOCATIONS": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": "W2_Locations_EDL_IN1686.csv"
+							},
+							"sourceSALESREP": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": "W2_SaleREP_EDL_IN1686.csv"
+							},
+							"sourceCUST": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": "W2_Customers_EDL_IN1686.csv"
+							},
+							"STGPurchaseOrder": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_STG_IN1686",
+								"File": "W2_PurchaseOrder_STG_IN1686.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "EDL_Estimate_STG_copy1",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_EDL_PurchaseOrder_STG_IN1686",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcPurchaseOrder": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": "W2_Estimate_EDL_IN1686.csv"
+							},
+							"sourceProducts": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": "W2_Item_EDL_IN1686.csv"
+							},
+							"sourceLOCATIONS": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": "W2_Locations_EDL_IN1686.csv"
+							},
+							"sourceSALESREP": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": "W2_SaleREP_EDL_IN1686.csv"
+							},
+							"sourceCUST": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_EDL_IN1686",
+								"File": "W2_Customers_EDL_IN1686.csv"
+							},
+							"STGPurchaseOrder": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_STG_IN1686",
+								"File": "W2_Estimate_STG_IN1686.csv"
 							}
 						}
 					},
