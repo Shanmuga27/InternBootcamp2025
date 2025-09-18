@@ -24,6 +24,10 @@
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
 					"name": "sink1"
 				}
 			],

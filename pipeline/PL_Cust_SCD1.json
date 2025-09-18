@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
+				"name": "Copy SQL_BLOB",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -63,6 +63,77 @@
 						}
 					}
 				]
+			},
+			{
+				"name": "DF_Cust_SCD1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Copy SQL_BLOB",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Cust_SCD1",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"srcCUST": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/STG_workshop",
+								"Param_File": "STG_Customers.csv"
+							},
+							"tgtCUST": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/TGT_workshop",
+								"Param_File": "SCD1_Customers.csv"
+							},
+							"sink1": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/TGT_workshop",
+								"Param_File": "SCD1_Customers.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Copy BLOB_SQL_DW",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DF_Cust_SCD1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"enableStaging": false
+				}
 			}
 		],
 		"folder": {
