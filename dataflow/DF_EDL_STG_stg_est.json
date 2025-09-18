@@ -34,6 +34,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "sourceSALESREP"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sourceCUST"
 				}
 			],
 			"sinks": [],
@@ -206,6 +213,9 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourceSALESREP",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceCUST",
 				"sourceEDLestimate derive(Last_Modified_Date = currentTimestamp(),",
 				"          Last_Modified_Time = currentTimestamp(),",
 				"          Last_Modified_GMT = currentUTC(),",
