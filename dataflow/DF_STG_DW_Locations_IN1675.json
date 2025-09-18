@@ -25,10 +25,7 @@
 			"sinks": [],
 			"transformations": [
 				{
-					"name": "Transformations1"
-				},
-				{
-					"name": "Transformations2"
+					"name": "join1"
 				}
 			],
 			"scriptLines": [
@@ -54,8 +51,11 @@
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> TgtLocations",
-				"SrcLocations derive(Location_Zipcode = regexReplace(Location_Zipcode, '[^0-9]', '')) ~> Transformations1",
-				"Transformations1 derive(Location_Zipcode = iif(length(regexReplace(Location_Zipcode,'[^0-9]','')) > 6,     substring(regexReplace(Location_Zipcode,'[^0-9]',''),0,6),     right(concat(regexReplace(Location_Zipcode,'[^0-9]',''),'000000'),6) )) ~> Transformations2"
+				"SrcLocations join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1"
 			]
 		}
 	}
