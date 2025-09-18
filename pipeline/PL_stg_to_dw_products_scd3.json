@@ -170,7 +170,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "boootcamp25",
-							"folder": "IN1680/workshop_stg",
+							"folder": "IN1680/workshop_dw",
 							"file": "products.csv"
 						}
 					}
