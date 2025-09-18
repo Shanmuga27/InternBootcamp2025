@@ -1,0 +1,47 @@
+{
+	"name": "PL_EDL_STG",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_EDL_STG_Customer",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_EDL_STG_Customers",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"EDLCustomer": {
+								"PR_Directory": "IN1684/Workshop/EDL",
+								"PR_Filename": "EDL_Customer"
+							},
+							"STGCustomer": {
+								"PR_Directory": "IN1684/Workshop/STG",
+								"PR_Filename": "STG_Customer"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "Workshop/EDL_STG"
+		},
+		"annotations": []
+	}
+}
