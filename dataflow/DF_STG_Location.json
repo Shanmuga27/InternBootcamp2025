@@ -1,0 +1,96 @@
+{
+	"name": "DF_STG_Location",
+	"properties": {
+		"folder": {
+			"name": "workshop/EDL_STG"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "sourceLocations"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "locsink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1",
+					"description": "NULL & transf"
+				},
+				{
+					"name": "derivedColumn2",
+					"description": "Last modified values"
+				},
+				{
+					"name": "select1",
+					"description": "Renaming columns"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Location_Id as short,",
+				"          Name as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          State as string,",
+				"          Zipcode as string,",
+				"          Location_key as short,",
+				"          Delete_Flg as boolean,",
+				"          Active_Flag as boolean,",
+				"          Date_Last_Modified as timestamp,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceLocations",
+				"derivedColumn2 derive(each(match(type=='string'), $$ = replace(iifNull($$, \"UNK\"),'NULL', 'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> derivedColumn1",
+				"sourceLocations derive(Last_Modified_Time = currentTimestamp(),",
+				"          Last_Updated_By = 'IN1674',",
+				"          Last_Modified_Date = currentTimestamp()) ~> derivedColumn2",
+				"derivedColumn1 select(mapColumn(",
+				"          Location_Id,",
+				"          Name,",
+				"          City,",
+				"          Country,",
+				"          State,",
+				"          Zipcode,",
+				"          Location_key,",
+				"          Delete_Flg,",
+				"          Active_Flag,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp,",
+				"          Last_Modified_Time,",
+				"          Last_Modified_Date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['STG_Locations.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> locsink"
+			]
+		}
+	}
+}
