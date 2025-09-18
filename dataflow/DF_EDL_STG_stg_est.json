@@ -81,6 +81,12 @@
 				{
 					"name": "derived2",
 					"description": "derived columns tranf"
+				},
+				{
+					"name": "selectCUST"
+				},
+				{
+					"name": "ESTjoinCUST"
 				}
 			],
 			"scriptLines": [
@@ -213,7 +219,20 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourceSALESREP",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          Customer_S_Key as boolean,",
+				"          Customer_Id as integer,",
+				"          Company_Name as string,",
+				"          Created_Date as timestamp,",
+				"          Last_Modified_Date as timestamp,",
+				"          Delete_Flag as boolean,",
+				"          Active_Flag as boolean,",
+				"          Created_Time as timestamp,",
+				"          Created_By as string,",
+				"          Last_Modified_Time as timestamp,",
+				"          Last_Updated_By as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourceCUST",
 				"sourceEDLestimate derive(Last_Modified_Date = currentTimestamp(),",
@@ -255,7 +274,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectSALESREP",
-				"ESTjoinSALESREP select(mapColumn(",
+				"ESTjoinCUST select(mapColumn(",
 				"          Estimate_S_Key,",
 				"          Transaction_Id,",
 				"          Transaction_Line_Id,",
@@ -298,11 +317,12 @@
 				"          Last_Modified_Time,",
 				"          Last_Updated_By,",
 				"          Last_Modified_GMT,",
-				"          Item_Id_Key = selectPROD@Item_Id,",
-				"          Location_Id_Key = selectLOCATIONS@Location_Id,",
+				"          Customer_Id_KEY = Customer_Id_Key,",
+				"          Sales_Rep_Id_KEY = selectSALESREP@Sales_Rep_Id,",
+				"          Item_Id_KEY = selectPROD@Item_Id,",
+				"          Location_Id_KEY = selectLOCATIONS@Location_Id,",
 				"          Location_Name,",
-				"          Location_City,",
-				"          Sales_Rep_Id_Key = selectSALESREP@Sales_Rep_Id",
+				"          Location_City",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> select1",
@@ -323,7 +343,17 @@
 				"          MS_Domestic_Ship_Date = subDays(Etd_Ship_Date,45),",
 				"          MS_Domestic_Cancel_Date = addDays(Etd_Ship_Date, 55)) ~> derived1",
 				"derived1 derive(Level_Descr = iif(Confidence_Factor_descr=='25%', '', iif(Confidence_Factor_descr=='50%', '', iif(Confidence_Factor_descr=='Dropped', '', iif(Confidence_Factor_descr=='75%', 'Pending Confirmation', iif(Confidence_Factor_descr=='90%', 'Pending Approval', iif(Confidence_Factor_descr=='Actual', 'Confirmed', iif(Confidence_Factor_descr=='90%-Pre', 'Confirmed', iif(Confidence_Factor_descr=='90%-Releases', 'Confirmed', 'Invalid')))))))),",
-				"          Month_ETD_date = concat(toString(year(ETD_date)),'-',toString(month(ETD_date)))) ~> derived2"
+				"          Month_ETD_date = concat(toString(year(ETD_date)),'-',toString(month(ETD_date)))) ~> derived2",
+				"sourceCUST select(mapColumn(",
+				"          Customer_Id_Key = Customer_Id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCUST",
+				"ESTjoinSALESREP, selectCUST join(Company_Id == Customer_Id_Key,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> ESTjoinCUST"
 			]
 		}
 	}
