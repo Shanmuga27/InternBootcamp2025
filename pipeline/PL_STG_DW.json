@@ -1,6 +1,103 @@
 {
 	"name": "PL_STG_DW",
 	"properties": {
+		"activities": [
+			{
+				"name": "DF_STG_DW_Customer",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_STG_DW_SCD1",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"STGCustomer": {
+								"PR_Directory": "IN1684/Workshop/STG",
+								"PR_Filename": "STG_Customer"
+							},
+							"DimCustomer": {
+								"PR_Directory": "IN1684/Workshop/TGT",
+								"PR_Filename": "Dim_Customer"
+							},
+							"TGTCustomer": {
+								"PR_Directory": "IN1684/Workshop/TGT",
+								"PR_Filename": "Dim_Customer"
+							},
+							"TGTCustomerUpdate": {
+								"PR_Directory": "IN1684/Workshop/TGT",
+								"PR_Filename": "Dim_Customer2"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Get Child Items",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "DF_STG_DW_Customer",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": []
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Child Items",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"enableStaging": false
+							}
+						}
+					]
+				}
+			}
+		],
 		"folder": {
 			"name": "Workshop/STG_DW"
 		},

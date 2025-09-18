@@ -1,0 +1,133 @@
+{
+	"name": "DF_STG_DW_SCD1",
+	"properties": {
+		"folder": {
+			"name": "Workshop/STG - DW"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "STGCustomer"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "DimCustomer"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "TGTCustomer"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "TGTCustomerUpdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Customer_Id as integer,",
+				"          Customer_key as integer,",
+				"          Company_Name as string,",
+				"          Delete_Flg as string,",
+				"          Create_Date as timestamp,",
+				"          Date_Last_Modified as timestamp,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp,",
+				"          Active_Flag as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> STGCustomer",
+				"source(output(",
+				"          Customer_Key as integer,",
+				"          Customer_Id as integer,",
+				"          Company_Name as string,",
+				"          Created_Date as timestamp,",
+				"          Last_Modified_Date as timestamp,",
+				"          Delete_Flag as string,",
+				"          Created_Time as timestamp,",
+				"          Created_By as string,",
+				"          Last_Modified_Time as timestamp,",
+				"          Last_Updated_By as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> DimCustomer",
+				"select1, DimCustomer join(select1@Customer_Id == DimCustomer@Customer_Id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join",
+				"join split(isNull(DimCustomer@Customer_Id),",
+				"     select1@Customer_Id==DimCustomer@Customer_Id && (select1@Company_Name != DimCustomer@Company_Name),",
+				"     disjoint: true) ~> split1@(Insert, Update)",
+				"STGCustomer select(mapColumn(",
+				"          Customer_Id,",
+				"          Customer_key,",
+				"          Company_Name,",
+				"          Delete_Flg,",
+				"          Create_Date,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"split1@Insert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_Customer'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Customer_Id = split1@Insert@Customer_Id,",
+				"          Customer_key = split1@Insert@Customer_key,",
+				"          Company_Name = split1@Insert@Company_Name,",
+				"          Delete_Flg,",
+				"          Create_Date,",
+				"          Date_Last_Modified,",
+				"          Created_By = split1@Insert@Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By = split1@Insert@Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> TGTCustomer",
+				"split1@Update sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_Customer2'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> TGTCustomerUpdate"
+			]
+		}
+	}
+}
