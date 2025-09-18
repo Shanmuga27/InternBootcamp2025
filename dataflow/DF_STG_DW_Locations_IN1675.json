@@ -13,10 +13,24 @@
 						"type": "DatasetReference"
 					},
 					"name": "SrcLocations"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "TgtLocations"
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "Transformations1"
+				},
+				{
+					"name": "Transformations2"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          Location_ID as integer,",
@@ -36,7 +50,12 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> SrcLocations"
+				"     ignoreNoFilesFound: false) ~> SrcLocations",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TgtLocations",
+				"SrcLocations derive(Location_Zipcode = regexReplace(Location_Zipcode, '[^0-9]', '')) ~> Transformations1",
+				"Transformations1 derive(Location_Zipcode = iif(length(regexReplace(Location_Zipcode,'[^0-9]','')) > 6,     substring(regexReplace(Location_Zipcode,'[^0-9]',''),0,6),     right(concat(regexReplace(Location_Zipcode,'[^0-9]',''),'000000'),6) )) ~> Transformations2"
 			]
 		}
 	}
