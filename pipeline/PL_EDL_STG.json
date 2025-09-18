@@ -37,6 +37,76 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "DF_EDL_STG_Location",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_EDL_STG_Location",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"EDLLocation": {
+								"PR_Directory": "IN1684/Workshop/EDL",
+								"PR_Filename": "EDL_Location"
+							},
+							"STGLocation": {
+								"PR_Directory": "IN1684/Workshop/STG",
+								"PR_Filename": "STG_Location"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "DF_EDL_STG_Product",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_EDL_STG_Product",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"EDLItem": {
+								"PR_Directory": "IN1684/Workshop/EDL",
+								"PR_Filename": "EDL_Product"
+							},
+							"STGItem": {
+								"PR_Directory": "IN1684/Workshop/STG",
+								"PR_Filename": "STG_Product"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"folder": {
