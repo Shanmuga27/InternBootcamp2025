@@ -86,12 +86,16 @@
 				"     disjoint: false) ~> split1@(Insert, Update)",
 				"split1@Insert sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['tgt_cus_1'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> NewCustomer",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> NewCustomer",
 				"split1@Update sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['tgt_cus_2'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> ExistCustomer"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> ExistCustomer"
 			]
 		}
 	}

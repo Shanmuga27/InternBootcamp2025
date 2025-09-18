@@ -80,7 +80,28 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "DF_SCD1_Customer",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcCustomer": {
+								"directory": "IN1677/workshop/staging",
+								"file": "STG_Customer"
+							},
+							"TgtCustomer": {
+								"container": "boootcamp25",
+								"directory": "IN1677/workshop/tgt/cus",
+								"file": "tgt_cus_1"
+							},
+							"NewCustomer": {
+								"container": "boootcamp25",
+								"directory": "IN1677/workshop/tgt/cus",
+								"file": "tgt_cus_1"
+							},
+							"ExistCustomer": {
+								"container": "boootcamp25",
+								"directory": "IN1677/workshop/tgt/cus",
+								"file": "tgt_cus_2"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
