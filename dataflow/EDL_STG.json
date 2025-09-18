@@ -17,6 +17,20 @@
 						"type": "DatasetReference"
 					},
 					"name": "EDLlocation"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "EDLproduct"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "EDLSalesReps"
 				}
 			],
 			"sinks": [
@@ -26,6 +40,23 @@
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "sink3"
+				},
+				{
+					"name": "sink4"
 				}
 			],
 			"transformations": [
@@ -37,6 +68,21 @@
 				},
 				{
 					"name": "derivedColumn3"
+				},
+				{
+					"name": "derivedColumn4"
+				},
+				{
+					"name": "derivedColumn5"
+				},
+				{
+					"name": "derivedColumn6"
+				},
+				{
+					"name": "derivedColumn7"
+				},
+				{
+					"name": "derivedColumn8"
 				}
 			],
 			"scriptLines": [
@@ -56,9 +102,67 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> EDLcust",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          Location_Id as short,",
+				"          Name as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          State as string,",
+				"          Zipcode as string,",
+				"          Location_key as short,",
+				"          Delete_Flg as boolean,",
+				"          Active_Flag as boolean,",
+				"          Date_Last_Modified as string,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> EDLlocation",
+				"source(output(",
+				"          Item_Id as integer,",
+				"          Generic_Description as string,",
+				"          PurchaseDescription as string,",
+				"          Artwork as string,",
+				"          Color as string,",
+				"          Package_Type as string,",
+				"          Special_Requirements as string,",
+				"          Case_Pack as string,",
+				"          Full_Name as string,",
+				"          Display_Name as string,",
+				"          Account_Manager_Name as string,",
+				"          Brand_Name as string,",
+				"          Brand_Manager_Name as string,",
+				"          Item_Status as string,",
+				"          Item_Type as string,",
+				"          Maker_Name as string,",
+				"          Product_Manager_Name as string,",
+				"          Master_Carton_Rqmnts as string,",
+				"          Trade_Partner_Name as string,",
+				"          Part_Of_Assembly_Item as string,",
+				"          Type_Name as string,",
+				"          Trade_Partner_Code as string,",
+				"          VendorName as string,",
+				"          UPC as string,",
+				"          QunatityOnHand as boolean,",
+				"          SSCC14 as string,",
+				"          Master_Carton_Markings_Item_N as integer,",
+				"          Item_Key as short,",
+				"          Delete_Flg as boolean,",
+				"          Active_Flag as boolean,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EDLproduct",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> EDLSalesReps",
 				"EDLcust derive(Date_Last_Modified = currentTimestamp(),",
 				"          Last_Updated_By = 'IN1689',",
 				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn1",
@@ -68,6 +172,17 @@
 				"EDLlocation derive(Date_Last_Modified = currentTimestamp(),",
 				"          Last_Updated_By = 'IN1689',",
 				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn3",
+				"derivedColumn3 derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> derivedColumn4",
+				"EDLproduct derive(Date_Last_Modified = currentTimestamp(),",
+				"          Last_Updated_By = 'IN1689',",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn5",
+				"derivedColumn5 derive(each(match(type == 'string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
+				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> derivedColumn6",
+				"EDLSalesReps derive() ~> derivedColumn7",
+				"derivedColumn7 derive() ~> derivedColumn8",
 				"derivedColumn2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
@@ -84,7 +199,72 @@
 				"          Last_Updated_By,",
 				"          Last_Update_Timestamp,",
 				"          Active_Flag",
-				"     )) ~> sink1"
+				"     )) ~> sink1",
+				"derivedColumn4 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Location_Id,",
+				"          Location_Name = Name,",
+				"          Location_City = City,",
+				"          Location_Country = Country,",
+				"          Location_State = State,",
+				"          Location_Zipcode = Zipcode,",
+				"          Location_key,",
+				"          Delete_Flg,",
+				"          Active_Flag,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     )) ~> sink2",
+				"derivedColumn6 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Item_Id,",
+				"          item_Descr = Generic_Description,",
+				"          Brand_descr = PurchaseDescription,",
+				"          Artwork_descr = Artwork,",
+				"          Color_descr = Color,",
+				"          Package_Type_descr = Package_Type,",
+				"          Special_Req_descr = Special_Requirements,",
+				"          Case_Pack_descr = Case_Pack,",
+				"          Full_Name_descr = Full_Name,",
+				"          Display_name_descr = Display_Name,",
+				"          Account_manager_name = Account_Manager_Name,",
+				"          Brand_name = Brand_Name,",
+				"          brand_manager_name = Brand_Manager_Name,",
+				"          Item_status_descr = Item_Status,",
+				"          item_type_descr = Item_Type,",
+				"          maker_name = Maker_Name,",
+				"          product_manager_name = Product_Manager_Name,",
+				"          Master_Carton_req_descr = Master_Carton_Rqmnts,",
+				"          Trade_partner_Name = Trade_Partner_Name,",
+				"          Part_Of_Assembly_Item,",
+				"          Type_Name,",
+				"          Trade_partner_CD = Trade_Partner_Code,",
+				"          Vendor_Name = VendorName,",
+				"          UPC_nbr = UPC,",
+				"          On_Hand_Quantity = QunatityOnHand,",
+				"          SSCC14_nbr = SSCC14,",
+				"          Master_Carton_Item_nbr = Master_Carton_Markings_Item_N,",
+				"          Item_Key,",
+				"          Delete_Flg,",
+				"          Active_Flag,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp,",
+				"          Date_Last_Modified",
+				"     )) ~> sink3",
+				"derivedColumn8 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink4"
 			]
 		}
 	}
