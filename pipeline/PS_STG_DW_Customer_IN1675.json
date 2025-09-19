@@ -499,6 +499,8 @@
 			{
 				"name": "Data flow1",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -527,6 +529,545 @@
 								"ContainerName": "boootcamp25",
 								"FolderName": "IN1675/Workshop/DWFiles",
 								"FileName": "DW_Product.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Copy data2",
+				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Item_Key",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Item_key",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Item_Id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Item_ID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Item_Descr",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Item_Descr",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Brand_desr",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Brand_Descr",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Artwork_descr",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Artwork_Descr",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Color_descr",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Color_Descr",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Package_Type_descr",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Package_Type_Descr",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Special_Req_descr",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Special_Req_Descr",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Case_Pack_desc",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Case_Pack_Descr",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Full_Name_descr",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Full_Name_Descr",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Display_Name_descr",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Display_name_Descr",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Account_Manager_Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Account_Manager_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Brand_Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Brand_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Brand_Manager_Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Brand_Manager_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Item_Status_descr",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Item_Status_Descr",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Item_Type_descr",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Item_Type_Descr",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Maker_Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Maker_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Product_Manager_Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Product_Manager_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Master_Carton_Req_descr",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Master_Carton_Req_Descr",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Trade_Partner_Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Trade_Partner_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Type_Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Type_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Trade_Partner_Code",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Trade_Partner_Cd",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Vendor_Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Vendor_Name",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "UPC_nbr",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "UPC_Nbr",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "On_Hand_Quantity",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "On_Hand_Quantity",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "SSCC14_nbr",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "SSCC14_Nbr",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Master_Carton_Markings_Item_Nbr",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Master_Carton_Item_Nbr",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Create_Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Create_Date",
+									"type": "Date",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "Date_last_Modified",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Date_Last_Modified",
+									"type": "Date",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "Delete_Flag",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Delete_Flag",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Created_By",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Created_By",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Created_Timestamp",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Created_Timestamp",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "Last_Updated_By",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Last_Updated_By",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Last_Update_Timestamp",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Last_Update_Timestamp",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "prev_brand_manager_name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "prev_brand_manager_name",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "prev_producr_manager_name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "prev_producr_manager_name",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"ContainerName": "boootcamp25",
+							"FolderName": "IN1675/Workshop/DWFiles",
+							"FileName": "DW_Product.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_OnPremSQL_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": "Dim_Product",
+							"SchemaName": "DMuthuku",
+							"DatabaseName": "ADF_Training"
+						}
+					}
+				]
+			},
+			{
+				"name": "Data flow2",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_STG_DW_SalesRep",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcSalesRep": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/EDL_to_STG",
+								"FileName": "STG_SalesRep.csv"
+							},
+							"TgtSalesRep": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/TargetFiles",
+								"FileName": "Dim_SalesRep.csv"
+							},
+							"DWSalesRep": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/DWFiles",
+								"FileName": "DW_SalesRep.csv"
 							}
 						}
 					},
