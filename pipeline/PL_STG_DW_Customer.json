@@ -1,5 +1,5 @@
 {
-	"name": "PL_STG_DW",
+	"name": "PL_STG_DW_Customer",
 	"properties": {
 		"activities": [
 			{
@@ -30,6 +30,10 @@
 							"TGTCustomer": {
 								"PR_Directory": "IN1684/Workshop/TGT/Customer",
 								"PR_Filename": "Dim_Customer"
+							},
+							"TGTCustomerUpdate": {
+								"PR_Directory": "IN1684/Workshop/TGT/Customer",
+								"PR_Filename": "Dim_Customer2"
 							}
 						}
 					},
@@ -41,8 +45,94 @@
 				}
 			},
 			{
-				"name": "Copy data1",
-				"type": "Copy",
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "SqlServerSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_Blob_IN1684",
+									"type": "DatasetReference",
+									"parameters": {
+										"PR_Directory": "IN1684/Workshop/TGT/Customer",
+										"PR_Filename": {
+											"value": "@item().Name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_SQL_Server_IN1684",
+									"type": "DatasetReference",
+									"parameters": {
+										"PR_Tablename": "Dim_Customer",
+										"PR_Schema": "PMahendi",
+										"PR_Database": "ADF_Training"
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Get Metadata1",
+				"type": "GetMetadata",
 				"dependsOn": [
 					{
 						"activity": "DF_STG_DW_Customer",
@@ -60,53 +150,25 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
-					"sink": {
-						"type": "SqlServerSink",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
+					"dataset": {
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference",
 						"parameters": {
 							"PR_Directory": "IN1684/Workshop/TGT/Customer",
-							"PR_Filename": "Dim_Customer"
+							"PR_Filename": "*"
 						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
 					}
-				],
-				"outputs": [
-					{
-						"referenceName": "DS_SQL_Server_IN1684",
-						"type": "DatasetReference",
-						"parameters": {
-							"PR_Tablename": "Dim_Customer",
-							"PR_Schema": "PMahendi",
-							"PR_Database": "ADF_Training"
-						}
-					}
-				]
+				}
 			}
 		],
 		"folder": {

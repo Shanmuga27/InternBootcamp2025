@@ -1,0 +1,9 @@
+{
+	"name": "PL_STG_DW_Location",
+	"properties": {
+		"folder": {
+			"name": "Workshop/STG_DW"
+		},
+		"annotations": []
+	}
+}

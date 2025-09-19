@@ -165,12 +165,12 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
-				"          Customer_Id,",
 				"          Customer_key,",
+				"          Customer_Id,",
 				"          Company_Name,",
-				"          Delete_Flg,",
 				"          Create_Date,",
 				"          Date_Last_Modified,",
+				"          Delete_Flg,",
 				"          Created_By,",
 				"          Created_Timestamp,",
 				"          Last_Updated_By,",
@@ -179,8 +179,10 @@
 				"     partitionBy('hash', 1)) ~> TGTCustomer",
 				"derivedColumn2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_Customer2'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> TGTCustomerUpdate"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> TGTCustomerUpdate"
 			]
 		}
 	}
