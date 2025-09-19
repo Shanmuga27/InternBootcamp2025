@@ -97,6 +97,16 @@
 								"Param_Container": "boootcamp25",
 								"Param_Folder": "IN1685/TGT_workshop",
 								"Param_File": "salesrep_tgt1.csv"
+							},
+							"sink1": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/TGT_workshop",
+								"Param_File": "salesrep_tgt1.csv"
+							},
+							"sink2": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/TGT_workshop",
+								"Param_File": "salesrep_t2.csv"
 							}
 						}
 					},
@@ -106,6 +116,144 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "Copy INS_BLOB_SQL",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DF_SalesRep_SCD3_copy1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"Param_Container": "boootcamp25",
+							"Param_Folder": "IN1685/TGT_workshop",
+							"Param_File": "salesrep_tgt1.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_OnPrem_SQLServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"Par_SchemaName": "RRamesh",
+							"Par_TableName": "Dim_SalesRep",
+							"Param_DB_name": "ADF_Training"
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy UPD_BLOB_SQL",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DF_SalesRep_SCD3_copy1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"Param_Container": "boootcamp25",
+							"Param_Folder": "IN1685/TGT_workshop",
+							"Param_File": "salesrep_t2.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_OnPrem_SQLServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"Par_SchemaName": "RRamesh",
+							"Par_TableName": "Dim_SalesRep",
+							"Param_DB_name": "ADF_Training"
+						}
+					}
+				]
 			}
 		],
 		"folder": {
