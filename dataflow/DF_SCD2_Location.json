@@ -58,6 +58,9 @@
 				},
 				{
 					"name": "select3"
+				},
+				{
+					"name": "derivedColumn3"
 				}
 			],
 			"scriptLines": [
@@ -186,9 +189,19 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select3",
-				"union1 sink(allowSchemaDrift: true,",
+				"union1 derive(Location_Zipcode = \r",
+				"toInteger(\r",
+				"iif(length(toString(Location_Zipcode)) == 6, \r",
+				"    toString(Location_Zipcode), \r",
+				"    iif(length(toString(Location_Zipcode)) > 6, \r",
+				"        substring(toString(Location_Zipcode), 0, 6), \r",
+				"        lpad(toString(Location_Zipcode), 6, '0')\r",
+				"    )\r",
+				"))\r",
+				") ~> derivedColumn3",
+				"derivedColumn3 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['tgt_loc1'],",
+				"     partitionFileNames:['Dim_Location'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sink1"

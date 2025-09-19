@@ -60,7 +60,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"directory": "IN1677/workshop/tgt/loc",
-							"file": "tgt_loc1"
+							"file": "Dim_Location"
 						}
 					}
 				]
@@ -91,12 +91,12 @@
 							"TgtLocation": {
 								"container": "boootcamp25",
 								"directory": "IN1677/workshop/tgt/loc",
-								"file": "tgt_loc1"
+								"file": "Dim_Location"
 							},
 							"sink1": {
 								"container": "boootcamp25",
 								"directory": "IN1677/workshop/tgt/loc",
-								"file": "tgt_loc1"
+								"file": "Dim_Location"
 							}
 						}
 					},
@@ -110,14 +110,7 @@
 			{
 				"name": "Copy data2",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Data flow1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -160,7 +153,7 @@
 						"parameters": {
 							"container": "boootcamp25",
 							"directory": "IN1677/workshop/tgt/loc",
-							"file": "tgt_loc1"
+							"file": "Dim_Location"
 						}
 					}
 				],
