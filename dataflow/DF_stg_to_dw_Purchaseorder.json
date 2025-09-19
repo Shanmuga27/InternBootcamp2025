@@ -30,6 +30,9 @@
 				}
 			],
 			"scriptLines": [
+				"parameters{",
+				"     filename as string",
+				"}",
 				"source(output(",
 				"          Transaction_Id as integer,",
 				"          Transaction_Line_Id as short,",
@@ -106,8 +109,10 @@
 				"          rating as string,",
 				"          members as string",
 				"     ),",
+				"     partitionFileNames:[($filename)],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SinkOfPO"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SinkOfPO"
 			]
 		}
 	}
