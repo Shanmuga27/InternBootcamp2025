@@ -53,28 +53,28 @@
 						"referenceName": "DS_Blob_IN1677_Tgt",
 						"type": "DatasetReference"
 					},
-					"name": "sink2"
+					"name": "EdlLocations"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_Blob_IN1677_Tgt",
 						"type": "DatasetReference"
 					},
-					"name": "sink3"
+					"name": "EdlItems"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_Blob_IN1677_Tgt",
 						"type": "DatasetReference"
 					},
-					"name": "sink4"
+					"name": "EdlSalesRep"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_Blob_IN1677_Tgt",
 						"type": "DatasetReference"
 					},
-					"name": "sink5"
+					"name": "EdlEstimate"
 				}
 			],
 			"transformations": [
@@ -94,49 +94,49 @@
 					"name": "select5"
 				},
 				{
-					"name": "SCustomersKey"
+					"name": "SurCustomersKey"
 				},
 				{
-					"name": "surrogateKey2"
+					"name": "SurLocation"
 				},
 				{
-					"name": "surrogateKey3"
+					"name": "SurITem"
 				},
 				{
-					"name": "surrogateKey4"
+					"name": "SurSaleRep"
 				},
 				{
-					"name": "surrogateKey5"
+					"name": "SurEstimate"
 				},
 				{
-					"name": "derivedColumn2"
+					"name": "AuditFieldsL"
 				},
 				{
-					"name": "derivedColumn3"
+					"name": "AuditFieldsI"
 				},
 				{
-					"name": "derivedColumn4"
+					"name": "AuditFieldsSR"
 				},
 				{
-					"name": "derivedColumn5"
+					"name": "AuditFieldsE"
 				},
 				{
-					"name": "Col"
+					"name": "Cus"
 				},
 				{
-					"name": "AuditFields"
+					"name": "AuditFieldsC"
 				},
 				{
-					"name": "select7"
+					"name": "Loc"
 				},
 				{
-					"name": "select8"
+					"name": "It"
 				},
 				{
-					"name": "select9"
+					"name": "SR"
 				},
 				{
-					"name": "select10"
+					"name": "EST"
 				}
 			],
 			"scriptLines": [
@@ -346,51 +346,51 @@
 				"     skipDuplicateMapOutputs: true) ~> select5",
 				"select1 keyGenerate(output(Customer_key as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> SCustomersKey",
+				"     stepValue: 1L) ~> SurCustomersKey",
 				"select2 keyGenerate(output(Location_key as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> surrogateKey2",
+				"     stepValue: 1L) ~> SurLocation",
 				"select3 keyGenerate(output(Items_key as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> surrogateKey3",
+				"     stepValue: 1L) ~> SurITem",
 				"select4 keyGenerate(output(SalesReps_key as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> surrogateKey4",
+				"     stepValue: 1L) ~> SurSaleRep",
 				"select5 keyGenerate(output(Estimate_key as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> surrogateKey5",
-				"surrogateKey2 derive(Delete_Flg = 'N',",
+				"     stepValue: 1L) ~> SurEstimate",
+				"SurLocation derive(Delete_Flg = 'N',",
 				"          Active_Flag = 'Y',",
 				"          Date_Last_Modified = toTimestamp(null()),",
 				"          Created_By = 'IN1677',",
 				"          Created_Timestamp = currentTimestamp(),",
 				"          Last_Updated_By = toString(null()),",
-				"          Last_Update_Timestamp = toTimestamp(null())) ~> derivedColumn2",
-				"surrogateKey3 derive(Delete_flg = 'N',",
+				"          Last_Update_Timestamp = toTimestamp(null())) ~> AuditFieldsL",
+				"SurITem derive(Delete_flg = 'N',",
 				"          Active_Flag = 'Y',",
 				"          Create_Date = toTimestamp(currentDate()),",
 				"          Date_last_modified = toString(null()),",
 				"          Created_By = 'IN1677',",
 				"          Created_Timestamp = currentTimestamp(),",
 				"          Last_Updated_By = toString(null()),",
-				"          Last_Update_Timestamp = toTimestamp(null())) ~> derivedColumn3",
-				"surrogateKey4 derive(Delete_flg = 'N',",
+				"          Last_Update_Timestamp = toTimestamp(null())) ~> AuditFieldsI",
+				"SurSaleRep derive(Delete_flg = 'N',",
 				"          Active_Flag = 'Y',",
 				"          Create_Date = toTimestamp(currentDate()),",
 				"          Date_Last_Modified = toTimestamp(null()),",
 				"          Created_By = 'IN1677',",
 				"          Created_Timestamp = currentTimestamp(),",
 				"          Last_Updated_By = toString(null()),",
-				"          Last_Update_Timestamp = toTimestamp(null())) ~> derivedColumn4",
-				"surrogateKey5 derive(Delete_Flag = 'N',",
+				"          Last_Update_Timestamp = toTimestamp(null())) ~> AuditFieldsSR",
+				"SurEstimate derive(Delete_Flag = 'N',",
 				"          Create_Date = toTimestamp(currentDate()),",
 				"          Date_Created = toTimestamp(currentDate()),",
 				"          Date_Last_Modified_Gmt = toTimestamp(null()),",
 				"          Created_By = 'IN1677',",
 				"          Created_Timestamp = currentTimestamp(),",
 				"          Last_Updated_By = toString(null()),",
-				"          Last_Update_Timestamp = toTimestamp(null())) ~> derivedColumn5",
-				"AuditFields select(mapColumn(",
+				"          Last_Update_Timestamp = toTimestamp(null())) ~> AuditFieldsE",
+				"AuditFieldsC select(mapColumn(",
 				"          Customer_Id,",
 				"          Customer_key,",
 				"          Company_Name,",
@@ -404,16 +404,16 @@
 				"          Active_Flag",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> Col",
-				"SCustomersKey derive(Delete_Flg = 'N',",
+				"     skipDuplicateMapOutputs: true) ~> Cus",
+				"SurCustomersKey derive(Delete_Flg = 'N',",
 				"          Create_Date = toTimestamp(currentDate()),",
 				"          Date_Last_Modified = toTimestamp(null()),",
 				"          Created_By = 'IN1677',",
 				"          Created_Timestamp = currentTimestamp(),",
 				"          Last_Updated_By = toString(null()),",
 				"          Last_Update_Timestamp = toTimestamp(null()),",
-				"          Active_Flag = 'Y') ~> AuditFields",
-				"derivedColumn2 select(mapColumn(",
+				"          Active_Flag = 'Y') ~> AuditFieldsC",
+				"AuditFieldsL select(mapColumn(",
 				"          Location_Id,",
 				"          Location_key,",
 				"          Name,",
@@ -430,8 +430,8 @@
 				"          Last_Update_Timestamp",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select7",
-				"derivedColumn3 select(mapColumn(",
+				"     skipDuplicateMapOutputs: true) ~> Loc",
+				"AuditFieldsI select(mapColumn(",
 				"          Item_Id,",
 				"          Items_key,",
 				"          Generic_Description,",
@@ -470,8 +470,8 @@
 				"          Last_Update_Timestamp",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select8",
-				"derivedColumn4 select(mapColumn(",
+				"     skipDuplicateMapOutputs: true) ~> It",
+				"AuditFieldsSR select(mapColumn(",
 				"          Sales_Rep_Id,",
 				"          SalesReps_key,",
 				"          Sales_Rep_Name,",
@@ -491,8 +491,8 @@
 				"          Last_Update_Timestamp",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select9",
-				"derivedColumn5 select(mapColumn(",
+				"     skipDuplicateMapOutputs: true) ~> SR",
+				"AuditFieldsE select(mapColumn(",
 				"          Estimate_key,",
 				"          Transaction_Id,",
 				"          Transaction_Line_Id,",
@@ -537,37 +537,37 @@
 				"          Last_Update_Timestamp",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select10",
-				"Col sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> EST",
+				"Cus sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['EDL_Customers'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> EdlCustomers",
-				"select7 sink(allowSchemaDrift: true,",
+				"Loc sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['EDL_Locations'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink2",
-				"select8 sink(allowSchemaDrift: true,",
+				"     partitionBy('hash', 1)) ~> EdlLocations",
+				"It sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['EDL_Products'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink3",
-				"select9 sink(allowSchemaDrift: true,",
+				"     partitionBy('hash', 1)) ~> EdlItems",
+				"SR sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['EDL_SalesReps'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink4",
-				"select10 sink(allowSchemaDrift: true,",
+				"     partitionBy('hash', 1)) ~> EdlSalesRep",
+				"EST sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['EDL_Estimate'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink5"
+				"     partitionBy('hash', 1)) ~> EdlEstimate"
 			]
 		}
 	}

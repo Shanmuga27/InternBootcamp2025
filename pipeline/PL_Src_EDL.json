@@ -256,7 +256,7 @@
 				]
 			},
 			{
-				"name": "Data flow1",
+				"name": "DF_SRC_EDL",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -296,26 +296,6 @@
 								"container": "boootcamp25",
 								"directory": "IN1677/workshop/edl",
 								"file": "EDL_Customers"
-							},
-							"sink2": {
-								"container": "boootcamp25",
-								"directory": "IN1677/workshop/edl",
-								"file": "EDL_Locations"
-							},
-							"sink3": {
-								"container": "boootcamp25",
-								"directory": "IN1677/workshop/edl",
-								"file": "EDL_Products"
-							},
-							"sink4": {
-								"container": "boootcamp25",
-								"directory": "IN1677/workshop/edl",
-								"file": "EDL_SalesReps"
-							},
-							"sink5": {
-								"container": "boootcamp25",
-								"directory": "IN1677/workshop/edl",
-								"file": "EDL_Estimate"
 							}
 						}
 					},
@@ -331,7 +311,7 @@
 				"type": "GetMetadata",
 				"dependsOn": [
 					{
-						"activity": "Data flow1",
+						"activity": "DF_SRC_EDL",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -359,6 +339,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -386,7 +367,7 @@
 					"isSequential": true,
 					"activities": [
 						{
-							"name": "Copy data1",
+							"name": "COPY_SRC_TO_EDL",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
