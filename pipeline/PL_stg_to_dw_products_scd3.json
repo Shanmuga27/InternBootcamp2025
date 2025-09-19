@@ -87,12 +87,6 @@
 					"dataflow": {
 						"referenceName": "DF_stg_to_dw_products_scd3",
 						"type": "DataFlowReference",
-						"parameters": {
-							"filename": {
-								"value": "'@{pipeline().parameters.filename}'",
-								"type": "Expression"
-							}
-						},
 						"datasetParameters": {
 							"source1": {
 								"container": "boootcamp25",

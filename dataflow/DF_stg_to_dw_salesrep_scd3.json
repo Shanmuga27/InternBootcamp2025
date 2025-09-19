@@ -1,5 +1,5 @@
 {
-	"name": "DF_stg_to_dw_products_scd3",
+	"name": "DF_stg_to_dw_salesrep_scd3",
 	"properties": {
 		"folder": {
 			"name": "stg_to_dw"
@@ -92,7 +92,7 @@
 				"          Sales_Rep_Address as string,",
 				"          Sales_Rep_City as string,",
 				"          Sales_Rep_Country as string,",
-				"          Sales_key as string,",
+				"          Sales_key as integer,",
 				"          Delete_flag as string,",
 				"          Created_by as string,",
 				"          Created_timestamp as timestamp,",

@@ -1,5 +1,5 @@
 {
-	"name": "DF_stg_to_dw_salesrep_scd3",
+	"name": "DF_stg_to_dw_products_scd3",
 	"properties": {
 		"folder": {
 			"name": "stg_to_dw"
