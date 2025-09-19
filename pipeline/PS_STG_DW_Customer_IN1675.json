@@ -277,6 +277,8 @@
 			{
 				"name": "copylocations",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -493,6 +495,47 @@
 						}
 					}
 				]
+			},
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_STG_DW_Items",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcItems": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/EDL_to_STG",
+								"FileName": "STG_Product.csv"
+							},
+							"TgtItems": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/TargetFiles",
+								"FileName": "Dim_Product.csv"
+							},
+							"DWItems": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/DWFiles",
+								"FileName": "DW_Product.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"folder": {
