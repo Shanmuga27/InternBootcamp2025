@@ -1,5 +1,5 @@
 {
-	"name": "DF_STG_DW_SCD1",
+	"name": "DF_STG_DW_SCD2",
 	"properties": {
 		"folder": {
 			"name": "Workshop/STG - DW"
@@ -29,13 +29,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "TGTCustomer"
-				},
-				{
-					"dataset": {
-						"referenceName": "DS_Blob_IN1684",
-						"type": "DatasetReference"
-					},
-					"name": "TGTCustomerUpdate"
 				}
 			],
 			"transformations": [
@@ -61,10 +54,13 @@
 					"name": "select3"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "union1"
 				},
 				{
-					"name": "derivedColumn2"
+					"name": "select4"
+				},
+				{
+					"name": "alterRow1"
 				}
 			],
 			"scriptLines": [
@@ -106,7 +102,8 @@
 				"     broadcast: 'auto')~> join",
 				"join split(isNull(DimCustomer@Customer_Id),",
 				"     select1@Customer_Id==DimCustomer@Customer_Id && (select1@Company_Name != DimCustomer@Company_Name),",
-				"     disjoint: true) ~> split1@(Insert, Update)",
+				"     select1@Customer_Id==DimCustomer@Customer_Id && (select1@Company_Name == DimCustomer@Company_Name),",
+				"     disjoint: true) ~> split1@(Insert, Update, Existing)",
 				"STGCustomer select(mapColumn(",
 				"          Customer_Id,",
 				"          Customer_key,",
@@ -125,7 +122,7 @@
 				"split1@Update alterRow(updateIf(true())) ~> updateif",
 				"insertif select(mapColumn(",
 				"          Customer_Id = split1@Insert@Customer_Id,",
-				"          Customer_key = split1@Insert@Customer_key,",
+				"          Customer_key,",
 				"          Company_Name = split1@Insert@Company_Name,",
 				"          Delete_Flg,",
 				"          Create_Date,",
@@ -139,7 +136,7 @@
 				"     skipDuplicateMapOutputs: false) ~> select2",
 				"updateif select(mapColumn(",
 				"          Customer_Id = split1@Update@Customer_Id,",
-				"          Customer_key = split1@Update@Customer_key,",
+				"          Customer_key,",
 				"          Company_Name = split1@Update@Company_Name,",
 				"          Delete_Flg,",
 				"          Create_Date,",
@@ -151,15 +148,23 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> select3",
-				"select2 derive(Create_Date = toTimestamp(currentDate()),",
-				"          Created_By = \"IN1684\",",
-				"          Created_Timestamp = currentTimestamp(),",
-				"          Company_Name = initCap(Company_Name)) ~> derivedColumn1",
-				"select3 derive(Date_Last_Modified = toTimestamp(currentDate()),",
-				"          Last_Updated_By = \"IN1684\",",
-				"          Last_Update_Timestamp = currentTimestamp(),",
-				"          Company_Name = initCap(Company_Name)) ~> derivedColumn2",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"select2, select3, select4 union(byName: true)~> union1",
+				"alterRow1 select(mapColumn(",
+				"          Customer_Id = split1@Existing@Customer_Id,",
+				"          Customer_key = split1@Existing@Customer_key,",
+				"          Company_Name = split1@Existing@Company_Name,",
+				"          Delete_Flg,",
+				"          Create_Date,",
+				"          Date_Last_Modified,",
+				"          Created_By = split1@Existing@Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By = split1@Existing@Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4",
+				"split1@Existing alterRow(insertIf(true())) ~> alterRow1",
+				"union1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['Dim_Customer'],",
 				"     skipDuplicateMapInputs: true,",
@@ -176,11 +181,7 @@
 				"          Last_Updated_By,",
 				"          Last_Update_Timestamp",
 				"     ),",
-				"     partitionBy('hash', 1)) ~> TGTCustomer",
-				"derivedColumn2 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> TGTCustomerUpdate"
+				"     partitionBy('hash', 1)) ~> TGTCustomer"
 			]
 		}
 	}
