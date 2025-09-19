@@ -83,28 +83,7 @@
 					"dataflow": {
 						"referenceName": "LocationsSCD2",
 						"type": "DataFlowReference",
-						"parameters": {
-							"filename": {
-								"value": "'@{pipeline().parameters.filename}'",
-								"type": "Expression"
-							}
-						},
 						"datasetParameters": {
-							"source1": {
-								"filename": "STG_Locations.csv",
-								"folder": "IN1674/Workshop_Target_File",
-								"container": "boootcamp25"
-							},
-							"source2": {
-								"filename": "Dm_Location",
-								"folder": "IN1674/Workshop_Target_File",
-								"container": "boootcamp25"
-							},
-							"source3": {
-								"filename": "STG_Locations.csv",
-								"folder": "IN1674/Workshop_Target_File",
-								"container": "boootcamp25"
-							},
 							"sink1": {
 								"filename": "Dm_Location",
 								"folder": "IN1674/Workshop_Target_File",
