@@ -1,0 +1,117 @@
+{
+	"name": "PL_STG_DW_Product",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_STG_DW_Product",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_STG_DW_SCD3",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"STGProduct": {
+								"PR_Directory": "IN1684/Workshop/STG",
+								"PR_Filename": "STG_Product"
+							},
+							"DimProduct": {
+								"PR_Directory": "IN1684/Workshop/TGT/Product",
+								"PR_Filename": "Dim_Product"
+							},
+							"TGTProduct": {
+								"PR_Directory": "IN1684/Workshop/TGT/Product",
+								"PR_Filename": "Dim_Product"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CP_Blob_Server",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DF_STG_DW_Product",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Workshop/TGT/Product",
+							"PR_Filename": "Dim_Product"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_Server_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Tablename": "Dim_Product",
+							"PR_Schema": "PMahendi",
+							"PR_Database": "ADF_Training"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Workshop/STG_DW"
+		},
+		"annotations": []
+	}
+}

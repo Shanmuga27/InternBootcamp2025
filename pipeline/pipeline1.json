@@ -46,7 +46,7 @@
 						"referenceName": "DS_SQL_Server_IN1684",
 						"type": "DatasetReference",
 						"parameters": {
-							"PR_Tablename": "Dim_Location",
+							"PR_Tablename": "Dim_Product",
 							"PR_Schema": "PMahendi",
 							"PR_Database": "ADF_Training"
 						}
@@ -57,8 +57,8 @@
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference",
 						"parameters": {
-							"PR_Directory": "IN1684/Workshop/TGT/Location",
-							"PR_Filename": "Dim_Location"
+							"PR_Directory": "IN1684/Workshop/TGT/Product",
+							"PR_Filename": "Dim_Product"
 						}
 					}
 				]

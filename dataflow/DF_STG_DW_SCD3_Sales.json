@@ -1,5 +1,5 @@
 {
-	"name": "DF_STG_DW_SCD3",
+	"name": "DF_STG_DW_SCD3_Sales",
 	"properties": {
 		"folder": {
 			"name": "Workshop/STG - DW"
@@ -12,14 +12,14 @@
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "STGProduct"
+					"name": "STGSales"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "DimProduct"
+					"name": "DimSales"
 				}
 			],
 			"sinks": [
@@ -28,7 +28,7 @@
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "TGTProduct"
+					"name": "TGTSales"
 				}
 			],
 			"transformations": [
@@ -110,7 +110,7 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> STGProduct",
+				"     ignoreNoFilesFound: false) ~> STGSales",
 				"source(output(",
 				"          Item_key as integer,",
 				"          Item_ID as integer,",
@@ -149,8 +149,8 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> DimProduct",
-				"STGProduct select(mapColumn(",
+				"     ignoreNoFilesFound: false) ~> DimSales",
+				"STGSales select(mapColumn(",
 				"          each(match(true()),",
 				"               'SRC_'+$$ = $$)",
 				"     ),",
@@ -254,7 +254,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> select4",
-				"DimProduct select(mapColumn(",
+				"DimSales select(mapColumn(",
 				"          each(match(true()),",
 				"               \"TGT_\"+$$ = $$)",
 				"     ),",
@@ -317,7 +317,7 @@
 				"     partitionFileNames:['Dim_Product'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> TGTProduct"
+				"     partitionBy('hash', 1)) ~> TGTSales"
 			]
 		}
 	}
