@@ -24,6 +24,32 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Locations_SCD2",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"srcLOC": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_STG_IN1686",
+								"File": "W2_Locations_STG_IN1686.csv"
+							},
+							"tgtLOC": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_TGT_IN1686",
+								"File": "W2_Locations_TGT_IN1686.csv"
+							},
+							"sink1": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_TGT_IN1686",
+								"File": "I_Locations_TGT_IN1686.csv"
+							},
+							"sink2": {
+								"Container": "boootcamp25",
+								"Folder": "IN1686/WORKSHOP/W2_TGT_IN1686",
+								"File": "U_Locations_TGT_IN1686.csv"
+							}
+						}
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
@@ -34,6 +60,8 @@
 			{
 				"name": "Locations tgt SQL_BLOB",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -95,8 +123,6 @@
 			{
 				"name": "Copy INS_BLOB_SQL",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DF_Loc_SCD2",
@@ -125,14 +151,47 @@
 							"type": "DelimitedTextReadSettings"
 						}
 					},
-					"enableStaging": false
-				}
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "boootcamp25",
+							"Folder": "IN1686/WORKSHOP/W2_TGT_IN1686",
+							"File": "I_Locations_TGT_IN1686.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Tablename": "Dm_Location",
+							"DB_Name": "ADF_Locations"
+						}
+					}
+				]
 			},
 			{
 				"name": "Copy UPD_BLOB_SQL",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DF_Loc_SCD2",
@@ -161,8 +220,43 @@
 							"type": "DelimitedTextReadSettings"
 						}
 					},
-					"enableStaging": false
-				}
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "boootcamp25",
+							"Folder": "IN1686/WORKSHOP/W2_TGT_IN1686",
+							"File": "U_Locations_TGT_IN1686.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Tablename": "Dm_Location",
+							"DB_Name": "ADF_Training"
+						}
+					}
+				]
 			}
 		],
 		"folder": {
