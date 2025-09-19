@@ -1,113 +1,9 @@
 {
-	"name": "PL_SCD3_SalesRep",
+	"name": "PL_DIM_EST_PO",
 	"properties": {
 		"activities": [
 			{
 				"name": "Copy data1",
-				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "SqlServerSource",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "DS_SqlServer",
-						"type": "DatasetReference",
-						"parameters": {
-							"schema": "JSivakum",
-							"table": "Dm_SalesRep",
-							"db": "ADF_Training"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "DS_Blob_IN1677_Tgt",
-						"type": "DatasetReference",
-						"parameters": {
-							"container": "boootcamp25",
-							"directory": "IN1677/workshop/tgt/sal",
-							"file": "Dm_SalesRep"
-						}
-					}
-				]
-			},
-			{
-				"name": "Data flow1",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "DF_SCD3_SalesRep",
-						"type": "DataFlowReference",
-						"datasetParameters": {
-							"SrcSalesRep": {
-								"directory": "IN1677/workshop/staging",
-								"file": "STG_SalesRep"
-							},
-							"TgtSalesRep": {
-								"container": "boootcamp25",
-								"directory": "IN1677/workshop/tgt/sal",
-								"file": "Dm_SalesRep"
-							},
-							"sink1": {
-								"container": "boootcamp25",
-								"directory": "IN1677/workshop/tgt/sal",
-								"file": "Dm_SalesRep1"
-							}
-						}
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			},
-			{
-				"name": "Copy data2",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -157,8 +53,8 @@
 						"referenceName": "DS_Blob_IN1677_Src",
 						"type": "DatasetReference",
 						"parameters": {
-							"directory": "IN1677/workshop/tgt/sal",
-							"file": "Dm_SalesRep1"
+							"directory": "IN1677/workshop/tgt/est",
+							"file": "estimate"
 						}
 					}
 				],
@@ -168,11 +64,124 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"schema": "JSivakum",
-							"table": "Dm_SalesRep",
+							"table": "FT_Estimate",
 							"db": "ADF_Training"
 						}
 					}
 				]
+			},
+			{
+				"name": "Copy data2",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Data flow1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"directory": "IN1677/workshop/tgt/po",
+							"file": "purchaseorder"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SqlServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "JSivakum",
+							"table": "FT_Purchaseorder",
+							"db": "ADF_Training"
+						}
+					}
+				]
+			},
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_STG_DM_Estimate_Purchaseorder",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"StgEstimate": {
+								"directory": "IN1677/workshop/staging",
+								"file": "STG_Estimate"
+							},
+							"StgPurchase": {
+								"directory": "IN1677/workshop/staging",
+								"file": "STG_Purchaseorder"
+							},
+							"sink1": {
+								"container": "boootcamp25",
+								"directory": "IN1677/workshop/tgt/est",
+								"file": "estimate"
+							},
+							"sink2": {
+								"container": "boootcamp25",
+								"directory": "IN1677/workshop/tgt/po",
+								"file": "purchaseorder"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"folder": {

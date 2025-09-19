@@ -9,14 +9,14 @@
 						"referenceName": "DS_Blob_IN1677_Src",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "SrcSalesRep"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_Blob_IN1677_Tgt",
 						"type": "DatasetReference"
 					},
-					"name": "source2"
+					"name": "TgtSalesRep"
 				}
 			],
 			"sinks": [
@@ -30,13 +30,37 @@
 			],
 			"transformations": [
 				{
+					"name": "src"
+				},
+				{
+					"name": "tgt"
+				},
+				{
+					"name": "order"
+				},
+				{
+					"name": "SrcJoinTgt"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "alterRow2"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "union1"
+				},
+				{
 					"name": "select1"
-				},
-				{
-					"name": "select2"
-				},
-				{
-					"name": "select3"
 				}
 			],
 			"scriptLines": [
@@ -61,19 +85,44 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
-				"source(allowSchemaDrift: true,",
+				"     ignoreNoFilesFound: false) ~> SrcSalesRep",
+				"source(output(",
+				"          SalesRep_key as integer,",
+				"          Sales_Rep_Id as integer,",
+				"          Sales_Rep_Name as string,",
+				"          Sales_Rep_Address as string,",
+				"          Sales_Rep_City as string,",
+				"          Prev_Sales_Rep_City as string,",
+				"          Sales_Rep_Country as string,",
+				"          Prev_Sales_Rep_Country as string,",
+				"          Sales_Rep_Email as string,",
+				"          Sales_Rep_Loginaccess as string,",
+				"          Sales_Rep_Phone as string,",
+				"          Prev_Sales_Rep_Phone as string,",
+				"          Delete_Flg as string,",
+				"          Create_Date as timestamp,",
+				"          Date_Last_Modified as timestamp,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp_src as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source2",
-				"source1 select(mapColumn(",
+				"     ignoreNoFilesFound: false) ~> TgtSalesRep",
+				"SrcSalesRep select(mapColumn(",
 				"          each(match(true()  ),",
 				"               $$+'_src' = $$)",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"source2 select(skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2",
-				"select1 select(mapColumn(",
+				"     skipDuplicateMapOutputs: true) ~> src",
+				"TgtSalesRep select(mapColumn(",
+				"          each(match(true()  ),",
+				"               $$+'_tgt' = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> tgt",
+				"src select(mapColumn(",
 				"          SalesRep_key_src = SalesReps_key_src,",
 				"          Sales_Rep_Id_src,",
 				"          Sales_Rep_Name_src,",
@@ -92,10 +141,61 @@
 				"          Last_Update_Timestamp_src",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select3",
-				"select3 sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> order",
+				"order, tgt join(Sales_Rep_Id_src == Sales_Rep_Id_tgt,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> SrcJoinTgt",
+				"SrcJoinTgt split(isNull(Sales_Rep_Id_tgt),",
+				"     (Sales_Rep_Id_src==Sales_Rep_Id_tgt)&&(Sales_Rep_City_src!=Sales_Rep_City_tgt || Sales_Rep_Country_src!=Sales_Rep_Country_tgt || Sales_Rep_Phone_src!=Sales_Rep_Phone_tgt),",
+				"     disjoint: false) ~> split1@(insert, update)",
+				"split1@insert alterRow(insertIf(true())) ~> alterRow1",
+				"split1@update alterRow(updateIf(true())) ~> alterRow2",
+				"alterRow1 derive(Prev_Sales_Rep_City_tgt = toString(null()),",
+				"          Prev_Sales_Rep_Country_tgt = toString(null()),",
+				"          Prev_Sales_Rep_Phone_tgt = toString(null()),",
+				"          Delete_Flg_src = 'N',",
+				"          Create_Date_src = currentTimestamp(),",
+				"          Date_Last_Modified_src = toTimestamp(null()),",
+				"          Created_By_src = 'IN1677',",
+				"          Created_Timestamp_src = currentTimestamp(),",
+				"          Last_Updated_By_src = toString(null()),",
+				"          Last_Update_Timestamp_src = toTimestamp(null())) ~> derivedColumn1",
+				"alterRow2 derive(Prev_Sales_Rep_City_tgt = Sales_Rep_City_tgt,",
+				"          Prev_Sales_Rep_Country_tgt = Sales_Rep_Country_tgt,",
+				"          Prev_Sales_Rep_Phone_tgt = Sales_Rep_Phone_tgt,",
+				"          Delete_Flg_src = 'Y',",
+				"          Date_Last_Modified_tgt = currentTimestamp(),",
+				"          Last_Updated_By_tgt = 'IN1677',",
+				"          Last_Update_Timestamp_src_tgt = currentTimestamp()) ~> derivedColumn2",
+				"derivedColumn1, derivedColumn2 union(byName: true)~> union1",
+				"union1 select(mapColumn(",
+				"          SalesRep_key = SalesRep_key_src,",
+				"          Sales_Rep_Id = Sales_Rep_Id_src,",
+				"          Sales_Rep_Name = Sales_Rep_Name_src,",
+				"          Sales_Rep_Address = Sales_Rep_Address_src,",
+				"          Sales_Rep_City = Sales_Rep_City_src,",
+				"          Prev_Sales_Rep_City = Prev_Sales_Rep_City_tgt,",
+				"          Sales_Rep_Country = Sales_Rep_Country_src,",
+				"          Prev_Sales_Rep_Country = Prev_Sales_Rep_Country_tgt,",
+				"          Sales_Rep_Email = Sales_Rep_Email_src,",
+				"          Sales_Rep_Loginaccess = Sales_Rep_Loginaccess_src,",
+				"          Sales_Rep_Phone = Sales_Rep_Phone_src,",
+				"          Prev_Sales_Rep_Phone = Prev_Sales_Rep_Phone_tgt,",
+				"          Delete_Flg = Delete_Flg_src,",
+				"          Create_Date = Create_Date_src,",
+				"          Date_Last_Modified = Date_Last_Modified_src,",
+				"          Created_By = Created_By_src,",
+				"          Created_Timestamp = Created_Timestamp_src,",
+				"          Last_Updated_By = Last_Updated_By_src,",
+				"          Last_Update_Timestamp_src",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['Dm_SalesRep'],",
+				"     partitionFileNames:['Dm_SalesRep1'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sink1"
