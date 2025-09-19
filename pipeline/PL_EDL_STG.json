@@ -5,6 +5,8 @@
 			{
 				"name": "Data flow1",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -58,6 +60,122 @@
 								"container": "boootcamp25",
 								"folder": "IN1689/workshop-sttm/STG",
 								"filename": "STG_SalesReps.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Data flow2",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "EDL_STG_Estimate",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCestimate": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop-sttm/EDL",
+								"filename": "EDL_Estimate.csv"
+							},
+							"SRCcustomers": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop-sttm/EDL",
+								"filename": "EDL_Customers.csv"
+							},
+							"SRClocations": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop-sttm/EDL",
+								"filename": "EDL_Locations.csv"
+							},
+							"SRCproducts": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop-sttm/EDL",
+								"filename": "EDL_Products.csv"
+							},
+							"SRCsalesReps": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop-sttm/EDL",
+								"filename": "EDL_SalesReps.csv"
+							},
+							"sink1": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop-sttm/STG",
+								"filename": "STG_Estimate.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Data flow3",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "EDL_STG_Estimate_copy1",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCestimate": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop-sttm/EDL",
+								"filename": "EDL_Estimate.csv"
+							},
+							"SRCcustomers": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop-sttm/EDL",
+								"filename": "EDL_Customers.csv"
+							},
+							"SRClocations": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop-sttm/EDL",
+								"filename": "EDL_Locations.csv"
+							},
+							"SRCproducts": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop-sttm/EDL",
+								"filename": "EDL_Products.csv"
+							},
+							"SRCsalesReps": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop-sttm/EDL",
+								"filename": "EDL_SalesReps.csv"
+							},
+							"sink1": {
+								"container": "boootcamp25",
+								"folder": "IN1689/workshop-sttm/STG",
+								"filename": "STG_Purchaseorder.csv"
 							}
 						}
 					},

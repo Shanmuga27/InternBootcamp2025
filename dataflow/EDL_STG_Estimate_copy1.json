@@ -376,7 +376,7 @@
 				"     skipDuplicateMapOutputs: true) ~> select4",
 				"select4 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['STG_Estimate.csv'],",
+				"     partitionFileNames:['STG_Purchaseorder.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sink1"
