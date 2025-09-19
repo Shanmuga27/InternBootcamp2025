@@ -1,6 +1,9 @@
 {
 	"name": "DF_SRC_Customer_EDL_IN1686",
 	"properties": {
+		"folder": {
+			"name": "workshop/SRC_EDL"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [

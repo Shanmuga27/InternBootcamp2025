@@ -969,6 +969,9 @@
 				"defaultValue": "IN1686_SanjayKomala"
 			}
 		},
+		"folder": {
+			"name": "EXERCISE"
+		},
 		"annotations": []
 	}
 }

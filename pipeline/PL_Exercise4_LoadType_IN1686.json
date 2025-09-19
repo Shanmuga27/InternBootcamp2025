@@ -375,6 +375,9 @@
 				"type": "String"
 			}
 		},
+		"folder": {
+			"name": "EXERCISE"
+		},
 		"annotations": []
 	}
 }

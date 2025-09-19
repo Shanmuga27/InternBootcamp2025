@@ -1,6 +1,9 @@
 {
 	"name": "DF_Exercise4_OrdersUnion_IN1686",
 	"properties": {
+		"folder": {
+			"name": "EXERCISE"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
