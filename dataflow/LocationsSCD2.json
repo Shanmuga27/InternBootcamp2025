@@ -24,10 +24,11 @@
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference"
+					},
 					"name": "sink1"
-				},
-				{
-					"name": "sink2"
 				}
 			],
 			"transformations": [
@@ -57,11 +58,14 @@
 				},
 				{
 					"name": "select1"
+				},
+				{
+					"name": "union1"
 				}
 			],
 			"scriptLines": [
 				"source(output(",
-				"          Location_Id as short,",
+				"          Location_Id as string,",
 				"          Name as string,",
 				"          City as string,",
 				"          Country as string,",
@@ -100,19 +104,19 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> tgtLOC",
-				"derivedColumn2, selectTGT join(srcLOC@Location_Id == T_Location_ID,",
+				"derivedColumn2, selectTGT join(srcLOC@Location_Id == selectTGT@Location_ID,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> leftjoin",
-				"leftjoin split(isNull(T_Location_ID) || (srcLOC@Location_Id == T_Location_ID || Location_City != T_Location_City || Location_Country != T_Location_Country),",
-				"     (srcLOC@Location_Id == T_Location_ID || Location_City != T_Location_City ||Location_Country != T_Location_Country),",
+				"leftjoin split(isNull(srcLOC@Location_Id) || (srcLOC@Location_Id == selectTGT@Location_ID || Location_City != selectTGT@Location_ID || Location_Country != selectTGT@Location_ID),",
+				"     (srcLOC@Location_Id == selectTGT@Location_ID || Location_City != Location_City ||Location_Country != Location_Country),",
 				"     disjoint: true) ~> split1@(InsertStream, UpdateStream)",
 				"split1@UpdateStream derive(Last_Modified_Date = currentTimestamp(),",
 				"          Last_Modified_Time = currentTimestamp(),",
 				"          Delete_Flag = 'Y',",
 				"          Active_Flag = 'N') ~> derivedColumn1",
-				"srcLOC derive(Location_Zipcode = iif(length(Location_Zipcode)==6, Location_Zipcode, iif(length(Location_Zipcode)>6, rtrim(Location_Zipcode), lpad(Location_Zipcode,6,'0')))) ~> derivedColumn2",
+				"srcLOC derive(Location_Zipcode = iif(length(Zipcode)==6, Zipcode, iif(length(Zipcode)>6, rtrim(Zipcode), lpad(Zipcode,6,'0')))) ~> derivedColumn2",
 				"split1@InsertStream alterRow(insertIf(true())) ~> alterRowInsert",
 				"derivedColumn1 alterRow(updateIf(true())) ~> alterRowUpdate",
 				"tgtLOC select(mapColumn(",
@@ -203,18 +207,13 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"selectSRCcolumns sink(allowSchemaDrift: true,",
+				"selectSRCcolumns, select1 union(byName: true)~> union1",
+				"union1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['I_Locations_TGT_IN1686.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink1",
-				"select1 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     partitionFileNames:['U_Locations_TGT_IN1686.csv'],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink2"
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}
