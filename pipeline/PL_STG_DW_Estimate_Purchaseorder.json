@@ -36,7 +36,8 @@
 					"sink": {
 						"type": "SqlServerSink",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
 					},
 					"enableStaging": false,
 					"translator": {
@@ -73,6 +74,8 @@
 			{
 				"name": "DF_STG_DW_Estimate_PurchaseOrder",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -85,7 +88,25 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "DF_STG_DW",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"STGEstimate": {
+								"PR_Directory": "IN1684/Workshop/STG",
+								"PR_Filename": "STG_Estimate"
+							},
+							"STGPurchaseorder": {
+								"PR_Directory": "IN1684/Workshop/STG",
+								"PR_Filename": "STG_Purchaseorder"
+							},
+							"FTEstimate": {
+								"PR_Directory": "IN1684/Workshop/TGT/Estimate",
+								"PR_Filename": "FT_Estimate"
+							},
+							"FTPurchaseorder": {
+								"PR_Directory": "IN1684/Workshop/TGT/Purchaseorder",
+								"PR_Filename": "FT_Purchaseorder"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
@@ -114,8 +135,54 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"enableStaging": false
-				}
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Workshop/TGT/Purchaseorder",
+							"PR_Filename": "FT_Purchaseorder"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_Server_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Tablename": "FT_Purchaseorder",
+							"PR_Schema": "PMahendi",
+							"PR_Database": "ADF_Training"
+						}
+					}
+				]
 			}
 		],
 		"folder": {
