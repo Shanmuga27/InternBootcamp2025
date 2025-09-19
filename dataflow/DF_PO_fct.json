@@ -1,0 +1,107 @@
+{
+	"name": "DF_PO_fct",
+	"properties": {
+		"folder": {
+			"name": "workshop/STG_DW"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "srcSTGPO"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "surrogateKey1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Transaction_Id as string,",
+				"          Transaction_Line_Id as integer,",
+				"          Memo_descr as string,",
+				"          Sticker_Requirements_Descr as string,",
+				"          Inner_Requirements_Descr as string,",
+				"          Customer_Requirements_Descr as string,",
+				"          Sales_Program_Descr as string,",
+				"          Buyer_Dept_Descr as string,",
+				"          Buyer_Confirmed_On as string,",
+				"          Dept_Program_Descr as string,",
+				"          Program_Descr as string,",
+				"          Cancelled_Descr as string,",
+				"          Confidence_Factor_Id as string,",
+				"          Company_Id as integer,",
+				"          Item_Id as integer,",
+				"          Location_Id as integer,",
+				"          Sales_Rep_Id as integer,",
+				"          Document_Nbr as string,",
+				"          Price_Sticker_Id as string,",
+				"          PO_Nbr as integer,",
+				"          Release_Order_Nbr as string,",
+				"          CNTNR_Nbr as string,",
+				"          ETD_Ship_Date as timestamp,",
+				"          Ship_Date_Outbound_Date as timestamp,",
+				"          Cancel_Date_Outbound_Date as timestamp,",
+				"          Expiration_Date as timestamp,",
+				"          ETA_Arrival_Date as timestamp,",
+				"          Item_Qty as integer,",
+				"          Inner_Qty as string,",
+				"          Release_Qty as string,",
+				"          Quantity_Received_In_Shipment as string,",
+				"          Item_Unit_Price as string,",
+				"          Amount as string,",
+				"          Created_Date as timestamp,",
+				"          Last_Modified_Date as timestamp,",
+				"          Delete_Flag as string,",
+				"          Created_Time as timestamp,",
+				"          Created_By as string,",
+				"          Last_Modified_Time as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Modified_GMT as timestamp,",
+				"          Customer_Id_KEY as integer,",
+				"          Sales_Rep_Id_KEY as integer,",
+				"          Item_Id_KEY as integer,",
+				"          Location_Id_KEY as integer,",
+				"          Location_Name as string,",
+				"          Location_City as string,",
+				"          Sticker_Requirement_Purchase_descr as string,",
+				"          Confidence_Factor_descr as string,",
+				"          Final_Destination_Container as string,",
+				"          PRICE_STICKER_descr as string,",
+				"          Month_Ship_Date as date,",
+				"          ETD_date as date,",
+				"          MS_Domestic_Ship_Date as timestamp,",
+				"          MS_Domestic_Cancel_Date as timestamp,",
+				"          Level_Descr as string,",
+				"          Month_ETD_date as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcSTGPO",
+				"srcSTGPO keyGenerate(output(Purchase_Order_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"surrogateKey1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['FCT_PO_tgt.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

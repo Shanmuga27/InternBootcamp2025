@@ -50,11 +50,11 @@
 					"name": "split1"
 				},
 				{
-					"name": "derivedColumn2",
+					"name": "derivedUpdateValues",
 					"description": "derivedUPD"
 				},
 				{
-					"name": "derivedColumn3"
+					"name": "derivedInsertValues"
 				},
 				{
 					"name": "select1"
@@ -147,9 +147,9 @@
 				"     disjoint: true) ~> split1@(InsertStream, UpdateStream)",
 				"split1@UpdateStream derive(Current_Sales_Rep_City = Sales_Rep_City,",
 				"          Previous_Sales_Rep_City = Current_Sales_Rep_City,",
-				"          Sales_Rep_City = T_Sales_Rep_City) ~> derivedColumn2",
-				"split1@InsertStream derive(Current_Sales_Rep_City = Sales_Rep_City) ~> derivedColumn3",
-				"derivedColumn3 select(mapColumn(",
+				"          Sales_Rep_City = T_Sales_Rep_City) ~> derivedUpdateValues",
+				"split1@InsertStream derive(Current_Sales_Rep_City = Sales_Rep_City) ~> derivedInsertValues",
+				"derivedInsertValues select(mapColumn(",
 				"          Sales_S_Key,",
 				"          Sales_Rep_Id,",
 				"          Sales_Rep_Name,",
@@ -174,7 +174,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"derivedColumn2 select(mapColumn(",
+				"derivedUpdateValues select(mapColumn(",
 				"          Sales_S_Key,",
 				"          Sales_Rep_Id,",
 				"          Sales_Rep_Name,",
