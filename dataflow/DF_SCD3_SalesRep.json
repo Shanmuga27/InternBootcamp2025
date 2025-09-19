@@ -1,0 +1,105 @@
+{
+	"name": "DF_SCD3_SalesRep",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "select3"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Sales_Rep_Id as integer,",
+				"          SalesReps_key as integer,",
+				"          Sales_Rep_Name as string,",
+				"          Sales_Rep_Address as string,",
+				"          Sales_Rep_City as string,",
+				"          Sales_Rep_Country as string,",
+				"          Sales_Rep_Email as string,",
+				"          Sales_Rep_Loginaccess as string,",
+				"          Sales_Rep_Phone as string,",
+				"          Delete_Flg as string,",
+				"          Active_Flag as string,",
+				"          Create_Date as timestamp,",
+				"          Date_Last_Modified as timestamp,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source2",
+				"source1 select(mapColumn(",
+				"          each(match(true()  ),",
+				"               $$+'_src' = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"source2 select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select1 select(mapColumn(",
+				"          SalesRep_key_src = SalesReps_key_src,",
+				"          Sales_Rep_Id_src,",
+				"          Sales_Rep_Name_src,",
+				"          Sales_Rep_Address_src,",
+				"          Sales_Rep_City_src,",
+				"          Sales_Rep_Country_src,",
+				"          Sales_Rep_Email_src,",
+				"          Sales_Rep_Loginaccess_src,",
+				"          Sales_Rep_Phone_src,",
+				"          Delete_Flg_src,",
+				"          Create_Date_src,",
+				"          Date_Last_Modified_src,",
+				"          Created_By_src,",
+				"          Created_Timestamp_src,",
+				"          Last_Updated_By_src,",
+				"          Last_Update_Timestamp_src",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dm_SalesRep'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

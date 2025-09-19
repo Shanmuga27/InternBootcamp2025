@@ -1,0 +1,9 @@
+{
+	"name": "PL_SCD3_SalesRep",
+	"properties": {
+		"folder": {
+			"name": "workshop/SCD"
+		},
+		"annotations": []
+	}
+}
