@@ -1,13 +1,51 @@
 {
-	"name": "PL_STG_DW_Estimate_Purchaseorder",
+	"name": "PL_STG_DW_SalesRep",
 	"properties": {
 		"activities": [
 			{
-				"name": "CP_STG_DW_Estimate",
+				"name": "DF_STG_DW_SalesRep",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_STG_DW_SCD3_Sales",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"STGSales": {
+								"PR_Directory": "IN1684/Workshop/STG",
+								"PR_Filename": "STG_SalesRep"
+							},
+							"DimSales": {
+								"PR_Directory": "IN1684/Workshop/TGT/SalesRep",
+								"PR_Filename": "Dim_SalesRep"
+							},
+							"TGTSales": {
+								"PR_Directory": "IN1684/Workshop/TGT/SalesRep",
+								"PR_Filename": "Dim_SalesRep"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CP_STG_DW",
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "DF_STG_DW_Estimate_PurchaseOrder",
+						"activity": "DF_STG_DW_SalesRep",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -53,8 +91,8 @@
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference",
 						"parameters": {
-							"PR_Directory": "IN1684/Workshop/TGT/Estimate",
-							"PR_Filename": "FT_Estimate"
+							"PR_Directory": "IN1684/Workshop/TGT/SalesRep",
+							"PR_Filename": "Dim_SalesRep"
 						}
 					}
 				],
@@ -63,59 +101,12 @@
 						"referenceName": "DS_SQL_Server_IN1684",
 						"type": "DatasetReference",
 						"parameters": {
-							"PR_Tablename": "FT_Estimate",
+							"PR_Tablename": "Dim_SalesRep",
 							"PR_Schema": "PMahendi",
 							"PR_Database": "ADF_Training"
 						}
 					}
 				]
-			},
-			{
-				"name": "DF_STG_DW_Estimate_PurchaseOrder",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "DF_STG_DW",
-						"type": "DataFlowReference"
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			},
-			{
-				"name": "CP_STG_DW_Purchaseorder",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "DF_STG_DW_Estimate_PurchaseOrder",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"enableStaging": false
-				}
 			}
 		],
 		"folder": {
