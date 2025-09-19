@@ -14,7 +14,8 @@
 		"globalConfigurations": {
 			"PipelineBillingEnabled": "false",
 			"factoryStagingLSReferenceName": "LS_Azure_Blob_Storage",
-			"factoryStagingLSType": "LinkedServiceReference"
+			"factoryStagingLSType": "LinkedServiceReference",
+			"factoryStagingFolderPath": "boootcamp25"
 		}
 	},
 	"location": "centralindia",
