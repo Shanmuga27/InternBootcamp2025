@@ -1,0 +1,177 @@
+{
+	"name": "DF_Locations_SCD2",
+	"properties": {
+		"folder": {
+			"name": "workshop/STG_DW"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "srcLOC"
+				},
+				{
+					"name": "tgtLOC"
+				}
+			],
+			"sinks": [
+				{
+					"name": "sink1"
+				},
+				{
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "leftjoin",
+					"description": "Left join on 'srcLOC' and 'tgtLOC'"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2",
+					"description": "ZipCode"
+				},
+				{
+					"name": "alterRowInsert"
+				},
+				{
+					"name": "alterRowUpdate"
+				},
+				{
+					"name": "selectTGT"
+				},
+				{
+					"name": "selectSRCcolumns"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Locations_S_Key as integer,",
+				"          Location_Id as integer,",
+				"          Location_Name as string,",
+				"          Location_City as string,",
+				"          Location_Country as string,",
+				"          Location_State as string,",
+				"          Location_Zipcode as string,",
+				"          Last_Modified_Date as timestamp,",
+				"          Delete_Flag as string,",
+				"          Active_Flag as string,",
+				"          Created_Time as timestamp,",
+				"          Created_By as string,",
+				"          Last_Modified_Time as timestamp,",
+				"          Last_Updated_By as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> srcLOC",
+				"source(output(",
+				"          Locations_S_Key as integer,",
+				"          Location_Id as integer,",
+				"          Location_Name as string,",
+				"          Location_City as string,",
+				"          Location_Country as string,",
+				"          Location_State as string,",
+				"          Location_Zipcode as string,",
+				"          Last_Modified_Date as timestamp,",
+				"          Delete_Flag as string,",
+				"          Active_Flag as string,",
+				"          Created_Time as timestamp,",
+				"          Created_By as string,",
+				"          Last_Modified_Time as timestamp,",
+				"          Last_Updated_By as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> tgtLOC",
+				"derivedColumn2, selectTGT join(Location_Id == T_Location_Id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> leftjoin",
+				"leftjoin split(isNull(T_Location_Id) || (Location_Id == T_Location_Id || Location_City != T_Location_City || Location_Country != T_Location_Country),",
+				"     (Location_Id == T_Location_Id || Location_City != T_Location_City || Location_Country != T_Location_Country),",
+				"     disjoint: true) ~> split1@(InsertStream, UpdateStream)",
+				"split1@UpdateStream derive(Last_Modified_Date = currentTimestamp(),",
+				"          Last_Modified_Time = currentTimestamp(),",
+				"          Delete_Flag = 'Y',",
+				"          Active_Flag = 'N') ~> derivedColumn1",
+				"srcLOC derive(Location_Zipcode = iif(length(Location_Zipcode)==6, Location_Zipcode, iif(length(Location_Zipcode)>6, rtrim(Location_Zipcode), lpad(Location_Zipcode,6,'0')))) ~> derivedColumn2",
+				"split1@InsertStream alterRow(insertIf(true())) ~> alterRowInsert",
+				"derivedColumn1 alterRow(updateIf(true())) ~> alterRowUpdate",
+				"tgtLOC select(mapColumn(",
+				"          T_Locations_S_Key = Locations_S_Key,",
+				"          T_Location_Id = Location_Id,",
+				"          T_Location_Name = Location_Name,",
+				"          T_Location_City = Location_City,",
+				"          T_Location_Country = Location_Country,",
+				"          T_Location_State = Location_State,",
+				"          T_Location_Zipcode = Location_Zipcode,",
+				"          T_Last_Modified_Date = Last_Modified_Date,",
+				"          T_Delete_Flag = Delete_Flag,",
+				"          T_Active_Flag = Active_Flag,",
+				"          T_Created_Time = Created_Time,",
+				"          T_Created_By = Created_By,",
+				"          T_Last_Modified_Time = Last_Modified_Time,",
+				"          T_Last_Updated_By = Last_Updated_By",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectTGT",
+				"alterRowInsert select(mapColumn(",
+				"          Locations_S_Key,",
+				"          Location_Id,",
+				"          Location_Name,",
+				"          Location_City,",
+				"          Location_Country,",
+				"          Location_State,",
+				"          Location_Zipcode,",
+				"          Last_Modified_Date,",
+				"          Delete_Flag,",
+				"          Active_Flag,",
+				"          Created_Time,",
+				"          Created_By,",
+				"          Last_Modified_Time,",
+				"          Last_Updated_By",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSRCcolumns",
+				"alterRowUpdate select(mapColumn(",
+				"          Locations_S_Key,",
+				"          Location_Id,",
+				"          Location_Name,",
+				"          Location_City,",
+				"          Location_Country,",
+				"          Location_State,",
+				"          Location_Zipcode,",
+				"          Last_Modified_Date,",
+				"          Delete_Flag,",
+				"          Active_Flag,",
+				"          Created_Time,",
+				"          Created_By,",
+				"          Last_Modified_Time,",
+				"          Last_Updated_By",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"selectSRCcolumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['SCD2_Locations_tgt1.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['SCD2_Locations_t2.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink2"
+			]
+		}
+	}
+}
