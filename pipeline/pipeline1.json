@@ -1,0 +1,191 @@
+{
+	"name": "pipeline1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_EX_IN1674",
+						"type": "DatasetReference",
+						"parameters": {
+							"schemaname": "CKumaram",
+							"tablename": "EDL_Customer",
+							"Database": "ADF_Training"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "Dm_Customer",
+							"folder": "IN1674/STG_FILES",
+							"container": "boootcamp25"
+						}
+					}
+				]
+			},
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "SCD1CUSTOMER",
+						"type": "DataFlowReference",
+						"parameters": {
+							"filename": {
+								"value": "'@{pipeline().parameters.filename}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"source1": {
+								"filename": "STD_customer",
+								"folder": "IN1674/Workshop_Target_File",
+								"container": "boootcamp25"
+							},
+							"source2": {
+								"filename": "Dm_Customer",
+								"folder": "IN1674/Workshop_Target_File",
+								"container": "boootcamp25"
+							},
+							"sink1": {
+								"filename": "Dm_Customer",
+								"folder": "IN1674/Workshop_Target_File",
+								"container": "boootcamp25"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Copy data2",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "Dm_Customer_Final.CSV",
+							"folder": "IN1674/Workshop_Target_File",
+							"container": "boootcamp25"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_EX_IN1674",
+						"type": "DatasetReference",
+						"parameters": {
+							"schemaname": "CKumaram",
+							"tablename": "Customer_Final_TB",
+							"Database": "ADF_Training"
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"filename": {
+				"type": "string",
+				"defaultValue": "Dm_Customer_Final"
+			}
+		},
+		"annotations": []
+	}
+}

@@ -1,0 +1,47 @@
+{
+	"name": "puechaseorder",
+	"properties": {
+		"folder": {
+			"name": "stg_to_dw"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "SrcOfPO"
+				}
+			],
+			"sinks": [
+				{
+					"name": "SinkOfPO"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SKForPo"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     filename as string",
+				"}",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcOfPO",
+				"SrcOfPO keyGenerate(output(Purchase_Order_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SKForPo",
+				"SKForPo sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:[($filename)],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SinkOfPO"
+			]
+		}
+	}
+}
