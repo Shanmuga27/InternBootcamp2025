@@ -1,5 +1,5 @@
 {
-	"name": "pipeline3",
+	"name": "sql_to_csv_IN1680",
 	"properties": {
 		"activities": [
 			{
@@ -47,7 +47,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"SchemaName": "KRavi",
-							"TableName": "Dm_SalesRep",
+							"TableName": "Customers",
 							"DatabaseName": "ADF_Training"
 						}
 					}
@@ -58,13 +58,16 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "boootcamp25",
-							"folder": "IN1680/workshop_dw_src",
-							"file": "salesrep.csv"
+							"folder": "IN1680",
+							"file": "tgt_customers_IN1680"
 						}
 					}
 				]
 			}
 		],
+		"folder": {
+			"name": "ex3"
+		},
 		"annotations": []
 	}
 }
