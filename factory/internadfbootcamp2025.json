@@ -12,7 +12,7 @@
 			}
 		},
 		"globalConfigurations": {
-			"PipelineBillingEnabled": "false",
+			"PipelineBillingEnabled": "true",
 			"factoryStagingLSReferenceName": "LS_Azure_Blob_Storage",
 			"factoryStagingLSType": "LinkedServiceReference",
 			"factoryStagingFolderPath": "boootcamp25"
