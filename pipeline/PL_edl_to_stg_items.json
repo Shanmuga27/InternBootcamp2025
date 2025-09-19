@@ -43,11 +43,82 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "CD_products",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Data flow1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680/workshop_stg",
+							"file": "products.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_Server_IN1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "KRavi",
+							"TableName": "STG_Product",
+							"DatabaseName": "ADF_Training"
+						}
+					}
+				]
 			}
 		],
 		"parameters": {
 			"filename": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "products.csv"
 			}
 		},
 		"folder": {
