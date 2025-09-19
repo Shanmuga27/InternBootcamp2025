@@ -2,7 +2,7 @@
 	"name": "SalesSCD3",
 	"properties": {
 		"folder": {
-			"name": "stg_to_dw"
+			"name": "Workshop_answers/stg_to_dw"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
