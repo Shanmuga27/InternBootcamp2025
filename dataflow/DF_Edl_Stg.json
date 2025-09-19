@@ -555,7 +555,7 @@
 				"          Master_Carton_req_descr = Master_Carton_Rqmnts,",
 				"          Trade_Partner_Name,",
 				"          Type_Name,",
-				"          Trade_Partner_Name = Trade_Partner_Code,",
+				"          Trade_Partner_Code,",
 				"          VendorName,",
 				"          UPC_nbr = UPC,",
 				"          ON_Hand_Quality = QunatityOnHand,",
