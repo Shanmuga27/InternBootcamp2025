@@ -184,7 +184,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Tablename": "Dm_Location",
-							"DB_Name": "ADF_Locations"
+							"DB_Name": "ADF_Training"
 						}
 					}
 				]
