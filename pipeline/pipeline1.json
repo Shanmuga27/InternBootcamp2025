@@ -84,6 +84,16 @@
 						"referenceName": "LocationsSCD2",
 						"type": "DataFlowReference",
 						"datasetParameters": {
+							"srcLOC": {
+								"filename": "STG_Locations.csv",
+								"folder": "IN1674/Workshop_Target_File",
+								"container": "boootcamp25"
+							},
+							"tgtLOC": {
+								"filename": "Dm_Location",
+								"folder": "IN1674/Workshop_Target_File",
+								"container": "boootcamp25"
+							},
 							"sink1": {
 								"filename": "Dm_Location",
 								"folder": "IN1674/Workshop_Target_File",
