@@ -25,7 +25,7 @@
 						"referenceName": "DS_Blob_IN1677_Tgt",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "DimSalesRep"
 				}
 			],
 			"transformations": [
@@ -45,10 +45,10 @@
 					"name": "split1"
 				},
 				{
-					"name": "alterRow1"
+					"name": "insert"
 				},
 				{
-					"name": "alterRow2"
+					"name": "update"
 				},
 				{
 					"name": "derivedColumn1"
@@ -111,13 +111,13 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> TgtSalesRep",
 				"SrcSalesRep select(mapColumn(",
-				"          each(match(true()  ),",
+				"          each(match(true()),",
 				"               $$+'_src' = $$)",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> src",
 				"TgtSalesRep select(mapColumn(",
-				"          each(match(true()  ),",
+				"          each(match(true()),",
 				"               $$+'_tgt' = $$)",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
@@ -150,9 +150,9 @@
 				"SrcJoinTgt split(isNull(Sales_Rep_Id_tgt),",
 				"     (Sales_Rep_Id_src==Sales_Rep_Id_tgt)&&(Sales_Rep_City_src!=Sales_Rep_City_tgt || Sales_Rep_Country_src!=Sales_Rep_Country_tgt || Sales_Rep_Phone_src!=Sales_Rep_Phone_tgt),",
 				"     disjoint: false) ~> split1@(insert, update)",
-				"split1@insert alterRow(insertIf(true())) ~> alterRow1",
-				"split1@update alterRow(updateIf(true())) ~> alterRow2",
-				"alterRow1 derive(Prev_Sales_Rep_City_tgt = toString(null()),",
+				"split1@insert alterRow(insertIf(true())) ~> insert",
+				"split1@update alterRow(updateIf(true())) ~> update",
+				"insert derive(Prev_Sales_Rep_City_tgt = toString(null()),",
 				"          Prev_Sales_Rep_Country_tgt = toString(null()),",
 				"          Prev_Sales_Rep_Phone_tgt = toString(null()),",
 				"          Delete_Flg_src = 'N',",
@@ -162,7 +162,7 @@
 				"          Created_Timestamp_src = currentTimestamp(),",
 				"          Last_Updated_By_src = toString(null()),",
 				"          Last_Update_Timestamp_src = toTimestamp(null())) ~> derivedColumn1",
-				"alterRow2 derive(Prev_Sales_Rep_City_tgt = Sales_Rep_City_tgt,",
+				"update derive(Prev_Sales_Rep_City_tgt = Sales_Rep_City_tgt,",
 				"          Prev_Sales_Rep_Country_tgt = Sales_Rep_Country_tgt,",
 				"          Prev_Sales_Rep_Phone_tgt = Sales_Rep_Phone_tgt,",
 				"          Delete_Flg_src = 'Y',",
@@ -198,7 +198,7 @@
 				"     partitionFileNames:['Dm_SalesRep1'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink1"
+				"     partitionBy('hash', 1)) ~> DimSalesRep"
 			]
 		}
 	}

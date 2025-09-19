@@ -25,14 +25,14 @@
 						"referenceName": "DS_Blob_IN1677_Tgt",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "DimPurchase"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_Blob_IN1677_Tgt",
 						"type": "DatasetReference"
 					},
-					"name": "sink2"
+					"name": "DimEstimate"
 				}
 			],
 			"transformations": [
@@ -216,7 +216,7 @@
 				"          Last_Updated_By,",
 				"          Last_Update_Timestamp",
 				"     ),",
-				"     partitionBy('hash', 1)) ~> sink1",
+				"     partitionBy('hash', 1)) ~> DimPurchase",
 				"StgEstimate sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['estimate'],",
@@ -276,7 +276,7 @@
 				"          Last_Updated_By,",
 				"          Last_Update_Timestamp",
 				"     ),",
-				"     partitionBy('hash', 1)) ~> sink2"
+				"     partitionBy('hash', 1)) ~> DimEstimate"
 			]
 		}
 	}
