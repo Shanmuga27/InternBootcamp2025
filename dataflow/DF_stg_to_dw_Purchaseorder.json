@@ -12,13 +12,92 @@
 						"referenceName": "DS_Blob_1680",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "SrcOfPO"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "SinkOfPO"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SKForPo"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
+				"          Transaction_Id as integer,",
+				"          Transaction_Line_Id as short,",
+				"          Memo_descr as string,",
+				"          Sticker_Requirement_descr as string,",
+				"          Inner_Requirement_descr as string,",
+				"          Customer_Requirement_descr as string,",
+				"          Sales_Program_descr as string,",
+				"          Buyer_Dept_descr as string,",
+				"          Buyer_Confirmed_On as timestamp,",
+				"          Dept_Program_descr as string,",
+				"          Program_descr as string,",
+				"          Cancelled_descr as string,",
+				"          Confidence_Factor_descr as short,",
+				"          Company_Id as integer,",
+				"          Item_Id as integer,",
+				"          Location_Id as short,",
+				"          Sales_Rep_Id as string,",
+				"          Document_nbr as string,",
+				"          Price_Sticker_Id as string,",
+				"          PO_nbr as integer,",
+				"          Release_Order_nbr as string,",
+				"          CNTNR_nbr as string,",
+				"          ETD_Ship_dt as timestamp,",
+				"          Ship_Outbound_dt as timestamp,",
+				"          Cancel_Outbound_dt as timestamp,",
+				"          Expiration_dt as string,",
+				"          Item_qty as string,",
+				"          Inner_qty as string,",
+				"          Release_qty as string,",
+				"          Quantity_Received_In_Shipment as string,",
+				"          Item_unit_price as string,",
+				"          Amount as string,",
+				"          ETA_Arrival_Date as string,",
+				"          Closed_Script as boolean,",
+				"          Sales_Estimate_key as short,",
+				"          Delete_flag as boolean,",
+				"          Created_by as string,",
+				"          Created_timestamp as timestamp,",
+				"          Last_updated_by as string,",
+				"          Last_updated_timestamp as timestamp,",
+				"          Created_date as timestamp,",
+				"          Date_created as timestamp,",
+				"          Date_last_modified_gmt as timestamp,",
+				"          Location_key as short,",
+				"          Location_Name as string,",
+				"          Location_City as string,",
+				"          Item_key as integer,",
+				"          Customer_key as integer,",
+				"          Sticker_Requirement_Purchase_descr as string,",
+				"          Level_Descr as string,",
+				"          Final_Destination_Container as string,",
+				"          PRICE_STICKER_descr as string,",
+				"          Month_Ship_dt as string,",
+				"          ETD_dt as date,",
+				"          Month_ETD_dt as string,",
+				"          MS_Domestic_Ship_Date as timestamp,",
+				"          MS_Domestic_Cancel_Date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcOfPO",
+				"SrcOfPO keyGenerate(output(Purchase_Order_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SKForPo",
+				"SKForPo sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
 				"          anime_id as string,",
 				"          name as string,",
 				"          genre as string,",
@@ -27,9 +106,8 @@
 				"          rating as string,",
 				"          members as string",
 				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1"
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SinkOfPO"
 			]
 		}
 	}
