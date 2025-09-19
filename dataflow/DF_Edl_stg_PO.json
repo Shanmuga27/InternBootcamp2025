@@ -51,18 +51,6 @@
 			],
 			"transformations": [
 				{
-					"name": "derivedColumn2"
-				},
-				{
-					"name": "derivedColumn3"
-				},
-				{
-					"name": "derivedColumn5"
-				},
-				{
-					"name": "derivedColumn7"
-				},
-				{
 					"name": "Update"
 				},
 				{
@@ -236,18 +224,6 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> EdlEstimateToStgEstimate",
-				"EdlCustomers derive(Date_Last_Modified = toTimestamp(currentDate()),",
-				"          Last_Updated_By = 'IN1677',",
-				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn2",
-				"EdlLocation derive(Date_Last_Modified = toTimestamp(currentDate()),",
-				"          Last_Updated_By = 'IN1677',",
-				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn3",
-				"EdlProduct derive(Date_last_modified = toTimestamp(currentDate()),",
-				"          Last_Updated_By = 'IN1677',",
-				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn5",
-				"EdlSalesReps derive(Date_Last_Modified = toTimestamp(currentDate()),",
-				"          Last_Updated_By = 'IN1677',",
-				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn7",
 				"select1 derive(Date_Last_Modified_Gmt = currentUTC(),",
 				"          Last_Updated_By = 'IN1677',",
 				"          Last_Update_Timestamp = currentTimestamp()) ~> Update",
