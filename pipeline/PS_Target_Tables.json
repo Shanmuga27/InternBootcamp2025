@@ -197,6 +197,8 @@
 			{
 				"name": "Copy data2",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -252,6 +254,134 @@
 							"ContainerName": "boootcamp25",
 							"FolderName": "IN1675/Workshop/TargetFiles",
 							"FileName": "Dim_SalesRep.csv"
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy data3",
+				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_OnPremSQL_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": "FT_Estimate",
+							"SchemaName": "DMuthuku",
+							"DatabaseName": "ADF_Training"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"ContainerName": "boootcamp25",
+							"FolderName": "IN1675/Workshop/TargetFiles",
+							"FileName": "FT_Estimate.csv"
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy data4",
+				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_OnPremSQL_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": "FT_PurchaseOrder",
+							"SchemaName": "DMuthuku",
+							"DatabaseName": "ADF_Training"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"ContainerName": "boootcamp25",
+							"FolderName": "IN1675/Workshop/TargetFiles",
+							"FileName": "FT_PurchaseOrder.csv"
 						}
 					}
 				]

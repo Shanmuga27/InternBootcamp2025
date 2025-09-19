@@ -1,0 +1,105 @@
+{
+	"name": "DE_STG_DW_Estimate",
+	"properties": {
+		"folder": {
+			"name": "Workshop_IN1675/STG_DW_IN1675"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Sales_Estimate_Key as short,",
+				"          Transaction_Id as integer,",
+				"          Transaction_Line_Id as short,",
+				"          Memo_descr as string,",
+				"          Sticker_Requirements_descr as string,",
+				"          Inner_Requirements_descr as string,",
+				"          Customer_Requirements_descr as string,",
+				"          Sales_Program_descr as string,",
+				"          Buyer_Dept_descr as string,",
+				"          Buyer_Confirmed_On as string,",
+				"          Dept_Program_descr as string,",
+				"          Program_descr as string,",
+				"          Cancelled_descr as string,",
+				"          Sticker_Requirement_Purchase_descr as string,",
+				"          Confidence_Factor_descr as string,",
+				"          Level_Descr as string,",
+				"          Final_Destination_Container as string,",
+				"          PRICE_STICKER_descr as string,",
+				"          Customer_Key as integer,",
+				"          Item_Key as integer,",
+				"          Location_Key as short,",
+				"          Document_nbr as string,",
+				"          Price_Sticker_Id as string,",
+				"          Po_nbr as integer,",
+				"          Release_Order_Number as string,",
+				"          Sales_Rep_Id as short,",
+				"          Cntnr_nbr as string,",
+				"          Etd_Ship_dt as string,",
+				"          Ship_Date_Outbound as string,",
+				"          Cancel_Date_Outbound as string,",
+				"          Expiration_Date as string,",
+				"          Eta_Arrival_Date as string,",
+				"          Sales_Key as short,",
+				"          Item_Count as integer,",
+				"          Inner_Qty as string,",
+				"          Quantity_Received_In_Shipment as string,",
+				"          Release_Quantity as string,",
+				"          Item_Unit_Price as string,",
+				"          Amount as string,",
+				"          Delete_Flag as boolean,",
+				"          Create_Date as timestamp,",
+				"          Date_Created as timestamp,",
+				"          Date_Last_Modified_Gmt as timestamp,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp,",
+				"          Month_Ship_dt as string,",
+				"          ETD_dt as timestamp,",
+				"          Month_ETD_dt as string,",
+				"          MS_Domestic_Ship_Date as timestamp,",
+				"          MS_Domestic_Cancel_Date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 select(mapColumn(",
+				"          each(match(/* All input columns */ true()),",
+				"               /* Input name */ $$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['DW_Estimate.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
