@@ -230,6 +230,47 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "DFLoc",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_STG_DW_Locations_IN1675",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcLocations": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/EDL_to_STG",
+								"FileName": "STG_Location.csv"
+							},
+							"TgtLocations": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/TargetFiles",
+								"FileName": "Dim_Location.csv"
+							},
+							"DWLocations": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/Workshop/DWFiles",
+								"FileName": "DW_Locations.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"folder": {

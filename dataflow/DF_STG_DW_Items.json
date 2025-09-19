@@ -1,0 +1,84 @@
+{
+	"name": "DF_STG_DW_Items",
+	"properties": {
+		"folder": {
+			"name": "Workshop_IN1675/STG_DW_IN1675"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcItems"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "TgtItems"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "join1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Item_Id as integer,",
+				"          Item_Key as integer,",
+				"          Item_Descr as string,",
+				"          Brand_desr as string,",
+				"          Artwork_descr as string,",
+				"          Color_descr as string,",
+				"          Package_Type_descr as string,",
+				"          Special_Req_descr as string,",
+				"          Case_Pack_desc as string,",
+				"          Full_Name_descr as string,",
+				"          Display_Name_descr as string,",
+				"          Account_Manager_Name as string,",
+				"          Brand_Name as string,",
+				"          Brand_Manager_Name as string,",
+				"          Item_Status_descr as string,",
+				"          Item_Type_descr as string,",
+				"          Maker_Name as string,",
+				"          Product_Manager_Name as string,",
+				"          Master_Carton_Req_descr as string,",
+				"          Trade_Partner_Name as string,",
+				"          Type_Name as string,",
+				"          Trade_Partner_Code as string,",
+				"          Vendor_Name as string,",
+				"          UPC_nbr as string,",
+				"          On_Hand_Quantity as integer,",
+				"          SSCC14_nbr as integer,",
+				"          Master_Carton_Markings_Item_Nbr as integer,",
+				"          Part_Of_Assembly_Item as string,",
+				"          Delete_Flag as boolean,",
+				"          Active_Flag as boolean,",
+				"          Create_Date as timestamp,",
+				"          Date_last_Modified as timestamp,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcItems",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TgtItems",
+				"SrcItems join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1"
+			]
+		}
+	}
+}

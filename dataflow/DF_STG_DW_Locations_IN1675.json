@@ -22,10 +22,51 @@
 					"name": "TgtLocations"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "DWLocations"
+				}
+			],
 			"transformations": [
 				{
 					"name": "join1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "InsertRow"
+				},
+				{
+					"name": "UpdateRow"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "Transformations1"
+				},
+				{
+					"name": "Transformations2"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "union1"
 				}
 			],
 			"scriptLines": [
@@ -48,14 +89,105 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SrcLocations",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          Location_key as integer,",
+				"          Location_ID as integer,",
+				"          Location_Name as string,",
+				"          Location_Country as string,",
+				"          Location_City as string,",
+				"          Location_State as string,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp,",
+				"          Location_Zipcode as string,",
+				"          Date_Last_Modified as timestamp,",
+				"          Delete_Flg as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> TgtLocations",
-				"SrcLocations join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
-				"     joinType:'inner',",
+				"Transformations2, TgtLocations join(select2@Location_ID == TgtLocations@Location_ID,",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1"
+				"     broadcast: 'auto')~> join1",
+				"join1 split(isNull(TgtLocations@Location_ID),",
+				"     !isNull(TgtLocations@Location_ID)\r",
+				"&& ( isNull(TgtLocations@Date_Last_Modified) || select2@Date_Last_Modified > TgtLocations@Date_Last_Modified )\r",
+				"&& ( select2@Location_Country != TgtLocations@Location_Country || select2@Location_City!= TgtLocations@Location_City ),",
+				"     disjoint: false) ~> split1@(Insert, Update)",
+				"split1@Insert alterRow(insertIf(true())) ~> InsertRow",
+				"split1@Update alterRow(updateIf(true())) ~> UpdateRow",
+				"derivedColumn1 select(mapColumn(",
+				"          Location_ID = split1@Insert@Location_ID,",
+				"          Location_Name = split1@Insert@Location_Name,",
+				"          Location_Country = split1@Insert@Location_Country,",
+				"          Location_City = split1@Insert@Location_City,",
+				"          Location_State = split1@Insert@Location_State,",
+				"          Location_Zipcode = split1@Insert@Location_Zipcode,",
+				"          Location_Key = split1@Insert@Location_Key,",
+				"          Delete_Flg = split1@Insert@Delete_Flg,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"InsertRow derive(Created_By = 'IN1675',",
+				"          Created_Timestamp = currentTimestamp(),",
+				"          Last_Updated_By = 'IN1675',",
+				"          Last_Update_Timestamp = toTimestamp(currentDate()),",
+				"          Date_Last_Modified = toTimestamp(currentDate())) ~> derivedColumn1",
+				"UpdateRow derive(Delete_Flg = 'Y',",
+				"          Last_Updated_By = 'IN1675',",
+				"          Last_Update_Timestamp = currentTimestamp(),",
+				"          Date_Last_Modified = toTimestamp(currentDate())) ~> derivedColumn2",
+				"select2 derive(Location_Zipcode = regexReplace(Location_Zipcode, '[^0-9]', '')) ~> Transformations1",
+				"Transformations1 derive(Location_Zipcode = iif(length(regexReplace(Location_Zipcode,'[^0-9]','')) > 6,     substring(regexReplace(Location_Zipcode,'[^0-9]',''),0,6),     left(concat(regexReplace(Location_Zipcode,'[^0-9]',''),'000000'),6) )) ~> Transformations2",
+				"SrcLocations select(mapColumn(",
+				"          Location_ID,",
+				"          Location_Name,",
+				"          Location_Country,",
+				"          Location_City,",
+				"          Location_State,",
+				"          Location_Zipcode,",
+				"          Location_Key,",
+				"          Delete_Flg,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"derivedColumn2 select(mapColumn(",
+				"          Location_ID = split1@Update@Location_ID,",
+				"          Location_Name = split1@Update@Location_Name,",
+				"          Location_Country = split1@Update@Location_Country,",
+				"          Location_City = split1@Update@Location_City,",
+				"          Location_State = split1@Update@Location_State,",
+				"          Location_Zipcode = split1@Update@Location_Zipcode,",
+				"          Location_Key = split1@Update@Location_Key,",
+				"          Delete_Flg,",
+				"          Date_Last_Modified,",
+				"          Created_By = split1@Update@Created_By,",
+				"          Created_Timestamp = split1@Update@Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select1, select3 union(byName: true)~> union1",
+				"union1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['DW_Location.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> DWLocations"
 			]
 		}
 	}
