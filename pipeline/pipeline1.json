@@ -50,7 +50,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"schemaname": "CKumaram",
-							"tablename": "EDL_Customer",
+							"tablename": "Locations_DM",
 							"Database": "ADF_Training"
 						}
 					}
@@ -60,7 +60,7 @@
 						"referenceName": "Ds_blob_IN1674",
 						"type": "DatasetReference",
 						"parameters": {
-							"filename": "Dm_Customer",
+							"filename": "Dm_Location",
 							"folder": "IN1674/STG_FILES",
 							"container": "boootcamp25"
 						}
@@ -70,8 +70,6 @@
 			{
 				"name": "Data flow1",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -83,7 +81,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "SCD1CUSTOMER",
+						"referenceName": "LocationsSCD2",
 						"type": "DataFlowReference",
 						"parameters": {
 							"filename": {
@@ -93,17 +91,22 @@
 						},
 						"datasetParameters": {
 							"source1": {
-								"filename": "STD_customer",
+								"filename": "STG_Locations.csv",
 								"folder": "IN1674/Workshop_Target_File",
 								"container": "boootcamp25"
 							},
 							"source2": {
-								"filename": "Dm_Customer",
+								"filename": "Dm_Location",
+								"folder": "IN1674/Workshop_Target_File",
+								"container": "boootcamp25"
+							},
+							"source3": {
+								"filename": "STG_Locations.csv",
 								"folder": "IN1674/Workshop_Target_File",
 								"container": "boootcamp25"
 							},
 							"sink1": {
-								"filename": "Dm_Customer",
+								"filename": "Dm_Location",
 								"folder": "IN1674/Workshop_Target_File",
 								"container": "boootcamp25"
 							}
@@ -119,6 +122,8 @@
 			{
 				"name": "Copy data2",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
