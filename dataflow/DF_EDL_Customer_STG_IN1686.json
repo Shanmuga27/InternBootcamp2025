@@ -1,6 +1,9 @@
 {
 	"name": "DF_EDL_Customer_STG_IN1686",
 	"properties": {
+		"folder": {
+			"name": "workshop/EDL_STG"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [

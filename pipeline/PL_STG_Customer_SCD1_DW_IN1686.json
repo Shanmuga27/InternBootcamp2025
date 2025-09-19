@@ -1,5 +1,5 @@
 {
-	"name": "PL_Cust_SCD1",
+	"name": "PL_STG_Customer_SCD1_DW_IN1686",
 	"properties": {
 		"activities": [
 			{
@@ -81,7 +81,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_STG_CUST_DW_IN1686",
+						"referenceName": "DF_STG_CUSTOMER_DW_IN1686",
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"srcCUST": {

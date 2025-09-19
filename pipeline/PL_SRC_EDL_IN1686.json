@@ -427,6 +427,9 @@
 				"type": "string"
 			}
 		},
+		"folder": {
+			"name": "workshop/SRC_EDL"
+		},
 		"annotations": []
 	}
 }

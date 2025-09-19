@@ -15,18 +15,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataset": {
-						"referenceName": "DS_CSV_IN1686",
-						"type": "DatasetReference",
-						"parameters": {
-							"Container": "boootcamp25",
-							"Folder": "IN1686",
-							"File": "*"
-						}
-					},
-					"fieldList": [
-						"childItems"
-					],
+					"fieldList": [],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
 						"recursive": true,
@@ -161,6 +150,9 @@
 				"type": "Integer",
 				"defaultValue": 0
 			}
+		},
+		"folder": {
+			"name": "EXERCISE"
 		},
 		"annotations": []
 	}

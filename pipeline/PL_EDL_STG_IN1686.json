@@ -264,6 +264,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "workshop/EDL_STG"
+		},
 		"annotations": []
 	}
 }

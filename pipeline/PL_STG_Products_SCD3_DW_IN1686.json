@@ -1,15 +1,13 @@
 {
-	"name": "PL_STG_Locations_SCD2_DW_IN1686",
+	"name": "PL_STG_Products_SCD3_DW_IN1686",
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_Location_SCD3",
+				"name": "DF_PROD_SCD3",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
-						"activity": "Loctgt SQL_BLOB",
+						"activity": "Product tgt SQL_BLOB",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -58,10 +56,8 @@
 				}
 			},
 			{
-				"name": "Loctgt SQL_BLOB",
+				"name": "Product tgt SQL_BLOB",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -103,7 +99,7 @@
 						"referenceName": "DS_SQL_IN1686",
 						"type": "DatasetReference",
 						"parameters": {
-							"Tablename": "Dm_Location",
+							"Tablename": "Dm_Product",
 							"DB_Name": "ADF_Training"
 						}
 					}
@@ -115,7 +111,7 @@
 						"parameters": {
 							"Container": "boootcamp25",
 							"Folder": "IN1686/WORKSHOP/W2_TGT_IN1686",
-							"File": "W2_Locations_TGT_IN1686.csv"
+							"File": "W2_Products_TGT_IN1686.csv"
 						}
 					}
 				]
@@ -125,7 +121,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "DF_Location_SCD3",
+						"activity": "DF_PROD_SCD3",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -194,7 +190,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "DF_Location_SCD3",
+						"activity": "DF_PROD_SCD3",
 						"dependencyConditions": [
 							"Succeeded"
 						]
