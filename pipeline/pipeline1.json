@@ -123,7 +123,6 @@
 						"referenceName": "DS_Blob_IN1677_Src",
 						"type": "DatasetReference",
 						"parameters": {
-							"Container": "boootcamp25",
 							"directory": "IN1677/tgt_orders",
 							"file": "AllOrders_Unioned_IN1677.csv"
 						}
@@ -188,7 +187,6 @@
 						"referenceName": "DS_Blob_IN1677_Src",
 						"type": "DatasetReference",
 						"parameters": {
-							"Container": "boootcamp25",
 							"directory": "Exercise 4 src files",
 							"file": "Products.csv"
 						}
@@ -232,7 +230,6 @@
 						"referenceName": "DS_Blob_IN1677_Src",
 						"type": "DatasetReference",
 						"parameters": {
-							"Container": "boootcamp25",
 							"directory": "IN1677/global_parameter",
 							"file": "*"
 						}
@@ -315,7 +312,6 @@
 									"referenceName": "DS_Blob_IN1677_Src",
 									"type": "DatasetReference",
 									"parameters": {
-										"Container": "boootcamp25",
 										"directory": "IN1677/global_parameter",
 										"file": {
 											"value": "@item().Name",

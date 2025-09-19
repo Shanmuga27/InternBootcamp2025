@@ -5,14 +5,7 @@
 			{
 				"name": "Copy data1",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Data flow1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -36,7 +29,8 @@
 					"sink": {
 						"type": "SqlServerSink",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
 					},
 					"enableStaging": false,
 					"translator": {
@@ -53,7 +47,7 @@
 						"referenceName": "DS_Blob_IN1677_Src",
 						"type": "DatasetReference",
 						"parameters": {
-							"directory": "IN1677/workshop/tgt/est",
+							"directory": "IN1677/workshop/tgt/po",
 							"file": "estimate"
 						}
 					}
@@ -73,14 +67,7 @@
 			{
 				"name": "Copy data2",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Data flow1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -104,7 +91,8 @@
 					"sink": {
 						"type": "SqlServerSink",
 						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
 					},
 					"enableStaging": false,
 					"translator": {
@@ -122,7 +110,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "boootcamp25",
-							"directory": "IN1677/workshop/tgt/po",
+							"directory": "IN1677/workshop/tgt/est",
 							"file": "purchaseorder"
 						}
 					}
@@ -142,6 +130,8 @@
 			{
 				"name": "Data flow1",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",

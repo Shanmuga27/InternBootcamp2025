@@ -1,0 +1,135 @@
+{
+	"name": "PL_FINAL",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_SqlServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "JSivakum",
+							"table": "FT_Estimate",
+							"db": "ADF_Training"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"directory": "IN1677/workshop/tgt/est",
+							"file": "estimate"
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy data2",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_SqlServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"schema": "JSivakum",
+							"table": "FT_Purchaseorder",
+							"db": "ADF_Training"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"directory": "IN1677/workshop/tgt/po",
+							"file": "purchaseorder"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "workshop/SCD"
+		},
+		"annotations": []
+	}
+}
