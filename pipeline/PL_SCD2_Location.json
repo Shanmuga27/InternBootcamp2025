@@ -81,7 +81,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_SCD2_",
+						"referenceName": "DF_SCD2_Location",
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"SrcLocation": {

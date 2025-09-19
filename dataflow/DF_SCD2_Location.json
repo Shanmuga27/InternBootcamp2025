@@ -1,5 +1,5 @@
 {
-	"name": "DF_SCD2_",
+	"name": "DF_SCD2_Location",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -120,9 +120,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"join1 split(isNull(TgtLocation@Location_Id) || (select1@Location_Country!=TgtLocation@Location_Country || select1@Location_City!=TgtLocation@Location_City)\r",
-				"\r",
-				",",
+				"join1 split(isNull(TgtLocation@Location_Id) || (select1@Location_Country!=TgtLocation@Location_Country || select1@Location_City!=TgtLocation@Location_City),",
 				"     (select1@Location_Id == TgtLocation@Location_Id) && (select1@Location_Country!=TgtLocation@Location_Country || select1@Location_City!=TgtLocation@Location_City),",
 				"     disjoint: false) ~> split1@(insert, update)",
 				"split1@insert alterRow(insertIf(true())) ~> alterRow1",
