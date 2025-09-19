@@ -25,7 +25,7 @@
 						"referenceName": "DS_Blob_IN1677_Tgt",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "DmProduct"
 				}
 			],
 			"transformations": [
@@ -64,6 +64,9 @@
 				},
 				{
 					"name": "select3"
+				},
+				{
+					"name": "select4"
 				}
 			],
 			"scriptLines": [
@@ -164,7 +167,7 @@
 				"     (Item_Id_src==Item_Id_tgt) && (Brand_Name_src!=Brand_Name_tgt || Maker_Name_src!=Maker_Name_tgt),",
 				"     disjoint: false) ~> split1@(insert, update)",
 				"split1@insert alterRow(insertIf(true())) ~> insert",
-				"select1 union(byName: true)~> union1",
+				"select1, select2 union(byName: true)~> union1",
 				"split1@update alterRow(updateIf(true())) ~> update",
 				"insert derive(Brand_Name = Brand_Name_src,",
 				"          Prev_Brand_Name = toString(null()),",
@@ -241,12 +244,52 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select3",
-				"union1 sink(allowSchemaDrift: true,",
+				"union1 select(mapColumn(",
+				"          Item_key = Item_key_src,",
+				"          Item_Id = Item_Id_src,",
+				"          Item_Descr = Items_Descr_src,",
+				"          Brand_descr = Brand_descr_src,",
+				"          Artwork_descr = Artwork_descr_src,",
+				"          Color_descr = Color_descr_src,",
+				"          Package_Type_descr = Package_Type_descr_src,",
+				"          Special_Req_descr = Special_Req_descr_src,",
+				"          Case_Pack_descr = Case_Pack_descr_src,",
+				"          Full_Name_descr = Full_Name_descr_src,",
+				"          Display_Name_descr = Display_Name_descr_src,",
+				"          Account_Manager_Name = Account_Manager_Name_src,",
+				"          Brand_Name,",
+				"          Prev_Brand_Name,",
+				"          Brand_Manager_Name = Brand_Manager_Name_src,",
+				"          Item_Status_descr = Item_Status_descr_src,",
+				"          Item_Type_descr = Item_Type_descr_src,",
+				"          Maker_Name,",
+				"          Prev_Maker_Name,",
+				"          Product_Manager_Name = Product_Manager_Name_src,",
+				"          Master_Carton_req_descr = Master_Carton_req_descr_src,",
+				"          Trade_Partner_Name = Trade_Partner_Name_src,",
+				"          Type_Name = Type_Name_src,",
+				"          Trade_Partner_Cd = Trade_Partner_Code_src,",
+				"          VendorName = VendorName_src,",
+				"          UPC_nbr = UPC_nbr_src,",
+				"          ON_Hand_Quality = ON_Hand_Quality_src,",
+				"          SSCC14_nbr = SSCC14_nbr_src,",
+				"          Master_Carton_Item_nbr = Master_Carton_Item_nbr_src,",
+				"          Create_Date = Create_Date_src,",
+				"          Date_last_modified = Date_last_modified_src,",
+				"          Delete_flg = Delete_flg_src,",
+				"          Created_By = Created_By_src,",
+				"          Created_Timestamp = Created_Timestamp_src,",
+				"          Last_Updated_By = Last_Updated_By_src,",
+				"          Last_Update_Timestamp = Last_Update_Timestamp_src",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4",
+				"select4 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['Dm_Product'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink1"
+				"     partitionBy('hash', 1)) ~> DmProduct"
 			]
 		}
 	}
