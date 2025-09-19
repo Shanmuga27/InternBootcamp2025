@@ -1,6 +1,114 @@
 {
 	"name": "PL_STG_DW_Location",
 	"properties": {
+		"activities": [
+			{
+				"name": "DF_STG_DW_Location",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_STG_DW_SCD2",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"STGLocation": {
+								"PR_Directory": "IN1684/Workshop/STG",
+								"PR_Filename": "STG_Location"
+							},
+							"DimLocation": {
+								"PR_Directory": "IN1684/Workshop/TGT/Location",
+								"PR_Filename": "Dim_Location"
+							},
+							"TGTLocation": {
+								"PR_Directory": "IN1684/Workshop/TGT/Location",
+								"PR_Filename": "Dim_Location"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DF_STG_DW_Location",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Workshop/TGT/Location",
+							"PR_Filename": "Dim_Location"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_Server_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Tablename": "Dim_Location",
+							"PR_Schema": "PMahendi",
+							"PR_Database": "ADF_Training"
+						}
+					}
+				]
+			}
+		],
 		"folder": {
 			"name": "Workshop/STG_DW"
 		},
