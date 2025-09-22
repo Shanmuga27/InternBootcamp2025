@@ -8,6 +8,10 @@
 		"typeProperties": {
 			"sources": [
 				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
 					"name": "STGCustomer"
 				},
 				{
@@ -52,21 +56,9 @@
 				}
 			],
 			"scriptLines": [
-				"source(output(",
-				"          Customer_Id as integer,",
-				"          Customer_key as integer,",
-				"          Company_Name as string,",
-				"          Delete_Flg as string,",
-				"          Create_Date as timestamp,",
-				"          Date_Last_Modified as timestamp,",
-				"          Created_By as string,",
-				"          Created_Timestamp as timestamp,",
-				"          Last_Updated_By as string,",
-				"          Last_Update_Timestamp as timestamp,",
-				"          Active_Flag as boolean",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false) ~> STGCustomer",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> STGCustomer",
 				"source(output(",
 				"          Customer_Key as integer,",
 				"          Customer_Id as integer,",
