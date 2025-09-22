@@ -1,0 +1,114 @@
+{
+	"name": "DF_SCD1_copy",
+	"properties": {
+		"folder": {
+			"name": "training exercise"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "srcCUST"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "tgtCUST"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "LeftJoin"
+				},
+				{
+					"name": "alterRowINSERT"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "alterRowUPDATE"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "union1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as integer,",
+				"          name as string,",
+				"          email as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcCUST",
+				"source(output(",
+				"          id as integer,",
+				"          name as string,",
+				"          email as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> tgtCUST",
+				"srcCUST, tgtCUST join(srcCUST@id == tgtCUST@id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LeftJoin",
+				"split1@InsertStream alterRow(insertIf(true())) ~> alterRowINSERT",
+				"alterRowINSERT select(mapColumn(",
+				"          id = split1@InsertStream@id,",
+				"          name = split1@InsertStream@name,",
+				"          email = split1@InsertStream@email,",
+				"          id = split1@InsertStream@id,",
+				"          name = split1@InsertStream@name,",
+				"          email = split1@InsertStream@email",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"LeftJoin split(isNull(tgtCUST@id),",
+				"     (srcCUST@id==tgtCUST@id) && ((srcCUST@name != srcCUST@name) || (srcCUST@email != tgtCUST@email)),",
+				"     disjoint: true) ~> split1@(InsertStream, UpdateStream)",
+				"split1@UpdateStream alterRow(updateIf(true())) ~> alterRowUPDATE",
+				"alterRowUPDATE select(mapColumn(",
+				"          id = split1@UpdateStream@id,",
+				"          name = split1@UpdateStream@name,",
+				"          email = split1@UpdateStream@email,",
+				"          id = split1@UpdateStream@id,",
+				"          name = split1@UpdateStream@name,",
+				"          email = split1@UpdateStream@email",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select1, select2 union(byName: true)~> union1",
+				"union1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['scd1_tgt_cust.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
