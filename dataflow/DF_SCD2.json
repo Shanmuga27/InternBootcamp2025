@@ -43,13 +43,22 @@
 					"name": "derivedColumn1"
 				},
 				{
-					"name": "derivedColumn2"
+					"name": "derivedColumn4"
 				},
 				{
-					"name": "join2"
+					"name": "alterRow1"
 				},
 				{
-					"name": "derivedColumn3"
+					"name": "derivedColumn5"
+				},
+				{
+					"name": "alterRow2"
+				},
+				{
+					"name": "alterRow3"
+				},
+				{
+					"name": "select4"
 				}
 			],
 			"scriptLines": [
@@ -79,7 +88,7 @@
 				"     !isNull(source2@emp_id) && source1@phone!=source2@phone,",
 				"     !isNull(source2@emp_id) && source1@phone==source2@phone,",
 				"     disjoint: false) ~> split1@(Insert, Update, Existing)",
-				"derivedColumn1 select(mapColumn(",
+				"alterRow1 select(mapColumn(",
 				"          emp_id = split1@Insert@emp_id,",
 				"          {name } = split1@Insert@{name },",
 				"          phone = split1@Insert@phone,",
@@ -87,32 +96,37 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"derivedColumn3 select(mapColumn(",
+				"split1@Existing select(mapColumn(",
 				"          emp_id = split1@Existing@emp_id,",
 				"          {name } = split1@Existing@{name },",
 				"          phone = split1@Existing@phone,",
-				"          isactive = split1@Existing@isactive",
+				"          isactive = {split1@Existing@isactive}",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
-				"derivedColumn2 select(mapColumn(",
+				"alterRow3 select(mapColumn(",
 				"          emp_id = split1@Update@emp_id,",
 				"          {name } = split1@Update@{name },",
 				"          phone = split1@Update@phone,",
-				"          isactive = derivedColumn2@isactive",
+				"          isactive",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select3",
-				"select1, select2, select3 union(byName: true)~> union1",
+				"select1, select2, select3, select4 union(byName: true)~> union1",
 				"split1@Insert derive(isactive = 1) ~> derivedColumn1",
-				"split1@Update derive(isactive = 1) ~> derivedColumn2",
-				"split1@Existing, derivedColumn2 join(split1@Existing@emp_id == split1@Update@emp_id,",
-				"     joinType:'left',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join2",
-				"join2 derive(isactive = case(\r",
-				"split1@Existing@emp_id==split1@Update@emp_id && (split1@Update@phone!=split1@Existing@phone),\"N\",\"Y\")) ~> derivedColumn3"
+				"split1@Update derive(isactive = 1) ~> derivedColumn4",
+				"derivedColumn1 alterRow(insertIf(true())) ~> alterRow1",
+				"split1@Update derive(isactive = 0) ~> derivedColumn5",
+				"derivedColumn4 alterRow(insertIf(true())) ~> alterRow2",
+				"derivedColumn5 alterRow(updateIf(true())) ~> alterRow3",
+				"alterRow2 select(mapColumn(",
+				"          emp_id = split1@Update@emp_id,",
+				"          {name } = split1@Update@{name },",
+				"          phone = split1@Update@phone,",
+				"          isactive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4"
 			]
 		}
 	}
