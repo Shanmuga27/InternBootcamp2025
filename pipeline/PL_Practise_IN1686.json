@@ -5,6 +5,8 @@
 			{
 				"name": "XlSX_TO_PARQUET",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -523,6 +525,1080 @@
 						}
 					}
 				]
+			},
+			{
+				"name": "XLSX_SQL",
+				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Survey_ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Survey_ID",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Feedback_Program",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Feedback_Program",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "First_name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "First_name",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Last_name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Last_name",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Contact_Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Contact_Name",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Email",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Email",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "PHONE_NUMBER",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PHONE_NUMBER",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Contact_Country",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Contact_Country",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Job_Title",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Job_Title",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Contact_Department",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Contact_Department",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Language",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Language",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Salutation",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Salutation",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Ship_to_Desc",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Ship_to_Desc",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Ship to",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Ship to",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Sold_to_Desc",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Sold_to_Desc",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Sold_to",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Sold_to",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Lead_Contact_OD",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Lead_Contact_OD",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Lead_Contact_GBU_RBU",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Lead_Contact_GBU_RBU",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Lead_Contact_SBU",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Lead_Contact_SBU",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Main_Industry",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Main_Industry",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Region",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Region",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales_Channel",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Sales_Channel",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Customer_Network",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Customer_Network",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Lead_Contact_Segmentation1",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Lead_Contact_Segmentation1",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Lead_Contact_Segmentation2",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Lead_Contact_Segmentation2",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Invitation_Status",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Invitation_Status",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Creation_date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Creation_date",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Invitation_date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Invitation_date",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Local Invitation Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Local Invitation Date",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Survey_status",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Survey_status",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Expires_on_date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Expires_on_date",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Local_Expiration_Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Local_Expiration_Date",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Reason_for_Score",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Reason_for_Score",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Ease_of_doing_business",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Ease_of_doing_business",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Issue_Resolution",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Issue_Resolution",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Product_Quality",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Product_Quality",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Delivery_Reliability",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Delivery_Reliability",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Understanding _your_business_needs",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Understanding _your_business_needs",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Excel_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"DatasetSheetName": 0,
+							"Folder": "IN1686/Practice",
+							"FileName": "BASK.xlsx"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Tablename": "rawdata",
+							"DB_Name": "ADF_Training"
+						}
+					}
+				]
+			},
+			{
+				"name": "DeleteandLoad",
+				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "Script1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "DELETE FROM stg\nWHERE  year(Invitation_date) IN ('2022','2023');",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"preCopyScript": "SELECT * FROM rawdata\nWHERE  year(Invitation_date) IN ('2022','2023');",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Survey_ID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Survey_ID",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Feedback_Program",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Feedback_Program",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "First_name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "First_name",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Last_name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Last_name",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Contact_Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Contact_Name",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Email",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Email",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "PHONE_NUMBER",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PHONE_NUMBER",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Contact_Country",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Contact_Country",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Job_Title",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Job_Title",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Contact_Department",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Contact_Department",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Language",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Language",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Salutation",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Salutation",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Ship_to_Desc",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Ship_to_Desc",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Ship to",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Ship to",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Sold_to_Desc",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Sold_to_Desc",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Sold_to",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Sold_to",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Lead_Contact_OD",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Lead_Contact_OD",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Lead_Contact_GBU_RBU",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Lead_Contact_GBU_RBU",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Lead_Contact_SBU",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Lead_Contact_SBU",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Main_Industry",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Main_Industry",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Region",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Region",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales_Channel",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Sales_Channel",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Customer_Network",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Customer_Network",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Lead_Contact_Segmentation1",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Lead_Contact_Segmentation1",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Lead_Contact_Segmentation2",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Lead_Contact_Segmentation2",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Invitation_Status",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Invitation_Status",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Creation_date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Creation_date",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Invitation_date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Invitation_date",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Local Invitation Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Local Invitation Date",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Survey_status",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Survey_status",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Expires_on_date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Expires_on_date",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Local_Expiration_Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Local_Expiration_Date",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Reason_for_Score",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Reason_for_Score",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Ease_of_doing_business",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Ease_of_doing_business",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Issue_Resolution",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Issue_Resolution",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Product_Quality",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Product_Quality",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Delivery_Reliability",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Delivery_Reliability",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Understanding _your_business_needs",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Understanding _your_business_needs",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_SQL_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Tablename": "rawdata",
+							"DB_Name": "ADF_Training"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Tablename": "stg",
+							"DB_Name": "ADF_Training"
+						}
+					}
+				]
+			},
+			{
+				"name": "Script1",
+				"type": "Script",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "LS_On_Prem_IN1686",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"Database_Name": "stg"
+					}
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "DELETE FROM stg\nWHERE  year(Invitation_date) IN ('2022','2023');"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
 			}
 		],
 		"folder": {
