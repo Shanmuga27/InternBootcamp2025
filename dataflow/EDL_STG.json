@@ -189,7 +189,7 @@
 				"          Last_Updated_By = 'IN1689',",
 				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn1",
 				"derivedColumn1 derive(each(match(type=='string'), $$ = iif(isNull($$) || $$ == 'NULL', 'UNK', $$)),",
-				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
+				"          each(match(type=='integer'), $$ = iifNull($$, 0)),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'dd-MM-yyyy HH:mm:ss')))) ~> derivedColumn2",
 				"EDLlocation derive(Date_Last_Modified = currentTimestamp(),",
 				"          Last_Updated_By = 'IN1689',",
