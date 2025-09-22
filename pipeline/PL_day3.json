@@ -243,24 +243,66 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "SqlServerSource",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
+						"type": "ParquetSink",
 						"storeSettings": {
 							"type": "AzureBlobStorageWriteSettings"
 						},
 						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
+							"type": "ParquetWriteSettings"
 						}
 					},
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Customer_Key",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Customer_Key",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Customer_Id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Customer_Id",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Company_Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Company_Name",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
@@ -270,22 +312,23 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_OnPrem_SQLServer",
-						"type": "DatasetReference",
-						"parameters": {
-							"Par_SchemaName": "RRamesh",
-							"Par_TableName": "cust"
-						}
-					}
-				],
-				"outputs": [
-					{
 						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference",
 						"parameters": {
 							"Param_Container": "boootcamp25",
 							"Param_Folder": "IN1685",
-							"Param_File": "new_cust.csv"
+							"Param_File": "Customers.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Parquet1",
+						"type": "DatasetReference",
+						"parameters": {
+							"Par_Container": "boootcamp25",
+							"Par_Folder": "IN1685",
+							"Par_File": "Customers.parquet"
 						}
 					}
 				]

@@ -1,0 +1,41 @@
+{
+	"name": "DS_Parquet1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Azure_Blob_Storage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Par_Container": {
+				"type": "string"
+			},
+			"Par_Folder": {
+				"type": "string"
+			},
+			"Par_File": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().Par_File",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().Par_Folder",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().Par_Container",
+					"type": "Expression"
+				}
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
