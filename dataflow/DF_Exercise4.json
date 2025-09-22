@@ -52,7 +52,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SourceOrders",
-				"SourceOrders split(OrderDate> addMonths(currentDate(),-12),",
+				"SourceOrders split(OrderDate> addMonths(currentDate(),12),",
 				"     OrderDate< addMonths(currentDate(),-12),",
 				"     disjoint: false) ~> split1@(RecentOrders, OldOrders)",
 				"split1@RecentOrders derive({Order Type} = 'Recent') ~> DerivedColumn1",

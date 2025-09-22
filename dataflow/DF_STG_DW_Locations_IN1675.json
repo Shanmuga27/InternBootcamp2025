@@ -117,7 +117,7 @@
 				"&& ( isNull(TgtLocations@Date_Last_Modified) || select2@Date_Last_Modified > TgtLocations@Date_Last_Modified )\r",
 				"&& ( select2@Location_Country != TgtLocations@Location_Country || select2@Location_City!= TgtLocations@Location_City ),",
 				"     disjoint: false) ~> split1@(Insert, Update)",
-				"split1@Insert alterRow(insertIf(true())) ~> InsertRow",
+				"split1@Insert alterRow(insertIf(ERROR_FUNCTION('active=0'))) ~> InsertRow",
 				"split1@Update alterRow(updateIf(true())) ~> UpdateRow",
 				"derivedColumn1 select(mapColumn(",
 				"          Location_ID = split1@Insert@Location_ID,",

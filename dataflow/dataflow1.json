@@ -1,0 +1,119 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "derivedColumn3"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          emp_id as integer,",
+				"          {name } as string,",
+				"          phone as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          emp_id as integer,",
+				"          {name } as string,",
+				"          phone as integer,",
+				"          isactive as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source2",
+				"source1, source2 join(source1@emp_id == source2@emp_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 split(isNull(source2@emp_id),",
+				"     !isNull(source2@emp_id) && source1@phone!=source2@phone,",
+				"     !isNull(source2@emp_id) && source1@phone==source2@phone,",
+				"     disjoint: false) ~> split1@(Insert, Update, Existing)",
+				"derivedColumn1 select(mapColumn(",
+				"          emp_id = split1@Insert@emp_id,",
+				"          {name } = split1@Insert@{name },",
+				"          phone = split1@Insert@phone,",
+				"          isactive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"derivedColumn3 select(mapColumn(",
+				"          emp_id = split1@Existing@emp_id,",
+				"          {name } = split1@Existing@{name },",
+				"          phone = split1@Existing@phone,",
+				"          isactive = split1@Existing@isactive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"derivedColumn2 select(mapColumn(",
+				"          emp_id = split1@Update@emp_id,",
+				"          {name } = split1@Update@{name },",
+				"          phone = split1@Update@phone,",
+				"          isactive = derivedColumn2@isactive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select1, select2, select3 union(byName: true)~> union1",
+				"split1@Insert derive(isactive = 1) ~> derivedColumn1",
+				"split1@Update derive(isactive = 1) ~> derivedColumn2",
+				"split1@Existing, derivedColumn2 join(split1@Existing@emp_id == split1@Update@emp_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2 derive(isactive = case(\r",
+				"split1@Existing@emp_id==split1@Update@emp_id && (split1@Update@phone!=split1@Existing@phone),\"N\",\"Y\")) ~> derivedColumn3"
+			]
+		}
+	}
+}
