@@ -38,60 +38,60 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "Survey ID",
+									"name": "Survey_ID",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Survey ID",
+									"name": "Survey_ID",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Feedback Program",
+									"name": "Feedback_Program",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Feedback Program",
+									"name": "Feedback_Program",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "First name",
+									"name": "First_name",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "First name",
+									"name": "First_name",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Last name",
+									"name": "Last_name",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Last name",
+									"name": "Last_name",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Contact Name",
+									"name": "Contact_Name",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Contact Name",
+									"name": "Contact_Name",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
@@ -110,48 +110,48 @@
 							},
 							{
 								"source": {
-									"name": "PHONE NUMBER",
+									"name": "PHONE_NUMBER",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "PHONE NUMBER",
+									"name": "PHONE_NUMBER",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Contact Country",
+									"name": "Contact_Country",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Contact Country",
+									"name": "Contact_Country",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Job Title",
+									"name": "Job_Title",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Job Title",
+									"name": "Job_Title",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Contact Department",
+									"name": "Contact_Department",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Contact Department",
+									"name": "Contact_Department",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
@@ -182,12 +182,12 @@
 							},
 							{
 								"source": {
-									"name": "Ship_to",
+									"name": "Ship_to_Desc",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Ship_to",
+									"name": "Ship_to_Desc",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
@@ -206,6 +206,18 @@
 							},
 							{
 								"source": {
+									"name": "Sold_to_Desc",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Sold_to_Desc",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
 									"name": "Sold_to",
 									"type": "String",
 									"physicalType": "String"
@@ -218,60 +230,48 @@
 							},
 							{
 								"source": {
-									"name": "Sold to",
+									"name": "Lead_Contact_OD",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Sold to",
+									"name": "Lead_Contact_OD",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Lead Contact OD",
+									"name": "Lead_Contact_GBU_RBU",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Lead Contact OD",
+									"name": "Lead_Contact_GBU_RBU",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Lead Contact GBU/RBU",
+									"name": "Lead_Contact_SBU",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Lead Contact GBU/RBU",
+									"name": "Lead_Contact_SBU",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Lead Contact SBU",
+									"name": "Main_Industry",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Lead Contact SBU",
-									"type": "String",
-									"physicalType": "UTF8"
-								}
-							},
-							{
-								"source": {
-									"name": "Main Industry",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Main Industry",
+									"name": "Main_Industry",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
@@ -290,84 +290,84 @@
 							},
 							{
 								"source": {
-									"name": "Sales Channel",
+									"name": "Sales_Channel",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Sales Channel",
+									"name": "Sales_Channel",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Customer Network",
+									"name": "Customer_Network",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Customer Network",
+									"name": "Customer_Network",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Lead Contact Segmentation1",
+									"name": "Lead_Contact_Segmentation1",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Lead Contact Segmentation1",
+									"name": "Lead_Contact_Segmentation1",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Lead Contact Segmentation2",
+									"name": "Lead_Contact_Segmentation2",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Lead Contact Segmentation2",
+									"name": "Lead_Contact_Segmentation2",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Invitation Status",
+									"name": "Invitation_Status",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Invitation Status",
+									"name": "Invitation_Status",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Creationdate",
+									"name": "Creation_date",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Creationdate",
+									"name": "Creation_date",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Invitation date",
+									"name": "Invitation_date",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Invitation date",
+									"name": "Invitation_date",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
@@ -386,108 +386,108 @@
 							},
 							{
 								"source": {
-									"name": "Survey status",
+									"name": "Survey_status",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Survey status",
+									"name": "Survey_status",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Expires on date",
+									"name": "Expires_on_date",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Expires on date",
+									"name": "Expires_on_date",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Local Expiration Date",
+									"name": "Local_Expiration_Date",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Local Expiration Date",
+									"name": "Local_Expiration_Date",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Reason for Score",
+									"name": "Reason_for_Score",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Reason for Score",
+									"name": "Reason_for_Score",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Ease of doing business",
+									"name": "Ease_of_doing_business",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Ease of doing business",
+									"name": "Ease_of_doing_business",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Issue Resolution",
+									"name": "Issue_Resolution",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Issue Resolution",
+									"name": "Issue_Resolution",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Product Quality",
+									"name": "Product_Quality",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Product Quality",
+									"name": "Product_Quality",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Delivery Reliability",
+									"name": "Delivery_Reliability",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Delivery Reliability",
+									"name": "Delivery_Reliability",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
 							},
 							{
 								"source": {
-									"name": "Understanding your business needs",
+									"name": "Understanding _your_business_needs",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Understanding your business needs",
+									"name": "Understanding _your_business_needs",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
