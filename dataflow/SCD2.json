@@ -1,0 +1,191 @@
+{
+	"name": "SCD2",
+	"properties": {
+		"folder": {
+			"name": "STG_To_DW"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "STGLocation"
+				},
+				{
+					"name": "DimLocation"
+				}
+			],
+			"sinks": [
+				{
+					"name": "TGTLocation"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "insertif"
+				},
+				{
+					"name": "updateif"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Location_Id as short,",
+				"          Location_key as short,",
+				"          Location_Name as string,",
+				"          Location_City as string,",
+				"          Location_Country as string,",
+				"          Location_State as string,",
+				"          Location_Zipcode as string,",
+				"          Delete_Flg as boolean,",
+				"          Active_Flag as boolean,",
+				"          Date_Last_Modified as timestamp,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> STGLocation",
+				"source(output(",
+				"          Location_key as integer,",
+				"          Location_Id as integer,",
+				"          Location_Name as string,",
+				"          Location_Country as string,",
+				"          Location_City as string,",
+				"          Location_State as string,",
+				"          Created_By as string,",
+				"          Created_Timestamp as timestamp,",
+				"          Last_Updated_By as string,",
+				"          Last_Update_Timestamp as timestamp,",
+				"          Location_Zipcode as string,",
+				"          Date_Last_Modified as timestamp,",
+				"          Delete_Flg as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false) ~> DimLocation",
+				"select1, DimLocation join(select1@Location_Id == DimLocation@Location_Id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join",
+				"join split(isNull(DimLocation@Location_Id),",
+				"     (select1@Location_Id==DimLocation@Location_Id) && (select1@Location_Country != DimLocation@Location_Country||select1@Location_City!=DimLocation@Location_City),",
+				"     disjoint: true) ~> split1@(Insert, Update)",
+				"STGLocation select(mapColumn(",
+				"          Location_Id,",
+				"          Location_key,",
+				"          Location_Name,",
+				"          Location_City,",
+				"          Location_Country,",
+				"          Location_State,",
+				"          Location_Zipcode,",
+				"          Delete_Flg,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> select1",
+				"split1@Insert alterRow(insertIf(true())) ~> insertif",
+				"split1@Update alterRow(updateIf(true())) ~> updateif",
+				"insertif select(mapColumn(",
+				"          Location_Id = split1@Insert@Location_Id,",
+				"          Location_key = split1@Insert@Location_key,",
+				"          Location_Name = split1@Insert@Location_Name,",
+				"          Location_City = split1@Insert@Location_City,",
+				"          Location_Country = split1@Insert@Location_Country,",
+				"          Location_State = split1@Insert@Location_State,",
+				"          Location_Zipcode = split1@Insert@Location_Zipcode,",
+				"          Delete_Flg = split1@Insert@Delete_Flg,",
+				"          Date_Last_Modified = split1@Insert@Date_Last_Modified,",
+				"          Created_By = split1@Insert@Created_By,",
+				"          Created_Timestamp = split1@Insert@Created_Timestamp,",
+				"          Last_Updated_By = split1@Insert@Last_Updated_By,",
+				"          Last_Update_Timestamp = split1@Insert@Last_Update_Timestamp",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> select2",
+				"updateif select(mapColumn(",
+				"          Location_Id = split1@Update@Location_Id,",
+				"          Location_key = split1@Update@Location_key,",
+				"          Location_Name = split1@Update@Location_Name,",
+				"          Location_City = split1@Update@Location_City,",
+				"          Location_Country = split1@Update@Location_Country,",
+				"          Location_State = split1@Update@Location_State,",
+				"          Location_Zipcode = split1@Update@Location_Zipcode,",
+				"          Delete_Flg = split1@Update@Delete_Flg,",
+				"          Date_Last_Modified = split1@Update@Date_Last_Modified,",
+				"          Created_By = split1@Update@Created_By,",
+				"          Created_Timestamp = split1@Update@Created_Timestamp,",
+				"          Last_Updated_By = split1@Update@Last_Updated_By,",
+				"          Last_Update_Timestamp = split1@Update@Last_Update_Timestamp",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> select3",
+				"derivedColumn1, select3 union(byName: true)~> union1",
+				"select2 derive(Created_By = \"IN1684\",",
+				"          Created_Timestamp = currentTimestamp(),",
+				"          Location_Zipcode = iif(length(regexReplace(Location_Zipcode,'[^0-9]','')) > 6,     \r",
+				"substring(regexReplace(Location_Zipcode,'[^0-9]',''),0,6),     \r",
+				"left(concat(regexReplace(Location_Zipcode,'[^0-9]',''),'000000'),6) ),",
+				"          Date_Last_Modified = toTimestamp(currentDate()),",
+				"          Last_Updated_By = \"IN1684\",",
+				"          Last_Update_Timestamp = currentTimestamp()) ~> derivedColumn1",
+				"select3 derive(Date_Last_Modified = toTimestamp(currentDate()),",
+				"          Last_Updated_By = \"IN1684\",",
+				"          Last_Update_Timestamp = currentTimestamp(),",
+				"          Delete_Flg = \"Y\",",
+				"          Location_Zipcode = iif(length(regexReplace(Location_Zipcode,'[^0-9]','')) > 6,     \r",
+				"substring(regexReplace(Location_Zipcode,'[^0-9]',''),0,6),     \r",
+				"left(concat(regexReplace(Location_Zipcode,'[^0-9]',''),'000000'),6) )) ~> derivedColumn2",
+				"union1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_Location'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Location_Id,",
+				"          Location_key,",
+				"          Location_Name,",
+				"          Location_City,",
+				"          Location_Country,",
+				"          Location_State,",
+				"          Location_Zipcode,",
+				"          Delete_Flg,",
+				"          Date_Last_Modified,",
+				"          Created_By,",
+				"          Created_Timestamp,",
+				"          Last_Updated_By,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> TGTLocation"
+			]
+		}
+	}
+}
