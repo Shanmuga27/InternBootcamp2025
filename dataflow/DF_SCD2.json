@@ -31,9 +31,6 @@
 					"name": "select1"
 				},
 				{
-					"name": "select2"
-				},
-				{
 					"name": "union1"
 				},
 				{
@@ -59,6 +56,9 @@
 				},
 				{
 					"name": "select5"
+				},
+				{
+					"name": "select6"
 				}
 			],
 			"scriptLines": [
@@ -96,15 +96,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"split1@Existing select(mapColumn(",
-				"          emp_id = split1@Existing@emp_id,",
-				"          {name } = split1@Existing@{name },",
-				"          phone = split1@Existing@phone,",
-				"          isactive",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2",
-				"select1, select2, source2, select4 union(byName: true)~> union1",
+				"select1, select5, select4, select6 union(byName: true)~> union1",
 				"split1@Insert derive(isactive = 1) ~> derivedColumn1",
 				"split1@Update derive(isactive = 1) ~> derivedColumn4",
 				"derivedColumn1 alterRow(insertIf(true())) ~> alterRow1",
@@ -126,7 +118,15 @@
 				"          isactive",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select5"
+				"     skipDuplicateMapOutputs: true) ~> select5",
+				"split1@Existing select(mapColumn(",
+				"          emp_id = split1@Existing@emp_id,",
+				"          {name } = split1@Existing@{name },",
+				"          phone = split1@Existing@phone,",
+				"          isactive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select6"
 			]
 		}
 	}
