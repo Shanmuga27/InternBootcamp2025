@@ -22,7 +22,7 @@
 							"srcCUST": {
 								"Param_Container": "boootcamp25",
 								"Param_Folder": "IN1685",
-								"Param_File": "new_cust.csv"
+								"Param_File": "new_src_cust.csv"
 							},
 							"tgtCUST": {
 								"Param_Container": "boootcamp25",
