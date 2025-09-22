@@ -34,9 +34,6 @@
 					"name": "select2"
 				},
 				{
-					"name": "select3"
-				},
-				{
 					"name": "union1"
 				},
 				{
@@ -49,16 +46,19 @@
 					"name": "alterRow1"
 				},
 				{
-					"name": "derivedColumn5"
+					"name": "alterRow2"
 				},
 				{
-					"name": "alterRow2"
+					"name": "select4"
+				},
+				{
+					"name": "derivedColumn5"
 				},
 				{
 					"name": "alterRow3"
 				},
 				{
-					"name": "select4"
+					"name": "select5"
 				}
 			],
 			"scriptLines": [
@@ -100,25 +100,15 @@
 				"          emp_id = split1@Existing@emp_id,",
 				"          {name } = split1@Existing@{name },",
 				"          phone = split1@Existing@phone,",
-				"          isactive = {split1@Existing@isactive}",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2",
-				"alterRow3 select(mapColumn(",
-				"          emp_id = split1@Update@emp_id,",
-				"          {name } = split1@Update@{name },",
-				"          phone = split1@Update@phone,",
 				"          isactive",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select3",
-				"select1, select2, select3, select4 union(byName: true)~> union1",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select1, select2, source2, select4 union(byName: true)~> union1",
 				"split1@Insert derive(isactive = 1) ~> derivedColumn1",
 				"split1@Update derive(isactive = 1) ~> derivedColumn4",
 				"derivedColumn1 alterRow(insertIf(true())) ~> alterRow1",
-				"split1@Update derive(isactive = 0) ~> derivedColumn5",
 				"derivedColumn4 alterRow(insertIf(true())) ~> alterRow2",
-				"derivedColumn5 alterRow(updateIf(true())) ~> alterRow3",
 				"alterRow2 select(mapColumn(",
 				"          emp_id = split1@Update@emp_id,",
 				"          {name } = split1@Update@{name },",
@@ -126,7 +116,17 @@
 				"          isactive",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select4"
+				"     skipDuplicateMapOutputs: true) ~> select4",
+				"split1@Update derive(isactive = 0) ~> derivedColumn5",
+				"derivedColumn5 alterRow(updateIf(true())) ~> alterRow3",
+				"alterRow3 select(mapColumn(",
+				"          emp_id = split1@Update@emp_id,",
+				"          {name } = split1@Update@{name },",
+				"          phone = split1@Update@phone,",
+				"          isactive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select5"
 			]
 		}
 	}
