@@ -21,7 +21,7 @@
 						"referenceName": "DS_Blob_IN1677_Src",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "sinkTgtProduct"
 				}
 			],
 			"transformations": [
@@ -29,7 +29,7 @@
 					"name": "skProduct"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "DcProductTrans"
 				}
 			],
 			"scriptLines": [
@@ -53,8 +53,8 @@
 				"skProduct derive(ProductName = initCap(ProductName),",
 				"          start_date = currentTimestamp(),",
 				"          end_date = toString(null()),",
-				"          isActive = 'Y') ~> derivedColumn1",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"          isActive = 'Y') ~> DcProductTrans",
+				"DcProductTrans sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['Dim_products_IN1677'],",
 				"     skipDuplicateMapInputs: true,",
@@ -74,7 +74,7 @@
 				"          updated_by,",
 				"          runid",
 				"     ),",
-				"     partitionBy('hash', 1)) ~> sink1"
+				"     partitionBy('hash', 1)) ~> sinkTgtProduct"
 			]
 		}
 	}
