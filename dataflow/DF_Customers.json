@@ -1,0 +1,40 @@
+{
+	"name": "DF_Customers",
+	"properties": {
+		"folder": {
+			"name": "MOCK"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sourceCustomers"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerID as short,",
+				"          FirstName as string,",
+				"          LastName as string,",
+				"          Email as string,",
+				"          Country as string,",
+				"          CreatedDate as date,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceCustomers"
+			]
+		}
+	}
+}

@@ -5,11 +5,9 @@
 			{
 				"name": "Copy Orders_BLOB_SQL",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
-						"activity": "DF_orders",
+						"activity": "DF_order_details",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -57,7 +55,7 @@
 						"parameters": {
 							"Param_Container": "adf-mock-sep2025",
 							"Param_Folder": "Target/IN1685/DW_IN1685",
-							"Param_File": "Fact_orders_IN1685.csv"
+							"Param_File": "Fact_orderdetails_IN1685.csv"
 						}
 					}
 				],
@@ -67,14 +65,14 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Par_SchemaName": "RRamesh",
-							"Par_TableName": "Fact_orders_IN1685",
+							"Par_TableName": "Fact_orderdetails_IN1685",
 							"Param_DB_name": "ADF_Training"
 						}
 					}
 				]
 			},
 			{
-				"name": "DF_orders",
+				"name": "DF_order_details",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
@@ -94,17 +92,18 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_orders",
+						"referenceName": "DF_order_details",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"sourcePROD": {
+							"sourceORDERDETAILS": {
 								"Param_Container": "adf-mock-sep2025",
 								"Param_Folder": "Target/IN1685/DW_IN1685",
 								"Param_File": "Fact_orderdetails_tgt_IN1685.csv"
 							},
 							"sink1": {
 								"Param_Container": "adf-mock-sep2025",
-								"Param_Folder": "Target/IN1685/DW_IN1685"
+								"Param_Folder": "Target/IN1685/DW_IN1685",
+								"Param_File": "Fact_orderdetails_IN1685.csv"
 							}
 						}
 					},
@@ -118,8 +117,6 @@
 			{
 				"name": "Script_Incremental",
 				"type": "Script",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -149,8 +146,6 @@
 			{
 				"name": "Copy Incremental",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Script_Incremental",
