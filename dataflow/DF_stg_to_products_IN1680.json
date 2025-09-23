@@ -24,8 +24,21 @@
 					"name": "SNKproducts"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "surrogateproduct"
+				},
+				{
+					"name": "derivedInit"
+				},
+				{
+					"name": "selectFinal"
+				}
+			],
 			"scriptLines": [
+				"parameters{",
+				"     filename as string",
+				"}",
 				"source(output(",
 				"          ProductID as short,",
 				"          ProductName as string,",
@@ -40,7 +53,31 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SRCproducts",
-				"SRCproducts sink(allowSchemaDrift: true,",
+				"SRCproducts keyGenerate(output(product_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateproduct",
+				"surrogateproduct derive(ProductName_init = initCap(ProductName),",
+				"          isActive = 'Y',",
+				"          start_date = currentTimestamp(),",
+				"          end_date = currentTimestamp()) ~> derivedInit",
+				"derivedInit select(mapColumn(",
+				"          ProductID,",
+				"          Category,",
+				"          Price,",
+				"          {created date},",
+				"          {created by },",
+				"          {updated date},",
+				"          {updated by},",
+				"          runid,",
+				"          product_key,",
+				"          ProductName = ProductName_init,",
+				"          isActive,",
+				"          start_date,",
+				"          end_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectFinal",
+				"selectFinal sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          anime_id as string,",
@@ -51,8 +88,10 @@
 				"          rating as string,",
 				"          members as string",
 				"     ),",
+				"     partitionFileNames:[($filename)],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SNKproducts"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKproducts"
 			]
 		}
 	}

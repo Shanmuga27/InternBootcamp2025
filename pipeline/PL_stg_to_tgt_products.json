@@ -18,11 +18,22 @@
 					"dataflow": {
 						"referenceName": "DF_stg_to_products_IN1680",
 						"type": "DataFlowReference",
+						"parameters": {
+							"filename": {
+								"value": "'@{variables('filename')}'",
+								"type": "Expression"
+							}
+						},
 						"datasetParameters": {
 							"SRCproducts": {
 								"container": "adf-mock-sep2025",
 								"folder": "Target/IN1680",
 								"file": "stg_products_IN1680.csv"
+							},
+							"SNKproducts": {
+								"container": "adf-mock-sep2025",
+								"folder": "Target/IN1680",
+								"file": "Dim_products_IN1680.csv"
 							}
 						}
 					},
@@ -32,8 +43,84 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DF_products_fullload",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "adf-mock-sep2025",
+							"folder": "Target/IN1680",
+							"file": "Dim_products_IN1680.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_Server_IN1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "KRavi",
+							"TableName": "Dim_products_IN1680",
+							"DatabaseName": "ADF_Training"
+						}
+					}
+				]
 			}
 		],
+		"variables": {
+			"filename": {
+				"type": "String",
+				"defaultValue": "Dim_products_IN1680.csv"
+			}
+		},
 		"folder": {
 			"name": "mock_stg_to_tgt"
 		},
