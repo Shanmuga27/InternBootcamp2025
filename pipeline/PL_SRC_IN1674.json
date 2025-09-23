@@ -1,0 +1,117 @@
+{
+	"name": "PL_SRC_IN1674",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Data flow1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference",
+						"parameters": {
+							"filename": "Dim_customers_IN1674.csv",
+							"folder": "Target/IN1674",
+							"container": "adf-mock-sep2025"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_EX_IN1674",
+						"type": "DatasetReference",
+						"parameters": {
+							"schemaname": "CKumaram",
+							"tablename": "Dim_customers_IN1674",
+							"Database": "ADF_Training"
+						}
+					}
+				]
+			},
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_stgCustomers_IN1674",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"cus": {
+								"filename": "stg_customers_IN1674.csv",
+								"folder": "Target/IN1674",
+								"container": "adf-mock-sep2025"
+							},
+							"sink1": {
+								"filename": "Dim_customers_IN1674.csv",
+								"folder": "Target/IN1674",
+								"container": "adf-mock-sep2025"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "Mocktest"
+		},
+		"annotations": []
+	}
+}
