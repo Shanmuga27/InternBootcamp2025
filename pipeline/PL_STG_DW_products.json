@@ -86,7 +86,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_products",
+						"referenceName": "DF_orders",
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"sourcePROD": {
