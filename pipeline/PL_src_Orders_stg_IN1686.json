@@ -75,14 +75,99 @@
 							"fileExtension": ".txt"
 						}
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['OrderID']"
+								},
+								"sink": {
+									"name": "OrderID"
+								}
+							},
+							{
+								"source": {
+									"path": "$['CustomerID']"
+								},
+								"sink": {
+									"name": "CustomerID"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OrderAmount']"
+								},
+								"sink": {
+									"name": "OrderAmount"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OrderDate']"
+								},
+								"sink": {
+									"name": "OrderDate"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Status']"
+								},
+								"sink": {
+									"name": "Status"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Created_date']"
+								},
+								"sink": {
+									"name": "Created_date"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Created_by']"
+								},
+								"sink": {
+									"name": "Created_by"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Updated_date']"
+								},
+								"sink": {
+									"name": "Updated_date"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Updated_by']"
+								},
+								"sink": {
+									"name": "Updated_by"
+								}
+							},
+							{
+								"source": {
+									"path": "$['runid']"
+								},
+								"sink": {
+									"name": "runid"
+								}
+							}
+						]
+					}
 				},
 				"inputs": [
 					{
 						"referenceName": "DS_Json_IN1686",
 						"type": "DatasetReference",
 						"parameters": {
-							"container": "adf-mock-sep2025 ",
+							"container": "adf-mock-sep2025",
 							"folder": "SourceFiles",
 							"filename": "orders.json"
 						}
@@ -143,62 +228,53 @@
 						"mappings": [
 							{
 								"source": {
+									"name": "OrderID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "OrderID",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
 									"name": "CustomerID",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "customer_id",
-									"type": "Int32",
-									"physicalType": "int"
+									"name": "CustomerID"
 								}
 							},
 							{
 								"source": {
-									"name": "FirstName",
+									"name": "OrderAmount",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "first_name",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"name": "OrderAmount"
 								}
 							},
 							{
 								"source": {
-									"name": "LastName",
+									"name": "OrderDate",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "last_name",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"name": "OrderDate"
 								}
 							},
 							{
 								"source": {
-									"name": "Email",
+									"name": "Status",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "email",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Country",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "country",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"name": "Status"
 								}
 							},
 							{
@@ -208,9 +284,7 @@
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "created_date",
-									"type": "DateTime",
-									"physicalType": "datetime"
+									"name": "Created_date"
 								}
 							},
 							{
@@ -220,9 +294,7 @@
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "created_by",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"name": "Created_by"
 								}
 							},
 							{
@@ -232,9 +304,7 @@
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "updated_date",
-									"type": "DateTime",
-									"physicalType": "datetime"
+									"name": "Updated_date"
 								}
 							},
 							{
@@ -244,9 +314,7 @@
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "updated_by",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"name": "Updated_by"
 								}
 							},
 							{
@@ -256,9 +324,7 @@
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "runid",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"name": "runid"
 								}
 							}
 						],

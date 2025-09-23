@@ -260,9 +260,88 @@
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "name",
-									"type": "String",
+									"name": "ProductID",
 									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Category",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Category"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductName",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ProductName"
+								}
+							},
+							{
+								"source": {
+									"name": "Price",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Price"
+								}
+							},
+							{
+								"source": {
+									"name": "Created_date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Created_date"
+								}
+							},
+							{
+								"source": {
+									"name": "Created_by",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Created_by"
+								}
+							},
+							{
+								"source": {
+									"name": "Updated_date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Updated_date"
+								}
+							},
+							{
+								"source": {
+									"name": "Updated_by",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Updated_by"
+								}
+							},
+							{
+								"source": {
+									"name": "runid",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "runid"
 								}
 							}
 						],
