@@ -3,6 +3,25 @@
 	"properties": {
 		"activities": [
 			{
+				"name": "Web1",
+				"type": "WebActivity",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"url": "https://api.agify.io/?name=jones"
+				}
+			},
+			{
 				"name": "Copy data1",
 				"type": "Copy",
 				"dependsOn": [],
@@ -26,29 +45,156 @@
 							"type": "JsonReadSettings"
 						}
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['name']"
+								},
+								"sink": {
+									"name": "name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['capital']"
+								},
+								"sink": {
+									"name": "capital",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['population']"
+								},
+								"sink": {
+									"name": "population",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['area']"
+								},
+								"sink": {
+									"name": "area",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"path": "$['currency']"
+								},
+								"sink": {
+									"name": "currency",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['languages'][0]"
+								},
+								"sink": {
+									"name": "language_0",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['$[\\'languages\\'][1]']"
+								},
+								"sink": {
+									"name": "lang_1",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['region']"
+								},
+								"sink": {
+									"name": "region",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['subregion']"
+								},
+								"sink": {
+									"name": "subregion",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['flag']"
+								},
+								"sink": {
+									"name": "flag",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['$[\\'languages\\'][2]']"
+								},
+								"sink": {
+									"name": "language_2",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['$[\\'languages\\'][1]']"
+								},
+								"sink": {
+									"name": "language_1",
+									"type": "String"
+								}
+							}
+						],
+						"collectionReference": "",
+						"mapComplexValuesToString": true
+					}
 				},
 				"inputs": [
 					{
 						"referenceName": "DS_Json",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"param_Container": "boootcamp25",
+							"param_Directory": "IN1685",
+							"param_File": "file.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"Param_Container": "boootcamp25",
+							"Param_Folder": "IN1685",
+							"Param_File": "file.csv"
+						}
 					}
 				]
-			},
-			{
-				"name": "Web1",
-				"type": "WebActivity",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": []
 			}
 		],
 		"folder": {
