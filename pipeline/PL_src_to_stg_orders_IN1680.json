@@ -189,8 +189,6 @@
 			{
 				"name": "CP_orders_stg_orders_IN1680",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
