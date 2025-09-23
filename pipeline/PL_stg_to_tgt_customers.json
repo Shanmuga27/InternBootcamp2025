@@ -5,8 +5,6 @@
 			{
 				"name": "DF_customers",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "CP_src_cust_from_table",
@@ -123,8 +121,6 @@
 			{
 				"name": "CP_tgt",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DF_customers",

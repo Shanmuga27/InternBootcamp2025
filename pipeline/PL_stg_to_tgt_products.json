@@ -1,0 +1,42 @@
+{
+	"name": "PL_stg_to_tgt_products",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_products_fullload",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_stg_to_products_IN1680",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCproducts": {
+								"container": "adf-mock-sep2025",
+								"folder": "Target/IN1680",
+								"file": "stg_products_IN1680.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "mock_stg_to_tgt"
+		},
+		"annotations": []
+	}
+}
