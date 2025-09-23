@@ -1,0 +1,192 @@
+{
+	"name": "DF_DIM_CUSTOMERS_IN1686_Prac",
+	"properties": {
+		"folder": {
+			"name": "Practice"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "StgCustomers"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "TGTCustomer"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "TgtDimcustomers",
+					"rejectedDataLinkedService": {
+						"referenceName": "LS_Azure_Blob_Storage",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "LeftJOIN"
+				},
+				{
+					"name": "Transformations"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "StgCustomerSelect"
+				},
+				{
+					"name": "TGTCustomerSelect"
+				},
+				{
+					"name": "InsertAduitColumn"
+				},
+				{
+					"name": "UpdateAduitColumn"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "insertunionupdate"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "CustomerKey"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerID as short,",
+				"          FirstName as string,",
+				"          LastName as string,",
+				"          Email as string,",
+				"          Country as string,",
+				"          CreatedDate as date,",
+				"          Created_date as string,",
+				"          Created_by as string,",
+				"          Updated_date as string,",
+				"          Updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> StgCustomers",
+				"source(output(",
+				"          customer_id as integer,",
+				"          customer_key as string,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          customer_name as string,",
+				"          email as string,",
+				"          country as string,",
+				"          isActive as string,",
+				"          start_date as string,",
+				"          end_date as string,",
+				"          created_date as string,",
+				"          created_by as string,",
+				"          updated_date as string,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TGTCustomer",
+				"StgCustomerSelect, TGTCustomerSelect join(CustomerID == customer_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LeftJOIN",
+				"LeftJOIN derive(customer_name = concat(FirstName,\" \",LastName)) ~> Transformations",
+				"NullHandling split(isNull(customer_id) || !isNull(customer_id) && (NullHandling@Country!=NullHandling@country ),",
+				"     !isNull(customer_id) && (NullHandling@Country!=NullHandling@country ),",
+				"     disjoint: false) ~> split1@(Insert, Update)",
+				"StgCustomers select(mapColumn(",
+				"          CustomerID,",
+				"          FirstName,",
+				"          LastName,",
+				"          Email,",
+				"          Country,",
+				"          CreatedDate,",
+				"          Created_date,",
+				"          Created_by,",
+				"          Updated_date,",
+				"          Updated_by,",
+				"          runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> StgCustomerSelect",
+				"TGTCustomer select(mapColumn(",
+				"          customer_id,",
+				"          first_name,",
+				"          last_name,",
+				"          customer_name,",
+				"          email,",
+				"          country,",
+				"          isActive,",
+				"          start_date,",
+				"          end_date,",
+				"          created_date,",
+				"          created_by,",
+				"          updated_date,",
+				"          updated_by",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TGTCustomerSelect",
+				"split1@Insert derive(isActive = \"Y\",",
+				"          start_date = currentUTC(),",
+				"          end_date = currentUTC()) ~> InsertAduitColumn",
+				"split1@Update derive(isActive = \"N\",",
+				"          start_date = toTimestamp(start_date),",
+				"          end_date = currentUTC()) ~> UpdateAduitColumn",
+				"CustomerKey derive(each(match(type==\"string\"), $$ = iifNull($$, \"UNK\", $$)),",
+				"          each(match(type == \"integer\"), $$ = iifNull($$, 0, $$))) ~> NullHandling",
+				"InsertAduitColumn, UpdateAduitColumn union(byName: true)~> insertunionupdate",
+				"insertunionupdate select(mapColumn(",
+				"          CustomerID,",
+				"          CustomerKey,",
+				"          FirstName,",
+				"          LastName,",
+				"          customer_name,",
+				"          Email = insertunionupdate@Email,",
+				"          Country = insertunionupdate@Country,",
+				"          CreatedDate,",
+				"          Created_date = insertunionupdate@Created_date,",
+				"          Created_by = insertunionupdate@Created_by,",
+				"          Updated_date = insertunionupdate@Updated_date,",
+				"          Updated_by = insertunionupdate@Updated_by,",
+				"          runid,",
+				"          isActive,",
+				"          start_date,",
+				"          end_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"Transformations keyGenerate(output(CustomerKey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> CustomerKey",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_customers_IN1686.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> TgtDimcustomers"
+			]
+		}
+	}
+}
