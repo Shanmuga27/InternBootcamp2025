@@ -66,7 +66,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"schemaname": "CKumaram",
-							"tablename": "Dim_customers_IN1674",
+							"tablename": "Dim_products_IN1674",
 							"Database": "ADF_Training"
 						}
 					}
@@ -86,16 +86,16 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_stgCustomers_IN1674",
+						"referenceName": "DF_STGProducts_IN1674",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"cus": {
-								"filename": "stg_customers_IN1674.csv",
+							"product": {
+								"filename": "stg_products_IN1674.csv",
 								"folder": "Target/IN1674",
 								"container": "adf-mock-sep2025"
 							},
 							"sink1": {
-								"filename": "Dim_customers_IN1674.csv",
+								"filename": "Dim_products_IN1674.csv",
 								"folder": "Target/IN1674",
 								"container": "adf-mock-sep2025"
 							}
