@@ -3,11 +3,11 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy Prod_BLOB_SQL",
+				"name": "Copy Orders_BLOB_SQL",
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "DF_products",
+						"activity": "DF_orders",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -56,7 +56,7 @@
 						"parameters": {
 							"Param_Container": "adf-mock-sep2025",
 							"Param_Folder": "Target/IN1685/DW_IN1685",
-							"Param_File": "Dim_products_IN1685.csv"
+							"Param_File": "Fact_orders_IN1685.csv"
 						}
 					}
 				],
@@ -66,16 +66,23 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Par_SchemaName": "RRamesh",
-							"Par_TableName": "Dim_products_IN1685",
+							"Par_TableName": "Fact_orders_IN1685",
 							"Param_DB_name": "ADF_Training"
 						}
 					}
 				]
 			},
 			{
-				"name": "DF_products",
+				"name": "DF_orders",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Copy Incremental",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -91,13 +98,13 @@
 						"datasetParameters": {
 							"sourcePROD": {
 								"Param_Container": "adf-mock-sep2025",
-								"Param_Folder": "Target/IN1685/STG_IN1685",
-								"Param_File": "STG_IN1685_stg_products.csv"
+								"Param_Folder": "Target/IN1685/DW_IN1685",
+								"Param_File": "Fact_orders_tgt_IN1685.csv"
 							},
 							"sink1": {
 								"Param_Container": "adf-mock-sep2025",
 								"Param_Folder": "Target/IN1685/DW_IN1685",
-								"Param_File": "Dim_products_IN1685.csv"
+								"Param_File": "Fact_orders_IN1685.csv"
 							}
 						}
 					},
@@ -107,6 +114,110 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "Script_Incremental",
+				"type": "Script",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "LS_SQLServer_IN1685",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"Param_DB_name": "ADF_Training"
+					}
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "select *\nfrom RRamesh.STG_IN1685_stg_orders\nwhere STG_IN1685_stg_orders.OrderDate > (select max(OrderDate) from RRamesh.Fact_orders_IN1685)"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "Copy Incremental",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Script_Incremental",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"Param_Container": "adf-mock-sep2025",
+							"Param_Folder": "Target/IN1685/STG_IN1685",
+							"Param_File": "STG_IN1685_stg_orders.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"Param_Container": "adf-mock-sep2025",
+							"Param_Folder": "Target/IN1685/DW_IN1685",
+							"Param_File": "Fact_orders_tgt_IN1685.csv"
+						}
+					}
+				]
 			}
 		],
 		"folder": {
