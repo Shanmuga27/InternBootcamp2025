@@ -1,9 +1,6 @@
 {
-	"name": "DF_SRC_TO_STG_IN1689",
+	"name": "DF_SRC_TO_STG_PRACTICE_IN1689",
 	"properties": {
-		"folder": {
-			"name": "MOCK TEST - STTM"
-		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [

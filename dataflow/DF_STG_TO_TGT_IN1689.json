@@ -2,7 +2,7 @@
 	"name": "DF_STG_TO_TGT_IN1689",
 	"properties": {
 		"folder": {
-			"name": "STG_To_DW"
+			"name": "MOCK TEST - STTM"
 		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
