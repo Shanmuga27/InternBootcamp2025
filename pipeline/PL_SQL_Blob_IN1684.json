@@ -1,9 +1,9 @@
 {
-	"name": "PL_SRC_to_STG_SQL_Server_IN1684",
+	"name": "PL_SQL_Blob_IN1684",
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
+				"name": "CP_Dim_Customer_Blob",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -15,8 +15,54 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"enableStaging": false
-				}
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_SQL_Server_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Tablename": "Dim_customers_IN1684",
+							"PR_Schema": "PMahendi",
+							"PR_Database": "ADF_Training"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "Target/IN1684/TGT",
+							"PR_Filename": "Dim_customers_IN1684",
+							"PR_Container": "adf-mock-sep2025"
+						}
+					}
+				]
 			}
 		],
 		"folder": {
