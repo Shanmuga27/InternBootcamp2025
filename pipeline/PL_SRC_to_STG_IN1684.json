@@ -5,8 +5,6 @@
 			{
 				"name": "CP_customer_stg_Customer_IN1684",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -224,8 +222,6 @@
 			{
 				"name": "CP_orders_stg_orders_IN1684",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -408,8 +404,6 @@
 			{
 				"name": "CP_products_stg_products_IN1684",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -615,8 +609,6 @@
 			{
 				"name": "CP_stg_Customer_IN1684_SQL_Server",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "CP_customer_stg_Customer_IN1684",
@@ -808,8 +800,6 @@
 			{
 				"name": "CP_stg_orders_IN1684_SQL_Server",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "CP_orders_stg_orders_IN1684",
@@ -1003,8 +993,6 @@
 			{
 				"name": "CP_stg_products_IN1684_SQL_Server",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "CP_products_stg_products_IN1684",
@@ -1360,8 +1348,6 @@
 			{
 				"name": "CP_stg_orderdetails_IN1684_SQL_Server",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "CP_orderdetails_stg_orderdetails_IN1684",
@@ -1401,6 +1387,18 @@
 						"mappings": [
 							{
 								"source": {
+									"name": "OrderDetailID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "orderdetail_id",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
 									"name": "OrderID",
 									"type": "String",
 									"physicalType": "String"
@@ -1413,52 +1411,26 @@
 							},
 							{
 								"source": {
-									"name": "CustomerID",
+									"name": "ProductID",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "customer_id",
+									"name": "product_id",
 									"type": "Int32",
 									"physicalType": "int"
 								}
 							},
 							{
 								"source": {
-									"name": "OrderAmount",
+									"name": "Quantity",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "order_amount",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 2,
-									"precision": 10
-								}
-							},
-							{
-								"source": {
-									"name": "OrderDate",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "order_date",
-									"type": "DateTime",
-									"physicalType": "datetime"
-								}
-							},
-							{
-								"source": {
-									"name": "Status",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "status",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"name": "quantity",
+									"type": "Int32",
+									"physicalType": "int"
 								}
 							},
 							{
