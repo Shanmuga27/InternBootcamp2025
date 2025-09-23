@@ -1,6 +1,155 @@
 {
 	"name": "PL_json_to_csv",
 	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['name']"
+								},
+								"sink": {
+									"name": "name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['capital']"
+								},
+								"sink": {
+									"name": "capital",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['population']"
+								},
+								"sink": {
+									"name": "population",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "$['area']"
+								},
+								"sink": {
+									"name": "area",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"path": "$['currency']"
+								},
+								"sink": {
+									"name": "currency",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['languages']"
+								},
+								"sink": {
+									"name": "languages",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['region']"
+								},
+								"sink": {
+									"name": "region",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['subregion']"
+								},
+								"sink": {
+									"name": "subregion",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['flag']"
+								},
+								"sink": {
+									"name": "flag",
+									"type": "String"
+								}
+							}
+						],
+						"mapComplexValuesToString": true
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_json_IN1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"contianer": "boootcamp25",
+							"folder": "IN1680",
+							"file": "file.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680",
+							"file": "file.csv"
+						}
+					}
+				]
+			}
+		],
 		"annotations": []
 	}
 }
