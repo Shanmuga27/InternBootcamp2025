@@ -1,5 +1,5 @@
 {
-	"name": "DF_STG_TGT",
+	"name": "DF_STG_TGT_customers_SCD2",
 	"properties": {
 		"folder": {
 			"name": "IN1677_Mock"
@@ -22,7 +22,15 @@
 					"name": "tgtCustomers"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference"
+					},
+					"name": "sinkTgtCustomer"
+				}
+			],
 			"transformations": [
 				{
 					"name": "SkCustomerKey"
@@ -47,6 +55,15 @@
 				},
 				{
 					"name": "DcAuditcol1"
+				},
+				{
+					"name": "unionSrcTgt"
+				},
+				{
+					"name": "selectSrc"
+				},
+				{
+					"name": "selectTgt"
 				}
 			],
 			"scriptLines": [
@@ -113,13 +130,97 @@
 				"     skipDuplicateMapOutputs: true) ~> selectColumns",
 				"split1@insert alterRow(insertIf(true())) ~> Insert",
 				"split1@update alterRow(updateIf(true())) ~> Update",
-				"Insert derive(start_date = currentDate(),",
+				"Insert derive(customer_name = concat(FirstName,' ',LastName),",
+				"          isActive = 'Y',",
+				"          start_date = currentTimestamp(),",
 				"          end_date = toTimestamp(null()),",
-				"          created_date = currentDate(),",
+				"          created_date = currentTimestamp(),",
 				"          updated_date = toTimestamp(null()),",
 				"          updated_by = toString(null())\r",
 				") ~> DcAuditcol",
-				"Update derive() ~> DcAuditcol1"
+				"Update derive(isActive = 'N',",
+				"          end_date = currentTimestamp(),",
+				"          updated_date = currentTimestamp(),",
+				"          updated_by = {created_by }) ~> DcAuditcol1",
+				"selectSrc, selectTgt union(byName: true)~> unionSrcTgt",
+				"DcAuditcol select(mapColumn(",
+				"          CustomerID,",
+				"          FirstName,",
+				"          LastName,",
+				"          Email = split1@insert@Email,",
+				"          Country = split1@insert@Country,",
+				"          created_date,",
+				"          {created_by },",
+				"          updated_date,",
+				"          updated_by,",
+				"          runid = split1@insert@runid,",
+				"          customer_key = split1@insert@customer_key,",
+				"          customer_id,",
+				"          customer_key = split1@insert@customer_key,",
+				"          first_name,",
+				"          last_name,",
+				"          customer_name,",
+				"          email = split1@insert@email,",
+				"          country = split1@insert@country,",
+				"          isActive,",
+				"          start_date,",
+				"          end_date,",
+				"          created_by,",
+				"          runid = split1@insert@runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSrc",
+				"DcAuditcol1 select(mapColumn(",
+				"          CustomerID,",
+				"          FirstName,",
+				"          LastName,",
+				"          Email = split1@update@Email,",
+				"          Country = split1@update@Country,",
+				"          created_date = split1@update@created_date,",
+				"          {created_by },",
+				"          updated_date,",
+				"          updated_by,",
+				"          runid = split1@update@runid,",
+				"          customer_key = split1@update@customer_key,",
+				"          customer_id,",
+				"          customer_key = split1@update@customer_key,",
+				"          first_name,",
+				"          last_name,",
+				"          customer_name,",
+				"          email = split1@update@email,",
+				"          country = split1@update@country,",
+				"          isActive,",
+				"          start_date,",
+				"          end_date,",
+				"          created_date = split1@update@created_date,",
+				"          created_by,",
+				"          runid = split1@update@runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectTgt",
+				"unionSrcTgt sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_customers_IN1677'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          customer_id = CustomerID,",
+				"          customer_key,",
+				"          first_name = FirstName,",
+				"          last_name = LastName,",
+				"          customer_name,",
+				"          email = unionSrcTgt@Email,",
+				"          country = unionSrcTgt@Country,",
+				"          isActive,",
+				"          start_date,",
+				"          end_date,",
+				"          created_date,",
+				"          created_by = {created_by },",
+				"          updated_date,",
+				"          updated_by,",
+				"          runid",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sinkTgtCustomer"
 			]
 		}
 	}

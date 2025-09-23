@@ -169,8 +169,6 @@
 			{
 				"name": "GM_STG",
 				"type": "GetMetadata",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "ForEach_Src",
@@ -211,8 +209,6 @@
 			{
 				"name": "ForEach_STG",
 				"type": "ForEach",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "GM_STG",
