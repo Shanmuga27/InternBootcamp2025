@@ -1,0 +1,9 @@
+{
+	"name": "PL_STG_DW",
+	"properties": {
+		"folder": {
+			"name": "MOCK/STG_DW"
+		},
+		"annotations": []
+	}
+}
