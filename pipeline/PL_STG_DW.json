@@ -3,40 +3,16 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_Products",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "DF_Products",
-						"type": "DataFlowReference",
-						"datasetParameters": {
-							"sourcePROD": {
-								"Param_Container": "adf-mock-sep2025",
-								"Param_Folder": "Target/IN1685/STG_IN1685",
-								"Param_File": "STG_IN1685_stg_products.csv"
-							}
-						}
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			},
-			{
 				"name": "Copy data1",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "DF_products",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -57,7 +33,21 @@
 							"type": "DelimitedTextReadSettings"
 						}
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
 				"inputs": [
 					{
@@ -65,11 +55,58 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"Param_Container": "adf-mock-sep2025",
-							"Param_Folder": "Target/IN1685/STG_IN1685",
-							"Param_File": "STG_IN1685_stg_products.csv"
+							"Param_Folder": "Target/IN1685/DW_IN1685",
+							"Param_File": "Dim_products_IN1685.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_OnPrem_SQLServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"Par_SchemaName": "RRamesh",
+							"Par_TableName": "Dim_products_IN1685",
+							"Param_DB_name": "ADF_Training"
 						}
 					}
 				]
+			},
+			{
+				"name": "DF_products",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_products",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"sourcePROD": {
+								"Param_Container": "adf-mock-sep2025",
+								"Param_Folder": "Target/IN1685/STG_IN1685",
+								"Param_File": "STG_IN1685_stg_products.csv"
+							},
+							"sink1": {
+								"Param_Container": "adf-mock-sep2025",
+								"Param_Folder": "Target/IN1685/DW_IN1685",
+								"Param_File": "Dim_products_IN1685.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"folder": {
