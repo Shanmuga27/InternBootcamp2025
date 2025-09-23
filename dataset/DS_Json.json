@@ -1,0 +1,40 @@
+{
+	"name": "DS_Json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Azure_Blob_Storage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"param_Container": {
+				"type": "string"
+			},
+			"param_Directory": {
+				"type": "string"
+			},
+			"param_File": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().param_File",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().param_Directory",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().param_Container",
+					"type": "Expression"
+				}
+			}
+		},
+		"schema": {}
+	}
+}
