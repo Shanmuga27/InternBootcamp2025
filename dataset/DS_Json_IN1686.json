@@ -1,0 +1,54 @@
+{
+	"name": "DS_Json_IN1686",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Azure_Blob_Storage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "file.json",
+				"folderPath": "IN1686/Practice",
+				"container": "boootcamp25"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"capital": {
+					"type": "string"
+				},
+				"population": {
+					"type": "integer"
+				},
+				"area": {
+					"type": "integer"
+				},
+				"currency": {
+					"type": "string"
+				},
+				"languages": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"region": {
+					"type": "string"
+				},
+				"subregion": {
+					"type": "string"
+				},
+				"flag": {
+					"type": "string"
+				}
+			}
+		}
+	}
+}
