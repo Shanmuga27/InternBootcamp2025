@@ -1,0 +1,145 @@
+{
+	"name": "PL_JSON_DUMMY",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['shoppingList']['groceries'][0]['item']"
+								},
+								"sink": {
+									"name": "shoppingList_groceries'][0]['item"
+								}
+							},
+							{
+								"source": {
+									"path": "$['shoppingList']['groceries'][0]['quantity']"
+								},
+								"sink": {
+									"name": "shoppingList_groceries'][0]['quantity"
+								}
+							},
+							{
+								"source": {
+									"path": "$['shoppingList']['groceries'][0]['unit']"
+								},
+								"sink": {
+									"name": "shoppingList_groceries'][0]['unit"
+								}
+							},
+							{
+								"source": {
+									"path": "$['shoppingList']['personalCare'][0]['item']"
+								},
+								"sink": {
+									"name": "shoppingList_personalCare'][0]['item"
+								}
+							},
+							{
+								"source": {
+									"path": "$['shoppingList']['personalCare'][0]['quantity']"
+								},
+								"sink": {
+									"name": "shoppingList_personalCare'][0]['quantity"
+								}
+							},
+							{
+								"source": {
+									"path": "$['shoppingList']['personalCare'][0]['unit']"
+								},
+								"sink": {
+									"name": "shoppingList_personalCare'][0]['unit"
+								}
+							},
+							{
+								"source": {
+									"path": "$['shoppingList']['householdItems'][0]['item']"
+								},
+								"sink": {
+									"name": "shoppingList_householdItems'][0]['item"
+								}
+							},
+							{
+								"source": {
+									"path": "$['shoppingList']['householdItems'][0]['quantity']"
+								},
+								"sink": {
+									"name": "shoppingList_householdItems'][0]['quantity"
+								}
+							},
+							{
+								"source": {
+									"path": "$['shoppingList']['householdItems'][0]['unit']"
+								},
+								"sink": {
+									"name": "shoppingList_householdItems'][0]['unit"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_JSON_SUMMY",
+						"type": "DatasetReference",
+						"parameters": {
+							"foldername": "IN1689/JSON_DUMMY",
+							"filename": "sample2.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1689/JSON_DUMMY",
+							"filename": "json_sample.csv"
+						}
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}

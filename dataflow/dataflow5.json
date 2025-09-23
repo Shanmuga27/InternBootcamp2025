@@ -1,0 +1,73 @@
+{
+	"name": "dataflow5",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "cSPLIT"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "join1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {shoppingList_groceries'][0]['item} as string,",
+				"          {shoppingList_groceries'][0]['quantity} as short,",
+				"          {shoppingList_groceries'][0]['unit} as string,",
+				"          {shoppingList_personalCare'][0]['item} as string,",
+				"          {shoppingList_personalCare'][0]['quantity} as short,",
+				"          {shoppingList_personalCare'][0]['unit} as string,",
+				"          {shoppingList_householdItems'][0]['item} as string,",
+				"          {shoppingList_householdItems'][0]['quantity} as short,",
+				"          {shoppingList_householdItems'][0]['unit} as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 lookup(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 split(isNull(target.CustomerID),",
+				"     disjoint: false) ~> cSPLIT@(INSERT, UPDATE)",
+				"cSPLIT@INSERT derive(stDate = currentUTC(),",
+				"          EndDt = ERROR_FUNCTION('toDate(__SINGLE_QUOTE__9999-12-31__SINGLE_QUOTE__')) ~> derivedColumn1",
+				"cSPLIT@UPDATE derive() ~> derivedColumn2",
+				"derivedColumn1, derivedColumn2 join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
