@@ -1,0 +1,53 @@
+{
+	"name": "OrdersJSON",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_Azure_Blob_Storage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"foldername": {
+				"type": "string"
+			},
+			"filename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().filename",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().foldername",
+					"type": "Expression"
+				},
+				"container": "boootcamp25"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"OrderID": {
+					"type": "integer"
+				},
+				"CustomerID": {
+					"type": "integer"
+				},
+				"OrderAmount": {
+					"type": "number"
+				},
+				"OrderDate": {
+					"type": "string"
+				},
+				"Status": {
+					"type": "string"
+				}
+			}
+		}
+	}
+}
