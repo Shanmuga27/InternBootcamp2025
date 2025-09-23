@@ -5,8 +5,6 @@
 			{
 				"name": "customers",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -87,6 +85,98 @@
 									"value": "@pipeline().parameters.filename",
 									"type": "Expression"
 								},
+								"folder": "Target/IN1674",
+								"container": "adf-mock-sep2025"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Orders",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Orders_IN1674",
+						"type": "DataFlowReference",
+						"parameters": {
+							"name": {
+								"value": "'@{pipeline().Pipeline}'",
+								"type": "Expression"
+							},
+							"id": {
+								"value": "'@{pipeline().RunId}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"source1": {
+								"filename": "orders.json",
+								"folder": "SourceFiles",
+								"container": "adf-mock-sep2025"
+							},
+							"sink1": {
+								"filename": "stg_orders_IN1674.csv",
+								"folder": "Target/IN1674",
+								"container": "adf-mock-sep2025"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "orderdetail",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Orderdetails_IN1674",
+						"type": "DataFlowReference",
+						"parameters": {
+							"name": {
+								"value": "'@{pipeline().Pipeline}'",
+								"type": "Expression"
+							},
+							"id": {
+								"value": "'@{pipeline().RunId}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"orderdetsrc": {
+								"filename": "orderdetails.json",
+								"folder": "SourceFiles",
+								"container": "adf-mock-sep2025"
+							},
+							"sink1": {
+								"filename": "stg_orderdetails_IN1674.csv",
 								"folder": "Target/IN1674",
 								"container": "adf-mock-sep2025"
 							}

@@ -1,0 +1,77 @@
+{
+	"name": "DF_Orders_IN1674",
+	"properties": {
+		"folder": {
+			"name": "MockTest/SRC_to_STG"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Json_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     name as string,",
+				"     id as string",
+				"}",
+				"source(output(",
+				"          CustomerID as short,",
+				"          OrderAmount as double,",
+				"          OrderDate as date,",
+				"          OrderID as short,",
+				"          Status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> source1",
+				"source1 derive({created date} = currentDate(),",
+				"          {created by } = $name,",
+				"          {updated date} = currentDate(),",
+				"          {updated by} = $name,",
+				"          runid = $id) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          customer_id = CustomerID,",
+				"          order_amount = OrderAmount,",
+				"          order_date = OrderDate,",
+				"          order_id = OrderID,",
+				"          status = Status,",
+				"          {created date},",
+				"          {created by },",
+				"          {updated date},",
+				"          {updated by},",
+				"          runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
