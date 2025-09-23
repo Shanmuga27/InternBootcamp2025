@@ -1,0 +1,260 @@
+{
+	"name": "DF_SRC_TO_STG_IN1689",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "sourceCUSTOMERS"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "sourcePRODUCTS"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrdersJSON",
+						"type": "DatasetReference"
+					},
+					"name": "sourceORDERS"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrdersJSON",
+						"type": "DatasetReference"
+					},
+					"name": "sourceORDERDETAILS"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "SNKcustomers"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "SNKproducts"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "SNKorders"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "SNKorderDetails"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "surrogateKeyRUNID1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "surrogateKeyRUNID2"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "select4"
+				},
+				{
+					"name": "surrogateKeyRUNID3"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "select5"
+				},
+				{
+					"name": "surrogateKeyRUNID4"
+				},
+				{
+					"name": "derivedColumn4"
+				},
+				{
+					"name": "select2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerID as integer,",
+				"          FirstName as string,",
+				"          LastName as string,",
+				"          Email as string,",
+				"          Country as string,",
+				"          CreatedDate as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceCUSTOMERS",
+				"source(output(",
+				"          ProductID as short,",
+				"          ProductName as string,",
+				"          Category as string,",
+				"          {{Price} as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourcePRODUCTS",
+				"source(output(",
+				"          CustomerID as short,",
+				"          OrderAmount as double,",
+				"          OrderDate as date,",
+				"          OrderID as short,",
+				"          Status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> sourceORDERS",
+				"source(output(",
+				"          OrderID as integer,",
+				"          CustomerID as integer,",
+				"          OrderAmount as double,",
+				"          OrderDate as string,",
+				"          Status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> sourceORDERDETAILS",
+				"sourceCUSTOMERS select(mapColumn(",
+				"          customer_ID = CustomerID,",
+				"          first_name = FirstName,",
+				"          last_name = LastName,",
+				"          email = Email,",
+				"          country = Country",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 keyGenerate(output(runid as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKeyRUNID1",
+				"surrogateKeyRUNID1 derive(created_date = currentTimestamp(),",
+				"          {created_by } = 'IN1689',",
+				"          updated_date = toTimestamp(null()),",
+				"          updated_by = toString(null())) ~> derivedColumn1",
+				"select2 keyGenerate(output(runid as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKeyRUNID2",
+				"surrogateKeyRUNID2 derive(created_date = currentTimestamp(),",
+				"          {created_by } = 'IN1689',",
+				"          updated_date = toTimestamp(null()),",
+				"          updated_by = toString(null())) ~> derivedColumn2",
+				"sourceORDERS select(mapColumn(",
+				"          Order_ID = OrderID,",
+				"          Customer_ID = CustomerID,",
+				"          Order_Amount = OrderAmount,",
+				"          Order_Date = OrderDate,",
+				"          Status",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4",
+				"select4 keyGenerate(output(runid as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKeyRUNID3",
+				"surrogateKeyRUNID3 derive(created_date = currentTimestamp(),",
+				"          {created_by } = 'IN1689',",
+				"          updated_date = toTimestamp(null()),",
+				"          updated_by = toString(null())) ~> derivedColumn3",
+				"sourceORDERDETAILS select(mapColumn(",
+				"          Order_ID = OrderID,",
+				"          Customer_ID = CustomerID,",
+				"          Order_Amount = OrderAmount,",
+				"          Order_Date = OrderDate,",
+				"          Status",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select5",
+				"select5 keyGenerate(output(runid as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKeyRUNID4",
+				"surrogateKeyRUNID4 derive(created_date = currentTimestamp(),",
+				"          {created_by } = 'IN1689',",
+				"          updated_date = toTimestamp(null()),",
+				"          updated_by = toString(null())) ~> derivedColumn4",
+				"sourcePRODUCTS select(mapColumn(",
+				"          Product_ID = ProductID,",
+				"          Product_Name = ProductName,",
+				"          Category,",
+				"          Price = {{Price}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['stg_customers_IN1689.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          customer_ID,",
+				"          first_name,",
+				"          last_name,",
+				"          email,",
+				"          country,",
+				"          runid,",
+				"          created_date,",
+				"          {created_by },",
+				"          updated_date,",
+				"          updated_by",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> SNKcustomers",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['stg_products_IN1689.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Product_id = Product_ID,",
+				"          Product_name = Product_Name,",
+				"          category = Category,",
+				"          Price,",
+				"          runid,",
+				"          created_date,",
+				"          {created_by },",
+				"          updated_date,",
+				"          updated_by",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> SNKproducts",
+				"derivedColumn3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['stg_orders_IN1689.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKorders",
+				"derivedColumn4 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['stg_orderdetails_IN1689.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKorderDetails"
+			]
+		}
+	}
+}

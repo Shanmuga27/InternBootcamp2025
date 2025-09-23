@@ -1,0 +1,196 @@
+{
+	"name": "PL_SRC_TO_STG_IN1689",
+	"properties": {
+		"activities": [
+			{
+				"name": "Orders_json_to_csv",
+				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "OrdersJSON",
+						"type": "DatasetReference",
+						"parameters": {
+							"foldername": "IN1689/ADF_MOCK_SEP25/SOURCE_FILES",
+							"filename": "orders.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1689/ADF_MOCK_SEP25/SOURCE_FILES/TARGETFILES",
+							"filename": "orders.csv"
+						}
+					}
+				]
+			},
+			{
+				"name": "Orderdetails_json_to_csv",
+				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "OrdersJSON",
+						"type": "DatasetReference",
+						"parameters": {
+							"foldername": "IN1689/ADF_MOCK_SEP25/SOURCE_FILES",
+							"filename": "orderdetails.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1689/ADF_MOCK_SEP25/SOURCE_FILES/TARGETFILES",
+							"filename": "orderdetails.json"
+						}
+					}
+				]
+			},
+			{
+				"name": "DF_SRC_STG_IN1689",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_SRC_TO_STG_IN1689",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"sourceCUSTOMERS": {
+								"container": "boootcamp25",
+								"folder": "IN1689/ADF_MOCK_SEP25/SOURCE_FILES",
+								"filename": "customers (1).csv"
+							},
+							"sourcePRODUCTS": {
+								"container": "boootcamp25",
+								"folder": "IN1689/ADF_MOCK_SEP25/SOURCE_FILES",
+								"filename": "products (1).csv"
+							},
+							"sourceORDERS": {
+								"foldername": "IN1689/ADF_MOCK_SEP25/SOURCE_FILES",
+								"filename": "orders.json"
+							},
+							"sourceORDERDETAILS": {
+								"foldername": "IN1689/ADF_MOCK_SEP25/SOURCE_FILES",
+								"filename": "orderdetails.json"
+							},
+							"SNKcustomers": {
+								"container": "boootcamp25",
+								"folder": "IN1689/ADF_MOCK_SEP25/TARGET_FILES",
+								"filename": "stg_customers_IN1689.csv"
+							},
+							"SNKproducts": {
+								"container": "boootcamp25",
+								"folder": "IN1689/ADF_MOCK_SEP25/TARGET_FILES",
+								"filename": "stg_products_IN1689.csv"
+							},
+							"SNKorders": {
+								"container": "boootcamp25",
+								"folder": "IN1689/ADF_MOCK_SEP25/TARGET_FILES",
+								"filename": "stg_orders_IN1689.csv"
+							},
+							"SNKorderDetails": {
+								"container": "boootcamp25",
+								"folder": "IN1689/ADF_MOCK_SEP25/TARGET_FILES",
+								"filename": "stg_orderdetails_IN1689.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
