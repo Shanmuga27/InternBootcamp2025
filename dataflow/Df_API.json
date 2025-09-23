@@ -1,6 +1,9 @@
 {
 	"name": "Df_API",
 	"properties": {
+		"folder": {
+			"name": "New folder"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [

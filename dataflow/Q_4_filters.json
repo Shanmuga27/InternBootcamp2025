@@ -1,6 +1,9 @@
 {
 	"name": "Q_4_filters",
 	"properties": {
+		"folder": {
+			"name": "New folder"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
@@ -74,9 +77,8 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1 split($Region[1] == 'APAC' &&( Country =='India' || Country=='Australia')  ,",
-				"     $Region[2] == 'EMEA'&& Country== 'UK'\r",
-				" ,",
+				"join1 split($Region[1] == 'APAC' &&( Country =='India' || Country=='Australia'),",
+				"     $Region[2] == 'EMEA'&& Country== 'UK',",
 				"     $Region[3] == 'AMER' && (Country == 'USA' || Country == 'Canada'),",
 				"     disjoint: false) ~> split1@(APAC, EMEA, AMER)",
 				"split1@APAC filter(startsWith(split1@APAC@CustomerID, 'A')) ~> filter1",

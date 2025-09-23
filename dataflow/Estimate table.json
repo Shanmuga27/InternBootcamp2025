@@ -1,6 +1,9 @@
 {
 	"name": "Estimate table",
 	"properties": {
+		"folder": {
+			"name": "New folder"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [

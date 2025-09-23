@@ -1,0 +1,74 @@
+{
+	"name": "DF_Products_IN1674",
+	"properties": {
+		"folder": {
+			"name": "MockTest/SRC_to_STG"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "srcproducts"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "product"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     pipname as string,",
+				"     pipid as string",
+				"}",
+				"source(output(",
+				"          ProductID as short,",
+				"          ProductName as string,",
+				"          Category as string,",
+				"          Price as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcproducts",
+				"srcproducts derive({created date} = currentDate(),",
+				"          {created by } = $pipname,",
+				"          {updated date} = currentDate(),",
+				"          {updated by} = $pipname,",
+				"          runid = $pipid) ~> product",
+				"product select(mapColumn(",
+				"          product_id = ProductID,",
+				"          product_name = ProductName,",
+				"          category = Category,",
+				"          price = Price,",
+				"          {created date},",
+				"          {created by },",
+				"          {updated date},",
+				"          {updated by},",
+				"          runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}

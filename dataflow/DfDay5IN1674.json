@@ -1,6 +1,9 @@
 {
 	"name": "DfDay5IN1674",
 	"properties": {
+		"folder": {
+			"name": "New folder"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [

@@ -25,8 +25,14 @@
 					"value": "@dataset().filename",
 					"type": "Expression"
 				},
-				"folderPath": "IN1674/Workshop_Target_File",
-				"container": "boootcamp25"
+				"folderPath": {
+					"value": "@dataset().folder",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().container",
+					"type": "Expression"
+				}
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",

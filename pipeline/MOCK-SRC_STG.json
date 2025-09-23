@@ -1,0 +1,110 @@
+{
+	"name": "MOCK-SRC_STG",
+	"properties": {
+		"activities": [
+			{
+				"name": "customers",
+				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Customers_IN1674",
+						"type": "DataFlowReference",
+						"parameters": {
+							"pipname": {
+								"value": "'@{pipeline().Pipeline}'",
+								"type": "Expression"
+							},
+							"runid": {
+								"value": "'@{pipeline().RunId}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"srcCus": {
+								"filename": "customers.csv",
+								"folder": "SourceFiles",
+								"container": "adf-mock-sep2025"
+							},
+							"sink1": {
+								"filename": "stg_customers_IN1674",
+								"folder": "Target/IN1674",
+								"container": "adf-mock-sep2025"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "products",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Products_IN1674",
+						"type": "DataFlowReference",
+						"parameters": {
+							"pipname": {
+								"value": "'@{pipeline().Pipeline}'",
+								"type": "Expression"
+							},
+							"pipid": {
+								"value": "'@{pipeline().RunId}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"srcproducts": {
+								"filename": "products.csv",
+								"folder": "SourceFiles",
+								"container": "adf-mock-sep2025"
+							},
+							"sink1": {
+								"filename": {
+									"value": "@pipeline().parameters.filename",
+									"type": "Expression"
+								},
+								"folder": "Target/IN1674",
+								"container": "adf-mock-sep2025"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"filename": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}
