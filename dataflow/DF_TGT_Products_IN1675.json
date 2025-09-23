@@ -1,0 +1,118 @@
+{
+	"name": "DF_TGT_Products_IN1675",
+	"properties": {
+		"folder": {
+			"name": "MOCK_TGT_IN1675"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcProducts"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "TgtProducts"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "DimProducts"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ProductKey"
+				},
+				{
+					"name": "AuditColums"
+				},
+				{
+					"name": "Join"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          product_id as integer,",
+				"          product_name as string,",
+				"          category as string,",
+				"          price as integer,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcProducts",
+				"source(output(",
+				"          product_id as integer,",
+				"          product_key as integer,",
+				"          product_name as string,",
+				"          Category as string,",
+				"          price as integer,",
+				"          isActive as string,",
+				"          start_date as timestamp,",
+				"          end_date as timestamp,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TgtProducts",
+				"SrcProducts keyGenerate(output(product_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> ProductKey",
+				"ProductKey derive(isActive = 'Y',",
+				"          start_date = currentTimestamp(),",
+				"          end_date = currentTimestamp()) ~> AuditColums",
+				"AuditColums, TgtProducts join(SrcProducts@product_id == TgtProducts@product_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> Join",
+				"Join select(mapColumn(",
+				"          product_id = SrcProducts@product_id,",
+				"          product_key = ProductKey@product_key,",
+				"          product_name = SrcProducts@product_name,",
+				"          category = SrcProducts@category,",
+				"          price = SrcProducts@price,",
+				"          isActive = AuditColums@isActive,",
+				"          start_date = AuditColums@start_date,",
+				"          end_date = AuditColums@end_date,",
+				"          created_date = SrcProducts@created_date,",
+				"          created_by = SrcProducts@created_by,",
+				"          updated_date = SrcProducts@updated_date,",
+				"          updated_by = SrcProducts@updated_by,",
+				"          runid = SrcProducts@runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_Products.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> DimProducts"
+			]
+		}
+	}
+}
