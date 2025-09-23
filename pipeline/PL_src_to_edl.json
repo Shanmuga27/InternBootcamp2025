@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "DS_blob_excel",
+						"referenceName": "DS_blob_excel_IN1680",
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "boootcamp25",
@@ -30,6 +30,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					}
 				}
@@ -88,7 +89,7 @@
 										},
 										"inputs": [
 											{
-												"referenceName": "DS_blob_excel",
+												"referenceName": "DS_blob_excel_IN1680",
 												"type": "DatasetReference",
 												"parameters": {
 													"container": "boootcamp25",
@@ -196,7 +197,7 @@
 										},
 										"inputs": [
 											{
-												"referenceName": "DS_blob_excel",
+												"referenceName": "DS_blob_excel_IN1680",
 												"type": "DatasetReference",
 												"parameters": {
 													"container": "boootcamp25",

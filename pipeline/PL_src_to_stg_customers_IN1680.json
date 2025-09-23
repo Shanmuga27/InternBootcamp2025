@@ -1,0 +1,116 @@
+{
+	"name": "PL_src_to_stg_customers_IN1680",
+	"properties": {
+		"activities": [
+			{
+				"name": "CP_customers_stg_customers",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "created date",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "created by ",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "updated date",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "updated by",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "runid",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "adf-mock-sep2025",
+							"folder": "SourceFiles",
+							"file": "customers.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "adf-mock-sep2025",
+							"folder": "Target/IN1680",
+							"file": "stg_customers_IN1680.csv"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "mock_src_to_stg"
+		},
+		"annotations": []
+	}
+}

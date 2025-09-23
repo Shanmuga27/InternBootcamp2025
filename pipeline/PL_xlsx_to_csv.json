@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "DS_blob_excel",
+						"referenceName": "DS_blob_excel_IN1680",
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "boootcamp25",
@@ -30,6 +30,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					}
 				}
@@ -70,11 +71,17 @@
 									"additionalColumns": [
 										{
 											"name": "Create_Date",
-											"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')"
+											"value": {
+												"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+												"type": "Expression"
+											}
 										},
 										{
 											"name": "Date_Last_Modified",
-											"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')"
+											"value": {
+												"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+												"type": "Expression"
+											}
 										}
 									],
 									"storeSettings": {
@@ -106,7 +113,7 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "DS_blob_excel",
+									"referenceName": "DS_blob_excel_IN1680",
 									"type": "DatasetReference",
 									"parameters": {
 										"container": "boootcamp25",
