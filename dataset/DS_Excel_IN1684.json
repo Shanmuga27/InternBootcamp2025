@@ -1,5 +1,5 @@
 {
-	"name": "DS_Excel",
+	"name": "DS_Excel_IN1684",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_Azure_Blob_Storage",
