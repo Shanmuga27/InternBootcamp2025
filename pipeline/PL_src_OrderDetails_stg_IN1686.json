@@ -1,0 +1,375 @@
+{
+	"name": "PL_src_OrderDetails_stg_IN1686",
+	"properties": {
+		"activities": [
+			{
+				"name": "SRC_OrderDetails_STG",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"additionalColumns": [
+							{
+								"name": "Created_date",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Created_by",
+								"value": {
+									"value": "@variables('Created_by')",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Updated_date",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Updated_by",
+								"value": {
+									"value": "@variables('Updated_by')",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "runid",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['OrderDetailID']"
+								},
+								"sink": {
+									"name": "OrderDetailID"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OrderID']"
+								},
+								"sink": {
+									"name": "OrderID"
+								}
+							},
+							{
+								"source": {
+									"path": "$['ProductID']"
+								},
+								"sink": {
+									"name": "ProductID"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Quantity']"
+								},
+								"sink": {
+									"name": "Quantity"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Created_date']"
+								},
+								"sink": {
+									"name": "Created_date"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Created_by']"
+								},
+								"sink": {
+									"name": "Created_by"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Updated_date']"
+								},
+								"sink": {
+									"name": "Updated_date"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Updated_by']"
+								},
+								"sink": {
+									"name": "Updated_by"
+								}
+							},
+							{
+								"source": {
+									"path": "$['runid']"
+								},
+								"sink": {
+									"name": "runid"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Json_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "adf-mock-sep2025",
+							"folder": "SourceFiles",
+							"filename": "orderdetails.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "adf-mock-sep2025",
+							"Folder": "Target/IN1686",
+							"File": "stg_orderdetails_IN1686.csv"
+						}
+					}
+				]
+			},
+			{
+				"name": "CSV_OrderDetails_STG_SQL",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "SRC_OrderDetails_STG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "OrderDetailID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "orderdetail_id",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "OrderID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "order_id",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "product_id",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Quantity",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "quantity",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Created_date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "created_date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "Created_by",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "created_by",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Updated_date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "updated_date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "Updated_by",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "updated_by",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "runid",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "runid",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "adf-mock-sep2025",
+							"Folder": "Target/IN1686",
+							"File": "stg_orderdetails_IN1686.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Tablename": "stg_orderdetails_IN1686",
+							"DB_Name": "ADF_Training"
+						}
+					}
+				]
+			}
+		],
+		"variables": {
+			"Created_by": {
+				"type": "String",
+				"defaultValue": "\"IN1686 Sanjay Komala\""
+			},
+			"Updated_by": {
+				"type": "String",
+				"defaultValue": "\"IN1686 Sanjay Komala\""
+			}
+		},
+		"folder": {
+			"name": "MOCK"
+		},
+		"annotations": []
+	}
+}
