@@ -1,0 +1,9 @@
+{
+	"name": "PL_Stg_Customers",
+	"properties": {
+		"folder": {
+			"name": "Practice_Mock_Test"
+		},
+		"annotations": []
+	}
+}
