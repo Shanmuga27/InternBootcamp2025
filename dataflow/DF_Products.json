@@ -26,10 +26,10 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          ProductID as integer,",
+				"          ProductID as short,",
 				"          ProductName as string,",
 				"          Category as string,",
-				"          Price as decimal(10,2),",
+				"          Price as integer,",
 				"          created_date as timestamp 'MM/dd/yyyy HH:mm:ss',",
 				"          created_by as string,",
 				"          updated_date as timestamp 'MM/dd/yyyy HH:mm:ss',",
