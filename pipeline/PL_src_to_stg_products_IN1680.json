@@ -102,7 +102,7 @@
 						"parameters": {
 							"container": "adf-mock-sep2025",
 							"folder": "Target/IN1680",
-							"file": "stg_customers_IN1680.csv"
+							"file": "stg_products_IN1680.csv"
 						}
 					}
 				]
