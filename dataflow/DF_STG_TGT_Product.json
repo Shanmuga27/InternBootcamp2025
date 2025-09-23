@@ -1,0 +1,81 @@
+{
+	"name": "DF_STG_TGT_Product",
+	"properties": {
+		"folder": {
+			"name": "IN1677_Mock"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference"
+					},
+					"name": "StgProduct"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Src",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "skProduct"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ProductID as integer,",
+				"          ProductName as string,",
+				"          Category as string,",
+				"          Price as integer,",
+				"          created_date as timestamp,",
+				"          {created_by } as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> StgProduct",
+				"StgProduct keyGenerate(output(product_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> skProduct",
+				"skProduct derive(ProductName = initCap(ProductName),",
+				"          start_date = currentTimestamp(),",
+				"          end_date = toString(null()),",
+				"          isActive = 'Y') ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_products_IN1677'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          ProductID,",
+				"          product_key,",
+				"          ProductName,",
+				"          Category,",
+				"          Price,",
+				"          isActive,",
+				"          start_date,",
+				"          end_date,",
+				"          created_date,",
+				"          {created_by },",
+				"          updated_date,",
+				"          updated_by,",
+				"          runid",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
