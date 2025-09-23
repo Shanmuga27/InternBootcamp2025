@@ -152,7 +152,7 @@
 				"          start_date = currentUTC(),",
 				"          end_date = currentUTC()) ~> InsertAduitColumn",
 				"split1@Update derive(isActive = \"N\",",
-				"          start_date = toTimestamp(start_date),",
+				"          start_date = currentUTC(),",
 				"          end_date = currentUTC()) ~> UpdateAduitColumn",
 				"CustomerKey derive(each(match(type==\"string\"), $$ = iifNull($$, \"UNK\", $$)),",
 				"          each(match(type == \"integer\"), $$ = iifNull($$, 0, $$))) ~> NullHandling",
