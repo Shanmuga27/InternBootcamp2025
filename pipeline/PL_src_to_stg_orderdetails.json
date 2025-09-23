@@ -1,0 +1,193 @@
+{
+	"name": "PL_src_to_stg_orderdetails",
+	"properties": {
+		"activities": [
+			{
+				"name": "CP_orderdetails_stg_orderdetails",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"additionalColumns": [
+							{
+								"name": "current date",
+								"value": {
+									"value": "@formatDateTime(utcNow())",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "pipieline name",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "current date1",
+								"value": {
+									"value": "@formatDateTime(utcNow())",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "pipeline name1",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "pipeline runid",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['OrderID']"
+								},
+								"sink": {
+									"name": "OrderID"
+								}
+							},
+							{
+								"source": {
+									"path": "$['CustomerID']"
+								},
+								"sink": {
+									"name": "CustomerID"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OrderAmount']"
+								},
+								"sink": {
+									"name": "OrderAmount"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OrderDate']"
+								},
+								"sink": {
+									"name": "OrderDate"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Status']"
+								},
+								"sink": {
+									"name": "Status"
+								}
+							},
+							{
+								"source": {
+									"path": "$['current date']"
+								},
+								"sink": {
+									"name": "created date"
+								}
+							},
+							{
+								"source": {
+									"path": "$['pipieline name']"
+								},
+								"sink": {
+									"name": "created by"
+								}
+							},
+							{
+								"source": {
+									"path": "$['current date1']"
+								},
+								"sink": {
+									"name": "updated date"
+								}
+							},
+							{
+								"source": {
+									"path": "$['pipeline name1']"
+								},
+								"sink": {
+									"name": "updated by"
+								}
+							},
+							{
+								"source": {
+									"path": "$['pipeline runid']"
+								},
+								"sink": {
+									"name": "runid"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_JSON_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Container": "boootcamp25",
+							"PR_Directory": "IN1684/Practice/Source Files",
+							"PR_Filename": "orderdetails.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Practice/Target/stg",
+							"PR_Filename": "stg_orderdetails",
+							"PR_Container": "boootcamp25"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "practice/src to stg"
+		},
+		"annotations": []
+	}
+}
