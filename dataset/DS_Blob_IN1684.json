@@ -11,6 +11,9 @@
 			},
 			"PR_Filename": {
 				"type": "string"
+			},
+			"PR_Container": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
@@ -26,7 +29,10 @@
 					"value": "@dataset().PR_Directory",
 					"type": "Expression"
 				},
-				"container": "boootcamp25"
+				"container": {
+					"value": "@dataset().PR_Container",
+					"type": "Expression"
+				}
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",

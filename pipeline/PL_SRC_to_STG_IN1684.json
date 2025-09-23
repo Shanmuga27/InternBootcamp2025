@@ -1,0 +1,228 @@
+{
+	"name": "PL_SRC_to_STG_IN1684",
+	"properties": {
+		"activities": [
+			{
+				"name": "CP_customer_Customer_IN1684",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "current date",
+								"value": {
+									"value": "@formatDateTime(utcNow())",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "pipeline name",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "current date1",
+								"value": {
+									"value": "@formatDateTime(utcNow())",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "pipeline name1",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "pipeline runid",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "CustomerID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "CustomerID",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "FirstName",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "FirstName",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "LastName",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "LastName",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Email",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Email",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Country",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Country",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "current date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "created date",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "pipeline name",
+									"type": "String"
+								},
+								"sink": {
+									"name": "created by",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "current date1",
+									"type": "String"
+								},
+								"sink": {
+									"name": "updated date",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "pipeline name1",
+									"type": "String"
+								},
+								"sink": {
+									"name": "updated by",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "pipeline runid",
+									"type": "String"
+								},
+								"sink": {
+									"name": "runid",
+									"physicalType": "String"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "SourceFiles",
+							"PR_Filename": "customers.csv",
+							"PR_Container": "adf-mock-sep2025"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "Target/IN1684/STG",
+							"PR_Filename": "stg_customers_IN1684",
+							"PR_Container": "adf-mock-sep2025"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "mock test_IN1684/Src to Stg"
+		},
+		"annotations": []
+	}
+}
