@@ -1,5 +1,5 @@
 {
-	"name": "PL_Stg_Customers",
+	"name": "PL_Stg_Products",
 	"properties": {
 		"activities": [
 			{
@@ -203,7 +203,7 @@
 						"parameters": {
 							"ContainerName": "adf-mock-sep2025",
 							"FolderName": "SourceFiles",
-							"FileName": "customers.csv"
+							"FileName": "products.csv"
 						}
 					}
 				],
@@ -222,6 +222,8 @@
 			{
 				"name": "Cp_customers_sql_to_adls",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
