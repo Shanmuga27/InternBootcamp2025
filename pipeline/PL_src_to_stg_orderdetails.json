@@ -1,0 +1,185 @@
+{
+	"name": "PL_src_to_stg_orderdetails",
+	"properties": {
+		"activities": [
+			{
+				"name": "CP_orderdetails_to_stg_orderdetails",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"additionalColumns": [
+							{
+								"name": "created date",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "created by ",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "updated date",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "updated by",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": " runid",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['OrderDetailID']"
+								},
+								"sink": {
+									"name": "orderdetail_id"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OrderID']"
+								},
+								"sink": {
+									"name": "order_id"
+								}
+							},
+							{
+								"source": {
+									"path": "$['ProductID']"
+								},
+								"sink": {
+									"name": "product_id"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Quantity']"
+								},
+								"sink": {
+									"name": "quantity"
+								}
+							},
+							{
+								"source": {
+									"path": "$['created date']"
+								},
+								"sink": {
+									"name": "created date"
+								}
+							},
+							{
+								"source": {
+									"path": "$['created by ']"
+								},
+								"sink": {
+									"name": "created by "
+								}
+							},
+							{
+								"source": {
+									"path": "$['updated date']"
+								},
+								"sink": {
+									"name": "updated date"
+								}
+							},
+							{
+								"source": {
+									"path": "$['updated by']"
+								},
+								"sink": {
+									"name": "updated by"
+								}
+							},
+							{
+								"source": {
+									"path": "$[' runid']"
+								},
+								"sink": {
+									"name": " runid"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_json_IN1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"contianer": "adf-mock-sep2025",
+							"folder": "SourceFiles",
+							"file": "orderdetails.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680/mock",
+							"file": "stg_orderdetails.csv"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "ReMockTest/src_to_stg"
+		},
+		"annotations": []
+	}
+}

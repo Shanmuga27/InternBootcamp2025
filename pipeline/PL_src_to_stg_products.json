@@ -1,0 +1,217 @@
+{
+	"name": "PL_src_to_stg_products",
+	"properties": {
+		"activities": [
+			{
+				"name": "CP_products_to_stg_products",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "created date",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "created by ",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "updated date",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "updated by",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "runid",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ProductID",
+									"type": "Int32",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "product_id",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductName",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "product_name",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Category",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "category",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Price",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "price",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "created date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "created date",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "created by ",
+									"type": "String"
+								},
+								"sink": {
+									"name": "created by ",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "updated date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "updated date",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "updated by",
+									"type": "String"
+								},
+								"sink": {
+									"name": "updated by",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "runid",
+									"type": "String"
+								},
+								"sink": {
+									"name": "runid",
+									"type": "String",
+									"physicalType": "String"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "adf-mock-sep2025",
+							"folder": "SourceFiles",
+							"file": "products.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680/mock",
+							"file": "stg_products.csv"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "ReMockTest/src_to_stg"
+		},
+		"annotations": []
+	}
+}
