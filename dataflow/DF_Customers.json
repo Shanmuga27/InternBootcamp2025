@@ -13,18 +13,28 @@
 						"type": "DatasetReference"
 					},
 					"name": "sourceCustomers"
+				},
+				{
+					"name": "tgtCust"
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "split1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
-				"          CustomerID as short,",
+				"          CustomerID as integer,",
 				"          FirstName as string,",
 				"          LastName as string,",
 				"          Email as string,",
 				"          Country as string,",
-				"          CreatedDate as date,",
+				"          CreatedDate as timestamp,",
 				"          created_date as timestamp,",
 				"          created_by as string,",
 				"          updated_date as timestamp,",
@@ -33,7 +43,16 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> sourceCustomers"
+				"     ignoreNoFilesFound: false) ~> sourceCustomers",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> tgtCust",
+				"sourceCustomers, tgtCust join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 split(ERROR_FUNCTION(''),",
+				"     disjoint: false) ~> split1@(, )"
 			]
 		}
 	}
