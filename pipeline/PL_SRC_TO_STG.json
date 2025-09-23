@@ -5,8 +5,6 @@
 			{
 				"name": "GM_SRC",
 				"type": "GetMetadata",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -40,8 +38,6 @@
 			{
 				"name": "ForEach_Src",
 				"type": "ForEach",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "GM_SRC",
@@ -84,7 +80,7 @@
 										{
 											"name": "created_by ",
 											"value": {
-												"value": "'IN1677'",
+												"value": "@pipeline().Pipeline",
 												"type": "Expression"
 											}
 										},
@@ -173,7 +169,16 @@
 			{
 				"name": "GM_STG",
 				"type": "GetMetadata",
-				"dependsOn": [],
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [
+					{
+						"activity": "ForEach_Src",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -206,6 +211,8 @@
 			{
 				"name": "ForEach_STG",
 				"type": "ForEach",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "GM_STG",

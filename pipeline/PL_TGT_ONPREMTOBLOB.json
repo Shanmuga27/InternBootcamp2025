@@ -57,7 +57,7 @@
 						"referenceName": "DS_Blob_IN1677_Src",
 						"type": "DatasetReference",
 						"parameters": {
-							"directory": "Target/IN1677/STG",
+							"directory": "Target/IN1677/TGT/customer",
 							"file": "Dim_customers_IN1677"
 						}
 					}

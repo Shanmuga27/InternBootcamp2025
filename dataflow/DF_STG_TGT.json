@@ -23,27 +23,103 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "SkCustomerKey"
+				},
+				{
+					"name": "JoinSrcTgt"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "selectColumns"
+				},
+				{
+					"name": "Insert"
+				},
+				{
+					"name": "Update"
+				},
+				{
+					"name": "DcAuditcol"
+				},
+				{
+					"name": "DcAuditcol1"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
-				"          CustomerID as short,",
+				"          CustomerID as integer,",
 				"          FirstName as string,",
 				"          LastName as string,",
 				"          Email as string,",
 				"          Country as string,",
-				"          CreatedDate as date,",
-				"          created_date as string,",
+				"          CreatedDate as timestamp,",
+				"          created_date as timestamp,",
 				"          {created_by } as string,",
-				"          updated_date as string,",
+				"          updated_date as timestamp,",
 				"          updated_by as string,",
 				"          runid as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> srcCustomers",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          customer_id as integer,",
+				"          customer_key as integer,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          customer_name as string,",
+				"          email as string,",
+				"          country as string,",
+				"          isActive as string,",
+				"          start_date as timestamp,",
+				"          end_date as timestamp,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> tgtCustomers"
+				"     ignoreNoFilesFound: false) ~> tgtCustomers",
+				"selectColumns keyGenerate(output(customer_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SkCustomerKey",
+				"SkCustomerKey, tgtCustomers join(CustomerID == customer_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinSrcTgt",
+				"JoinSrcTgt split(isNull(customer_id)||(selectColumns@Country != tgtCustomers@country),",
+				"     CustomerID==customer_id && (selectColumns@Country!=tgtCustomers@country),",
+				"     disjoint: false) ~> split1@(insert, update)",
+				"srcCustomers select(mapColumn(",
+				"          CustomerID,",
+				"          FirstName,",
+				"          LastName,",
+				"          Email,",
+				"          Country,",
+				"          created_date,",
+				"          {created_by },",
+				"          updated_date,",
+				"          updated_by,",
+				"          runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectColumns",
+				"split1@insert alterRow(insertIf(true())) ~> Insert",
+				"split1@update alterRow(updateIf(true())) ~> Update",
+				"Insert derive(start_date = currentDate(),",
+				"          end_date = toTimestamp(null()),",
+				"          created_date = currentDate(),",
+				"          updated_date = toTimestamp(null()),",
+				"          updated_by = toString(null())\r",
+				") ~> DcAuditcol",
+				"Update derive() ~> DcAuditcol1"
 			]
 		}
 	}
