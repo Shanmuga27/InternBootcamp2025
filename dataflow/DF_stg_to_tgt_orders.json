@@ -1,0 +1,62 @@
+{
+	"name": "DF_stg_to_tgt_orders",
+	"properties": {
+		"folder": {
+			"name": "Repractise"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCorders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKorders"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"parameters{",
+				"     filename as string",
+				"}",
+				"source(output(",
+				"          anime_id as string,",
+				"          name as string,",
+				"          genre as string,",
+				"          type as string,",
+				"          episodes as string,",
+				"          rating as string,",
+				"          members as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCorders",
+				"SRCorders sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          anime_id as string,",
+				"          name as string,",
+				"          genre as string,",
+				"          type as string,",
+				"          episodes as string,",
+				"          rating as string,",
+				"          members as string",
+				"     ),",
+				"     partitionFileNames:[($filename)],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKorders"
+			]
+		}
+	}
+}

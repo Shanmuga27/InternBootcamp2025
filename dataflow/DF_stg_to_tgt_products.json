@@ -1,0 +1,92 @@
+{
+	"name": "DF_stg_to_tgt_products",
+	"properties": {
+		"folder": {
+			"name": "Repractise"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCproducts"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKproducts"
+				}
+			],
+			"transformations": [
+				{
+					"name": "surrogateproducts"
+				},
+				{
+					"name": "derivedname"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     filename as string",
+				"}",
+				"source(output(",
+				"          product_id as short,",
+				"          product_name as string,",
+				"          category as string,",
+				"          price as integer,",
+				"          {created date} as string,",
+				"          {created by } as string,",
+				"          {updated date} as string,",
+				"          {updated by} as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCproducts",
+				"SRCproducts keyGenerate(output(products_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateproducts",
+				"surrogateproducts derive(product_name_init = initCap(product_name)) ~> derivedname",
+				"derivedname select(mapColumn(",
+				"          product_id,",
+				"          category,",
+				"          price,",
+				"          {created date},",
+				"          {created by },",
+				"          {updated date},",
+				"          {updated by},",
+				"          runid,",
+				"          products_key,",
+				"          product_name = product_name_init",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          anime_id as string,",
+				"          name as string,",
+				"          genre as string,",
+				"          type as string,",
+				"          episodes as string,",
+				"          rating as string,",
+				"          members as string",
+				"     ),",
+				"     partitionFileNames:[($filename)],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKproducts"
+			]
+		}
+	}
+}
