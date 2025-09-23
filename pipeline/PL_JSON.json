@@ -29,8 +29,7 @@
 					"sink": {
 						"type": "DelimitedTextSink",
 						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings",
-							"copyBehavior": "FlattenHierarchy"
+							"type": "AzureBlobStorageWriteSettings"
 						},
 						"formatSettings": {
 							"type": "DelimitedTextWriteSettings",
@@ -75,7 +74,7 @@
 								},
 								"sink": {
 									"name": "area",
-									"type": "Decimal"
+									"type": "Int64"
 								}
 							},
 							{
@@ -92,7 +91,7 @@
 									"path": "$['languages']"
 								},
 								"sink": {
-									"name": "languages",
+									"name": "lang",
 									"type": "String"
 								}
 							},
@@ -146,7 +145,7 @@
 						"parameters": {
 							"Param_Container": "boootcamp25",
 							"Param_Folder": "IN1685",
-							"Param_File": "file.csv"
+							"Param_File": "new_file.csv"
 						}
 					}
 				]
@@ -154,6 +153,8 @@
 			{
 				"name": "Copy CSV_SQL",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -229,7 +230,14 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "DF_clean_json",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"source1": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685",
+								"Param_File": "file.csv"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,

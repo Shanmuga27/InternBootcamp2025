@@ -9,7 +9,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "DS_Json",
+						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference"
 					},
 					"name": "source1"
@@ -18,15 +18,35 @@
 			"sinks": [],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
+					"name": "filter1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "derivedColumn3"
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          name as string,",
+				"          capital as string,",
+				"          population as integer,",
+				"          area as integer,",
+				"          currency as string,",
+				"          languages as string,",
+				"          region as string,",
+				"          subregion as string,",
+				"          flag as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false,",
-				"     documentForm: 'documentPerLine') ~> source1",
-				"source1 derive(languages = regexReplace(languages, '[\\\\[\\\\]\\\\\"]', '')) ~> derivedColumn1"
+				"     ignoreNoFilesFound: false) ~> source1",
+				"derivedColumn2 filter(languages == 'German' || lang_1 == 'German' || lang_2 == 'German' || lang_3 == 'German') ~> filter1",
+				"derivedColumn3 derive(lang_1 = regexSplit(languages, ',')[1],",
+				"          lang_2 = regexSplit(languages, ',')[2],",
+				"          lang_3 = regexSplit(languages, ',')[3]) ~> derivedColumn2",
+				"source1 derive(languages = regexReplace(languages, '[\\\\[\\\\]\\\\\"]', '')) ~> derivedColumn3"
 			]
 		}
 	}
