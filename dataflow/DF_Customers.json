@@ -18,13 +18,39 @@
 					"name": "tgtCust"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"name": "sink1"
+				},
+				{
+					"name": "sink2"
+				}
+			],
 			"transformations": [
 				{
-					"name": "join1"
+					"name": "join1",
+					"description": "LEFT join on 'sourceCustomers' and 'tgtCust'"
 				},
 				{
 					"name": "split1"
+				},
+				{
+					"name": "addColumns",
+					"description": "add start_date, end_date, isActive"
+				},
+				{
+					"name": "alterRowINSERT"
+				},
+				{
+					"name": "alterRowUPDATE"
+				},
+				{
+					"name": "derivedColumn2",
+					"description": "update date column"
+				},
+				{
+					"name": "dervivedcolumn",
+					"description": "update date column"
 				}
 			],
 			"scriptLines": [
@@ -46,13 +72,29 @@
 				"     ignoreNoFilesFound: false) ~> sourceCustomers",
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false) ~> tgtCust",
-				"sourceCustomers, tgtCust join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"addColumns, tgtCust join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
 				"join1 split(ERROR_FUNCTION(''),",
-				"     disjoint: false) ~> split1@(, )"
+				"     ERROR_FUNCTION(''),",
+				"     disjoint: false) ~> split1@(InsertStream, UpdateStream)",
+				"sourceCustomers derive(start_date = currentTimestamp(),",
+				"          end_date = toTimestamp(null()),",
+				"          isActive = 'Y') ~> addColumns",
+				"split1@InsertStream alterRow() ~> alterRowINSERT",
+				"split1@UpdateStream alterRow() ~> alterRowUPDATE",
+				"alterRowINSERT derive() ~> derivedColumn2",
+				"alterRowUPDATE derive() ~> dervivedcolumn",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1",
+				"dervivedcolumn sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2"
 			]
 		}
 	}
