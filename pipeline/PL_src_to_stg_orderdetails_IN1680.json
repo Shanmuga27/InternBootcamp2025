@@ -1,9 +1,9 @@
 {
-	"name": "PL_src_to_stg_orders_IN1680",
+	"name": "PL_src_to_stg_orderdetails_IN1680",
 	"properties": {
 		"activities": [
 			{
-				"name": "CP_orders_stg_orders",
+				"name": "CP_orderdetails_stg_orderdetails",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -83,7 +83,7 @@
 						"parameters": {
 							"contianer": "adf-mock-sep2025",
 							"folder": "SourceFiles",
-							"file": "orders.json"
+							"file": "orderdetails.json"
 						}
 					}
 				],
@@ -94,7 +94,7 @@
 						"parameters": {
 							"container": "adf-mock-sep2025",
 							"folder": "Target/IN1680",
-							"file": "stg_orders_IN1680.csv"
+							"file": "stg_ordersdetails_IN1680.csv"
 						}
 					}
 				]
