@@ -1,5 +1,5 @@
 {
-	"name": "PL_STG_Dim_Customer_TGT_IN1686",
+	"name": "PL_STG_Dim_Product_TGT_IN1686",
 	"properties": {
 		"activities": [
 			{
@@ -46,7 +46,7 @@
 						"referenceName": "DS_SQL_IN1686",
 						"type": "DatasetReference",
 						"parameters": {
-							"Tablename": "Dim_customers_IN1686",
+							"Tablename": "tgt_products_IN1686",
 							"DB_Name": "ADF_Training"
 						}
 					}
@@ -58,13 +58,13 @@
 						"parameters": {
 							"Container": "adf-mock-sep2025",
 							"Folder": "Target/IN1686/srcTGT",
-							"File": "Dim_customers_IN1686.csv"
+							"File": "tgt_Products_IN1686.csv"
 						}
 					}
 				]
 			},
 			{
-				"name": "Dim_customers_IN1686",
+				"name": "Dim_products_IN1686",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -109,7 +109,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Dim_customers_IN1686",
+						"activity": "Dim_products_IN1686",
 						"dependencyConditions": [
 							"Succeeded"
 						]
