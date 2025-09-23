@@ -12,7 +12,8 @@
 						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference"
 					},
-					"name": "sourcePROD"
+					"name": "sourcePROD",
+					"description": "Import data from stg_products"
 				}
 			],
 			"sinks": [
@@ -26,10 +27,12 @@
 			],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
+					"name": "derivedColumn1",
+					"description": "add new columns"
 				},
 				{
-					"name": "surrogateKey1"
+					"name": "surrogateKey1",
+					"description": "Adding new key Product_key "
 				}
 			],
 			"scriptLines": [
