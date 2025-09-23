@@ -5,8 +5,6 @@
 			{
 				"name": "CP_orders_stg_orders",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -200,7 +198,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "DelimitedTextSource",
+						"type": "JsonSource",
 						"additionalColumns": [
 							{
 								"name": "created date",
@@ -244,7 +242,7 @@
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
+							"type": "JsonReadSettings"
 						}
 					},
 					"sink": {
@@ -253,24 +251,16 @@
 						"sqlWriterUseTableLock": false,
 						"tableOption": "autoCreate"
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
+					"enableStaging": false
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_Blob_1680",
+						"referenceName": "DS_json_IN1680",
 						"type": "DatasetReference",
 						"parameters": {
-							"container": "adf-mock-sep2025",
-							"folder": "Target/IN1680",
-							"file": "stg_orders_IN1680.csv"
+							"contianer": "adf-mock-sep2025",
+							"folder": "SourceFiles",
+							"file": "orders.json"
 						}
 					}
 				],

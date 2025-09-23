@@ -5,6 +5,8 @@
 			{
 				"name": "DF_customers",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "CP_src_cust_from_table",
@@ -37,7 +39,7 @@
 								"folder": "Target/IN1680",
 								"file": "stg_customers_IN1680.csv"
 							},
-							"SNKtgtcust": {
+							"SRCtgtcust": {
 								"container": "adf-mock-sep2025",
 								"folder": "Target/IN1680/tgt",
 								"file": "dim_customers.csv"
@@ -121,6 +123,8 @@
 			{
 				"name": "CP_tgt",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "DF_customers",

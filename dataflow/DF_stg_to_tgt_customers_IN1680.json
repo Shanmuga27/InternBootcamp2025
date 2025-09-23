@@ -19,7 +19,7 @@
 						"referenceName": "DS_Blob_1680",
 						"type": "DatasetReference"
 					},
-					"name": "SNKtgtcust"
+					"name": "SRCtgtcust"
 				}
 			],
 			"sinks": [
@@ -36,7 +36,43 @@
 					"name": "surrogatecustomer"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "derivedName"
+				},
+				{
+					"name": "SLCTrenamecols"
+				},
+				{
+					"name": "joincustomerSrcAndTgt"
+				},
+				{
+					"name": "derivedInsert"
+				},
+				{
+					"name": "selectSrc"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "joinsSRCforupdate"
+				},
+				{
+					"name": "derivedNewINsert"
+				},
+				{
+					"name": "split2"
+				},
+				{
+					"name": "selectUpdate"
+				},
+				{
+					"name": "alterRowInsert"
+				},
+				{
+					"name": "alterRowUpdate"
+				},
+				{
+					"name": "unionAll"
 				}
 			],
 			"scriptLines": [
@@ -59,22 +95,106 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SRCcust",
 				"source(output(",
-				"          anime_id as string,",
-				"          name as string,",
-				"          genre as string,",
-				"          type as string,",
-				"          episodes as string,",
-				"          rating as string,",
-				"          members as string",
+				"          customer_id as integer,",
+				"          customer_key as integer,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          customer_name as string,",
+				"          email as string,",
+				"          country as string,",
+				"          isActive as string,",
+				"          start_date as timestamp,",
+				"          end_date as timestamp,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> SNKtgtcust",
+				"     ignoreNoFilesFound: false) ~> SRCtgtcust",
 				"SRCcust keyGenerate(output(customer_key as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogatecustomer",
-				"surrogatecustomer derive(customer_name = concat(FirstName, LastName)) ~> derivedColumn1",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"surrogatecustomer derive(customer_name = concat(FirstName, LastName)) ~> derivedName",
+				"SRCtgtcust select(mapColumn(",
+				"          tgt_customer_id = customer_id,",
+				"          tgt_customer_key = customer_key,",
+				"          tgt_first_name = first_name,",
+				"          tgt_last_name = last_name,",
+				"          tgt_customer_name = customer_name,",
+				"          tgt_email = email,",
+				"          tgt_country = country,",
+				"          tgt_isActive = isActive,",
+				"          tgt_start_date = start_date,",
+				"          tgt_end_date = end_date,",
+				"          tgt_created_date = created_date,",
+				"          tgt_created_by = created_by,",
+				"          tgt_updated_date = updated_date,",
+				"          tgt_updated_by = updated_by,",
+				"          tgt_runid = runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SLCTrenamecols",
+				"derivedName, SLCTrenamecols join(CustomerID == tgt_customer_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joincustomerSrcAndTgt",
+				"split1@insert derive(start_date = currentTimestamp(),",
+				"          isActive = 'Y') ~> derivedInsert",
+				"derivedInsert select(mapColumn(",
+				"          CustomerID,",
+				"          FirstName,",
+				"          LastName,",
+				"          Email,",
+				"          Country,",
+				"          {created date},",
+				"          {created by },",
+				"          {updated date},",
+				"          {updated by},",
+				"          runid,",
+				"          customer_key,",
+				"          customer_name,",
+				"          start_date,",
+				"          isActive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSrc",
+				"joincustomerSrcAndTgt split(isNull(tgt_customer_id) || !isNull(tgt_customer_id) && (Country!=tgt_country && tgt_isActive=='Y'),",
+				"     disjoint: false) ~> split1@(insert)",
+				"SLCTrenamecols, SRCcust join(tgt_customer_id == CustomerID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinsSRCforupdate",
+				"split2@update derive(isActive = 'N',",
+				"          end_date = currentTimestamp()) ~> derivedNewINsert",
+				"joinsSRCforupdate split(!isNull(tgt_customer_id) && (Country!=tgt_country && tgt_isActive=='Y'),",
+				"     disjoint: false) ~> split2@(update)",
+				"derivedNewINsert select(mapColumn(",
+				"          customer_id = tgt_customer_id,",
+				"          customer_key = tgt_customer_key,",
+				"          first_name = tgt_first_name,",
+				"          last_name = tgt_last_name,",
+				"          customer_name = tgt_customer_name,",
+				"          email = tgt_email,",
+				"          start_date = tgt_start_date,",
+				"          created_date = tgt_created_date,",
+				"          created_by = tgt_created_by,",
+				"          updated_date = tgt_updated_date,",
+				"          updated_by = tgt_updated_by,",
+				"          runid = tgt_runid,",
+				"          isActive,",
+				"          end_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectUpdate",
+				"selectSrc alterRow(insertIf(true())) ~> alterRowInsert",
+				"selectUpdate alterRow(updateIf(true())) ~> alterRowUpdate",
+				"alterRowInsert, alterRowUpdate union(byName: true)~> unionAll",
+				"unionAll sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          anime_id as string,",
