@@ -1,5 +1,5 @@
 {
-	"name": "PL_TGT_Product",
+	"name": "PL_Order_incremental",
 	"properties": {
 		"activities": [
 			{
@@ -16,16 +16,20 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_STG_TGT_Product",
+						"referenceName": "DF_Orders_incre",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"StgProduct": {
+							"srcOrders": {
 								"directory": "Target/IN1677/STG",
-								"file": "stg_products_IN1677"
+								"file": "stg_orders_IN1677"
 							},
-							"sinkTgtProduct": {
-								"directory": "Target/IN1677/TGT/product",
-								"file": "Dim_products_IN1677"
+							"tgtOrders": {
+								"directory": "Target/IN1677/TGT/orders",
+								"file": "Fact_orders_IN1677"
+							},
+							"sink1": {
+								"directory": "Target/IN1677/TGT/orders",
+								"file": "Fact_orders_IN1677"
 							}
 						}
 					},
@@ -39,7 +43,14 @@
 			{
 				"name": "Copy data1",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Data flow1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -81,8 +92,8 @@
 						"referenceName": "DS_Blob_IN1677_Src",
 						"type": "DatasetReference",
 						"parameters": {
-							"directory": "Target/IN1677/TGT/product",
-							"file": "Dim_products_IN1677"
+							"directory": "Target/IN1677/STG",
+							"file": "stg_orders_IN1677"
 						}
 					}
 				],
@@ -92,7 +103,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"schema": "JSivakum",
-							"table": "Dim_products_IN1677",
+							"table": "Fact_orders_IN1677",
 							"db": "ADF_Training"
 						}
 					}
