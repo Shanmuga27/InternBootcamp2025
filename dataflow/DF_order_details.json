@@ -1,5 +1,5 @@
 {
-	"name": "DF_orders",
+	"name": "DF_order_details",
 	"properties": {
 		"folder": {
 			"name": "MOCK"
@@ -33,10 +33,11 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          OrderDetailID as integer,",
-				"          OrderID as integer,",
-				"          ProductID as integer,",
-				"          Quantity as integer,",
+				"          OrderID as short,",
+				"          CustomerID as short,",
+				"          OrderAmount as short,",
+				"          OrderDate as date,",
+				"          Status as string,",
 				"          created_date as timestamp,",
 				"          created_by as string,",
 				"          updated_date as timestamp,",
@@ -46,12 +47,12 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourcePROD",
-				"sourcePROD keyGenerate(output(order_key as long),",
+				"sourcePROD keyGenerate(output(Product_key as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateKey1",
 				"surrogateKey1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['Fact_orderdetails_IN1685.csv'],",
+				"     partitionFileNames:['Fact_orders_IN1685.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sink1"
