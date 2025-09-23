@@ -1,0 +1,9 @@
+{
+	"name": "PL_stg_to_tgt_customers",
+	"properties": {
+		"folder": {
+			"name": "mock_stg_to_tgt"
+		},
+		"annotations": []
+	}
+}
