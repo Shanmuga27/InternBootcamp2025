@@ -1,0 +1,90 @@
+{
+	"name": "DF_Full_load",
+	"properties": {
+		"folder": {
+			"name": "mock test"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCProducts"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SNKDimProducts"
+				}
+			],
+			"transformations": [
+				{
+					"name": "surrogateProductKey"
+				},
+				{
+					"name": "transformation"
+				},
+				{
+					"name": "select"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ProductID as short,",
+				"          ProductName as string,",
+				"          Category as string,",
+				"          Price as integer,",
+				"          {created date} as string,",
+				"          {created by} as string,",
+				"          {updated date} as string,",
+				"          {updated by} as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCProducts",
+				"SRCProducts keyGenerate(output(product_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateProductKey",
+				"surrogateProductKey derive(isActive = \"Y\",",
+				"          ProductName = initCap(ProductName),",
+				"          start_date = currentDate(),",
+				"          end_date = toString(null()),",
+				"          {created date} = {created date},",
+				"          {created by} = {created by},",
+				"          {updated date} = currentDate(),",
+				"          {updated by} = {updated by}) ~> transformation",
+				"transformation select(mapColumn(",
+				"          product_id = ProductID,",
+				"          product_key,",
+				"          product_name = ProductName,",
+				"          category = Category,",
+				"          price = Price,",
+				"          start_date,",
+				"          end_date,",
+				"          isActive,",
+				"          {created date},",
+				"          {created by},",
+				"          {updated date},",
+				"          {updated by},",
+				"          runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select",
+				"select sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_products_IN1684'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKDimProducts"
+			]
+		}
+	}
+}

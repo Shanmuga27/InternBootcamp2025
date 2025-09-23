@@ -12,14 +12,14 @@
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "srcCustomers"
+					"name": "SRCCustomers"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "source1"
+					"name": "TGTDimCustomer"
 				}
 			],
 			"sinks": [
@@ -28,7 +28,7 @@
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "SNKDimCustomers"
 				}
 			],
 			"transformations": [
@@ -36,54 +36,243 @@
 					"name": "select1"
 				},
 				{
-					"name": "join1"
+					"name": "LeftSRCCustomersTGTDimCustomers"
 				},
 				{
 					"name": "split1"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "transformation2"
 				},
 				{
 					"name": "alterRow2"
 				},
 				{
-					"name": "select2"
+					"name": "select3"
 				},
 				{
 					"name": "union1"
 				},
 				{
 					"name": "select4"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "SurrogateCustomerKey"
+				},
+				{
+					"name": "transformation4"
+				},
+				{
+					"name": "alterRow3"
+				},
+				{
+					"name": "select5"
+				},
+				{
+					"name": "alterRow4"
+				},
+				{
+					"name": "select6"
+				},
+				{
+					"name": "transformation3"
+				},
+				{
+					"name": "alterRow5"
+				},
+				{
+					"name": "select7"
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          CustomerID as integer,",
+				"          FirstName as string,",
+				"          LastName as string,",
+				"          Email as string,",
+				"          Country as string,",
+				"          {created date} as string,",
+				"          {created by} as string,",
+				"          {updated date} as string,",
+				"          {updated by} as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> srcCustomers",
-				"source(allowSchemaDrift: true,",
+				"     ignoreNoFilesFound: false) ~> SRCCustomers",
+				"source(output(",
+				"          customer_id as integer,",
+				"          customer_key as integer,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          customer_name as string,",
+				"          email as string,",
+				"          country as string,",
+				"          isActive as string,",
+				"          start_date as date,",
+				"          end_date as date,",
+				"          {created date} as date,",
+				"          {created by} as string,",
+				"          {updated date} as date,",
+				"          {updated by} as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source1",
-				"srcCustomers select(skipDuplicateMapInputs: true,",
+				"     ignoreNoFilesFound: false) ~> TGTDimCustomer",
+				"SurrogateCustomerKey select(mapColumn(",
+				"          each(match(true()),",
+				"               \"SRC_\"+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
-				"     joinType:'inner',",
+				"select1, select2 join(SRC_CustomerID == TGT_customer_id,",
+				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1",
-				"join1 split(ERROR_FUNCTION(''),",
-				"     disjoint: false) ~> split1@(, )",
-				"split1 derive() ~> derivedColumn1",
-				"derivedColumn1 alterRow() ~> alterRow2",
-				"alterRow2 select(skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2",
-				"select2 union(byName: true)~> union1",
+				"     broadcast: 'auto')~> LeftSRCCustomersTGTDimCustomers",
+				"LeftSRCCustomersTGTDimCustomers split(isNull(TGT_customer_id),",
+				"     SRC_CustomerID==TGT_customer_id && (SRC_Country!=TGT_country),",
+				"     SRC_CustomerID==TGT_customer_id && (SRC_Country==TGT_country),",
+				"     disjoint: false) ~> split1@(INSERT, UPDATE, EXISTING)",
+				"split1@INSERT derive(isActive = \"Y\",",
+				"          { customer_name} = concat(SRC_FirstName,SRC_LastName),",
+				"          start_date = currentDate(),",
+				"          end_date = toString(null())) ~> transformation2",
+				"transformation2 alterRow(insertIf(true())) ~> alterRow2",
+				"alterRow2 select(mapColumn(",
+				"          CustomerID = SRC_CustomerID,",
+				"          Customer_Key = SRC_Customer_Key,",
+				"          FirstName = SRC_FirstName,",
+				"          LastName = SRC_LastName,",
+				"          customer_name = { customer_name},",
+				"          Email = SRC_Email,",
+				"          Country = SRC_Country,",
+				"          isActive,",
+				"          start_date,",
+				"          end_date,",
+				"          {created date} = {SRC_created date},",
+				"          {created by} = {SRC_created by},",
+				"          {updated date} = {SRC_updated date},",
+				"          {updated by} = {SRC_updated by},",
+				"          runid = SRC_runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select3, select5, select7, select6 union(byName: true)~> union1",
 				"union1 select(skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select4",
+				"TGTDimCustomer select(mapColumn(",
+				"          each(match(true()),",
+				"               \"TGT_\"+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"SRCCustomers keyGenerate(output(Customer_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SurrogateCustomerKey",
+				"split1@UPDATE derive() ~> transformation4",
+				"transformation4 alterRow() ~> alterRow3",
+				"alterRow3 select(mapColumn(",
+				"          SRC_CustomerID,",
+				"          SRC_FirstName,",
+				"          SRC_LastName,",
+				"          SRC_Email,",
+				"          SRC_Country,",
+				"          {SRC_created date},",
+				"          {SRC_created by},",
+				"          {SRC_updated date},",
+				"          {SRC_updated by},",
+				"          SRC_runid,",
+				"          SRC_Customer_Key,",
+				"          TGT_customer_id,",
+				"          TGT_customer_key,",
+				"          TGT_first_name,",
+				"          TGT_last_name,",
+				"          TGT_customer_name,",
+				"          TGT_email,",
+				"          TGT_country,",
+				"          TGT_isActive,",
+				"          TGT_start_date,",
+				"          TGT_end_date,",
+				"          {TGT_created date},",
+				"          {TGT_created by},",
+				"          {TGT_updated date},",
+				"          {TGT_updated by},",
+				"          TGT_runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select5",
+				"split1@EXISTING alterRow() ~> alterRow4",
+				"alterRow4 select(mapColumn(",
+				"          SRC_CustomerID,",
+				"          SRC_FirstName,",
+				"          SRC_LastName,",
+				"          SRC_Email,",
+				"          SRC_Country,",
+				"          {SRC_created date},",
+				"          {SRC_created by},",
+				"          {SRC_updated date},",
+				"          {SRC_updated by},",
+				"          SRC_runid,",
+				"          SRC_Customer_Key,",
+				"          TGT_customer_id,",
+				"          TGT_customer_key,",
+				"          TGT_first_name,",
+				"          TGT_last_name,",
+				"          TGT_customer_name,",
+				"          TGT_email,",
+				"          TGT_country,",
+				"          TGT_isActive,",
+				"          TGT_start_date,",
+				"          TGT_end_date,",
+				"          {TGT_created date},",
+				"          {TGT_created by},",
+				"          {TGT_updated date},",
+				"          {TGT_updated by},",
+				"          TGT_runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select6",
+				"split1@UPDATE derive() ~> transformation3",
+				"transformation3 alterRow() ~> alterRow5",
+				"alterRow5 select(mapColumn(",
+				"          SRC_CustomerID,",
+				"          SRC_FirstName,",
+				"          SRC_LastName,",
+				"          SRC_Email,",
+				"          SRC_Country,",
+				"          {SRC_created date},",
+				"          {SRC_created by},",
+				"          {SRC_updated date},",
+				"          {SRC_updated by},",
+				"          SRC_runid,",
+				"          SRC_Customer_Key,",
+				"          TGT_customer_id,",
+				"          TGT_customer_key,",
+				"          TGT_first_name,",
+				"          TGT_last_name,",
+				"          TGT_customer_name,",
+				"          TGT_email,",
+				"          TGT_country,",
+				"          TGT_isActive,",
+				"          TGT_start_date,",
+				"          TGT_end_date,",
+				"          {TGT_created date},",
+				"          {TGT_created by},",
+				"          {TGT_updated date},",
+				"          {TGT_updated by},",
+				"          TGT_runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select7",
 				"select4 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true) ~> SNKDimCustomers"
 			]
 		}
 	}
