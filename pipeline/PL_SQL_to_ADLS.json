@@ -1,0 +1,73 @@
+{
+	"name": "PL_SQL_to_ADLS",
+	"properties": {
+		"activities": [
+			{
+				"name": "CP_Customer_SQL_adls",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_OnPremSQL_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": "Dim_customers_IN1675",
+							"SchemaName": "DMuthuku",
+							"DatabaseName": "ADF_Training"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"ContainerName": "adf-mock-sep2025",
+							"FolderName": "Target/IN1675/target",
+							"FileName": "tgtCustomers.csv"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Mock_Test_IN1675/TGT_IN1675"
+		},
+		"annotations": []
+	}
+}

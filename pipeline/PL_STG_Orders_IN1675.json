@@ -1,0 +1,259 @@
+{
+	"name": "PL_STG_Orders_IN1675",
+	"properties": {
+		"activities": [
+			{
+				"name": "CP_Stg_Orders_ADLS_to_SQL",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"additionalColumns": [
+							{
+								"name": "Created_date",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Created_by",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Updated_date",
+								"value": {
+									"value": "@utcNow()",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "Updated_by",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "runid",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['OrderID']"
+								},
+								"sink": {
+									"name": "order_id",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "$['CustomerID']"
+								},
+								"sink": {
+									"name": "customer_id",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OrderAmount']"
+								},
+								"sink": {
+									"name": "order_amount",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OrderDate']"
+								},
+								"sink": {
+									"name": "order_date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Status']"
+								},
+								"sink": {
+									"name": "status",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Created_date']"
+								},
+								"sink": {
+									"name": "created_date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Created_by']"
+								},
+								"sink": {
+									"name": "created_by",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Updated_date']"
+								},
+								"sink": {
+									"name": "updated_date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Updated_by']"
+								},
+								"sink": {
+									"name": "updated_by",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['runid']"
+								},
+								"sink": {
+									"name": "runid",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_JSON_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "adf-mock-sep2025",
+							"folder": "SourceFiles",
+							"file": "orders.json"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_OnPremSQL_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": "stg_orders_IN1675",
+							"SchemaName": "DMuthuku",
+							"DatabaseName": "ADF_Training"
+						}
+					}
+				]
+			},
+			{
+				"name": "CP_Stg_Orders_SQL_to_ADLS",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_OnPremSQL_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": "stg_orders_IN1675",
+							"SchemaName": "DMuthuku",
+							"DatabaseName": "ADF_Training"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"ContainerName": "adf-mock-sep2025",
+							"FolderName": "Target/IN1675",
+							"FileName": "stg_orders_IN1675"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Mock_Test_IN1675/STG_IN1675"
+		},
+		"annotations": []
+	}
+}
