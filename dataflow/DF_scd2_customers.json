@@ -23,7 +23,48 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "selectTGT"
+				},
+				{
+					"name": "selectSRC"
+				},
+				{
+					"name": "join1",
+					"description": "LEFT JOIN"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "alterRowINSERT"
+				},
+				{
+					"name": "alterRowUPDATE"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "surrogateKey1"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "derivedColumn4"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn5"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          CustomerID as integer,",
@@ -50,17 +91,93 @@
 				"          email as string,",
 				"          country as string,",
 				"          isActive as string,",
-				"          start_date as string,",
-				"          end_date as string,",
-				"          created_date as string,",
+				"          start_date as timestamp,",
+				"          end_date as timestamp,",
+				"          created_date as timestamp,",
 				"          created_by as string,",
-				"          updated_date as string,",
+				"          updated_date as timestamp,",
 				"          updated_by as string,",
 				"          runid as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> tgt"
+				"     ignoreNoFilesFound: false) ~> tgt",
+				"tgt select(mapColumn(",
+				"          t_customer_id = customer_id,",
+				"          t_customer_key = customer_key,",
+				"          t_first_name = first_name,",
+				"          t_last_name = last_name,",
+				"          t_customer_name = customer_name,",
+				"          t_email = email,",
+				"          t_country = country,",
+				"          t_isActive = isActive,",
+				"          t_start_date = start_date,",
+				"          t_end_date = end_date,",
+				"          t_created_date = created_date,",
+				"          t_created_by = created_by,",
+				"          t_updated_date = updated_date,",
+				"          t_updated_by = updated_by,",
+				"          t_runid = runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectTGT",
+				"sourceCUST select(mapColumn(",
+				"          CustomerID,",
+				"          FirstName,",
+				"          LastName,",
+				"          Email,",
+				"          Country,",
+				"          created_date,",
+				"          created_by,",
+				"          updated_date,",
+				"          updated_by,",
+				"          runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSRC",
+				"derivedColumn2, selectTGT join(CustomerID == t_customer_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 split(isNull(t_customer_id) || (Country != t_country),",
+				"     (Country != t_country),",
+				"     disjoint: false) ~> split1@(InsertStream, UpdateStream)",
+				"split1@InsertStream alterRow(insertIf(true())) ~> alterRowINSERT",
+				"split1@UpdateStream alterRow(updateIf(true())) ~> alterRowUPDATE",
+				"selectSRC derive(isActive = 'Y',",
+				"          start_date = currentTimestamp(),",
+				"          end_date = toTimestamp(null()),",
+				"          customer_name = null()) ~> derivedColumn2",
+				"derivedColumn5 keyGenerate(output(customer_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"alterRowINSERT derive(start_date = currentTimestamp(),",
+				"          end_date = toTimestamp(null()),",
+				"          isActive = 'Y') ~> derivedColumn3",
+				"alterRowUPDATE derive(end_date = currentTimestamp(),",
+				"          isActive = 'N') ~> derivedColumn4",
+				"derivedColumn3, derivedColumn4 union(byName: true)~> union1",
+				"surrogateKey1 select(mapColumn(",
+				"          customer_id = CustomerID,",
+				"          customer_key,",
+				"          first_name = FirstName,",
+				"          last_name = LastName,",
+				"          customer_name,",
+				"          email = Email,",
+				"          country = Country,",
+				"          created_date,",
+				"          created_by,",
+				"          updated_date,",
+				"          updated_by,",
+				"          runid,",
+				"          isActive,",
+				"          start_date,",
+				"          end_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"union1 derive(customer_name = concat(FirstName, LastName)) ~> derivedColumn5"
 			]
 		}
 	}
