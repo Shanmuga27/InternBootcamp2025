@@ -27,14 +27,12 @@
 						}
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
+						"type": "ParquetSink",
 						"storeSettings": {
 							"type": "AzureBlobStorageWriteSettings"
 						},
 						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
+							"type": "ParquetWriteSettings"
 						}
 					},
 					"enableStaging": false,
@@ -91,7 +89,7 @@
 									"path": "$['languages']"
 								},
 								"sink": {
-									"name": "lang",
+									"name": "languages",
 									"type": "String"
 								}
 							},
@@ -140,12 +138,12 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DS_CSV_IN1685",
+						"referenceName": "DS_Parquet1",
 						"type": "DatasetReference",
 						"parameters": {
-							"Param_Container": "boootcamp25",
-							"Param_Folder": "IN1685",
-							"Param_File": "new_file.csv"
+							"Par_Container": "boootcamp25",
+							"Par_Folder": "IN1685",
+							"Par_File": "file.parquet"
 						}
 					}
 				]
