@@ -1,28 +1,9 @@
 {
-	"name": "PL_API",
+	"name": "PL_JSON",
 	"properties": {
 		"activities": [
 			{
-				"name": "Web1",
-				"type": "WebActivity",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"method": "POST",
-					"url": "https://api.agify.io/?name=jones"
-				}
-			},
-			{
-				"name": "Copy data1",
+				"name": "Copy JSON_CSV",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -48,7 +29,8 @@
 					"sink": {
 						"type": "DelimitedTextSink",
 						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
+							"type": "AzureBlobStorageWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
 						},
 						"formatSettings": {
 							"type": "DelimitedTextWriteSettings",
@@ -107,19 +89,10 @@
 							},
 							{
 								"source": {
-									"path": "$['languages'][0]"
+									"path": "$['languages']"
 								},
 								"sink": {
-									"name": "language_0",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['$[\\'languages\\'][1]']"
-								},
-								"sink": {
-									"name": "lang_1",
+									"name": "languages",
 									"type": "String"
 								}
 							},
@@ -149,24 +122,6 @@
 									"name": "flag",
 									"type": "String"
 								}
-							},
-							{
-								"source": {
-									"path": "$['$[\\'languages\\'][2]']"
-								},
-								"sink": {
-									"name": "language_2",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['$[\\'languages\\'][1]']"
-								},
-								"sink": {
-									"name": "language_1",
-									"type": "String"
-								}
 							}
 						],
 						"collectionReference": "",
@@ -192,6 +147,69 @@
 							"Param_Container": "boootcamp25",
 							"Param_Folder": "IN1685",
 							"Param_File": "file.csv"
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy CSV_SQL",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"Param_Container": "boootcamp25",
+							"Param_Folder": "IN1685",
+							"Param_File": "file.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_OnPrem_SQLServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"Par_SchemaName": "RRamesh",
+							"Par_TableName": "countries",
+							"Param_DB_name": "ADF_Training"
 						}
 					}
 				]
