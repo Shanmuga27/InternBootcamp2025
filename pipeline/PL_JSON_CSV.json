@@ -137,8 +137,33 @@
 						}
 					}
 				]
+			},
+			{
+				"name": "Switch1",
+				"type": "Switch",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"on": {
+						"value": "@pipeline().parameters.reg",
+						"type": "Expression"
+					},
+					"cases": [
+						{
+							"value": "Eu"
+						},
+						{
+							"value": "US"
+						}
+					]
+				}
 			}
 		],
+		"parameters": {
+			"reg": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "learn"
 		},
