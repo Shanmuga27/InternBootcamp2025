@@ -16,12 +16,12 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "DS_CSV_IN1675",
+						"referenceName": "DS_JSON_IN1675",
 						"type": "DatasetReference",
 						"parameters": {
-							"ContainerName": "adf-mock-sep2025",
-							"FolderName": "SourceFiles",
-							"FileName": "*.json"
+							"container": "adf-mock-sep2025",
+							"folder": "SourceFiles",
+							"file": "*.json"
 						}
 					},
 					"fieldList": [
@@ -32,7 +32,7 @@
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
-						"type": "DelimitedTextReadSettings"
+						"type": "JsonReadSettings"
 					}
 				}
 			},
