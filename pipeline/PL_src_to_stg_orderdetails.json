@@ -3,8 +3,10 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "CP_orderdetails_stg_orderdetails",
+				"name": "CP_stg_orderdetails_SQL",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -16,7 +18,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "JsonSource",
+						"type": "DelimitedTextSource",
 						"additionalColumns": [
 							{
 								"name": "current date",
@@ -60,7 +62,7 @@
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
-							"type": "JsonReadSettings"
+							"type": "DelimitedTextReadSettings"
 						}
 					},
 					"sink": {
@@ -150,18 +152,18 @@
 									"name": "runid"
 								}
 							}
-						]
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
 					}
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_JSON_IN1684",
-						"type": "DatasetReference",
-						"parameters": {
-							"PR_Container": "boootcamp25",
-							"PR_Directory": "IN1684/Practice/Source Files",
-							"PR_Filename": "orderdetails.json"
-						}
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
@@ -179,8 +181,6 @@
 			{
 				"name": "CP_orderdetails_stg_orderdetails_copy1",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -192,63 +192,20 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "JsonSource",
-						"additionalColumns": [
-							{
-								"name": "current date",
-								"value": {
-									"value": "@formatDateTime(utcNow())",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "pipieline name",
-								"value": {
-									"value": "@pipeline().Pipeline",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "current date1",
-								"value": {
-									"value": "@formatDateTime(utcNow())",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "pipeline name1",
-								"value": {
-									"value": "@pipeline().Pipeline",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "pipeline runid",
-								"value": {
-									"value": "@pipeline().RunId",
-									"type": "Expression"
-								}
-							}
-						],
+						"type": "DelimitedTextSource",
 						"storeSettings": {
 							"type": "AzureBlobStorageReadSettings",
 							"recursive": true,
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
-							"type": "JsonReadSettings"
+							"type": "DelimitedTextReadSettings"
 						}
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
 					},
 					"enableStaging": false,
 					"translator": {
@@ -256,99 +213,121 @@
 						"mappings": [
 							{
 								"source": {
-									"path": "$['OrderID']"
+									"name": "OrderDetailID",
+									"type": "String",
+									"physicalType": "String"
 								},
 								"sink": {
-									"name": "OrderID"
+									"name": "orderdetail_id",
+									"type": "Int32",
+									"physicalType": "int"
 								}
 							},
 							{
 								"source": {
-									"path": "$['CustomerID']"
+									"name": "OrderID",
+									"type": "String",
+									"physicalType": "String"
 								},
 								"sink": {
-									"name": "CustomerID"
+									"name": "order_id",
+									"type": "Int32",
+									"physicalType": "int"
 								}
 							},
 							{
 								"source": {
-									"path": "$['OrderAmount']"
+									"name": "ProductID",
+									"type": "String",
+									"physicalType": "String"
 								},
 								"sink": {
-									"name": "OrderAmount"
+									"name": "product_id",
+									"type": "Int32",
+									"physicalType": "int"
 								}
 							},
 							{
 								"source": {
-									"path": "$['OrderDate']"
+									"name": "Quantity",
+									"type": "String",
+									"physicalType": "String"
 								},
 								"sink": {
-									"name": "OrderDate"
+									"name": "quantity",
+									"type": "Int32",
+									"physicalType": "int"
 								}
 							},
 							{
 								"source": {
-									"path": "$['Status']"
+									"name": "created date",
+									"type": "String",
+									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Status"
+									"name": "created date",
+									"type": "DateTime",
+									"physicalType": "datetime"
 								}
 							},
 							{
 								"source": {
-									"path": "$['current date']"
+									"name": "created by",
+									"type": "String",
+									"physicalType": "String"
 								},
 								"sink": {
-									"name": "created date"
+									"name": "created by",
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							},
 							{
 								"source": {
-									"path": "$['pipieline name']"
+									"name": "updated date",
+									"type": "String",
+									"physicalType": "String"
 								},
 								"sink": {
-									"name": "created by"
+									"name": "updated date",
+									"type": "DateTime",
+									"physicalType": "datetime"
 								}
 							},
 							{
 								"source": {
-									"path": "$['current date1']"
+									"name": "updated by",
+									"type": "String",
+									"physicalType": "String"
 								},
 								"sink": {
-									"name": "updated date"
+									"name": "updated by",
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							},
 							{
 								"source": {
-									"path": "$['pipeline name1']"
+									"name": "runid",
+									"type": "String",
+									"physicalType": "String"
 								},
 								"sink": {
-									"name": "updated by"
-								}
-							},
-							{
-								"source": {
-									"path": "$['pipeline runid']"
-								},
-								"sink": {
-									"name": "runid"
+									"name": "runid",
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							}
-						]
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
 					}
 				},
 				"inputs": [
-					{
-						"referenceName": "DS_JSON_IN1684",
-						"type": "DatasetReference",
-						"parameters": {
-							"PR_Container": "boootcamp25",
-							"PR_Directory": "IN1684/Practice/Target/stg",
-							"PR_Filename": "orderdetails.json"
-						}
-					}
-				],
-				"outputs": [
 					{
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference",
@@ -356,6 +335,17 @@
 							"PR_Directory": "IN1684/Practice/Target/stg",
 							"PR_Filename": "stg_orderdetails",
 							"PR_Container": "boootcamp25"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_Server_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Tablename": "stg_orderdetails_p",
+							"PR_Schema": "PMahendi",
+							"PR_Database": "ADF_Training"
 						}
 					}
 				]

@@ -5,6 +5,8 @@
 			{
 				"name": "CP_product_stg_products",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -203,6 +205,217 @@
 							"PR_Directory": "IN1684/Practice/Target/stg",
 							"PR_Filename": "stg_products",
 							"PR_Container": "boootcamp25"
+						}
+					}
+				]
+			},
+			{
+				"name": "CP_stg_products_SQL",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "current date",
+								"value": {
+									"value": "@formatDateTime(utcNow())",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "pipieline name",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "current date1",
+								"value": {
+									"value": "@formatDateTime(utcNow())",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "pipeline name1",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "pipeline runid",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ProductID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "product_id",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "ProductName",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "product_name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Category",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "category",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Price",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "price",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 10
+								}
+							},
+							{
+								"source": {
+									"name": "created date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "created date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "created by",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "created by",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "updated date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "updated date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "updated by",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "updated by",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "runid",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "runid",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Practice/Target/stg",
+							"PR_Filename": "stg_products",
+							"PR_Container": "boootcamp25"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_Server_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Tablename": "stg_products_p",
+							"PR_Schema": "PMahendi",
+							"PR_Database": "ADF_Training"
 						}
 					}
 				]

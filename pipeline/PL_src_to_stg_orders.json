@@ -5,6 +5,8 @@
 			{
 				"name": "CP_orders_stg_orders",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -180,6 +182,192 @@
 							"PR_Directory": "IN1684/Practice/Target/stg",
 							"PR_Filename": "stg_orders",
 							"PR_Container": "boootcamp25"
+						}
+					}
+				]
+			},
+			{
+				"name": "CP_stg_orders_SQL",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "OrderID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "order_id",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "CustomerID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "customer_id",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "OrderAmount",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "order_amount",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 2,
+									"precision": 10
+								}
+							},
+							{
+								"source": {
+									"name": "OrderDate",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "order_date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "Status",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "status",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "created date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "created date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "created by",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "created by",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "updated date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "updated date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "updated by",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "updated by",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "runid",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "runid",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Container": "boootcamp25",
+							"PR_Directory": "IN1684/Practice/Target/stg",
+							"PR_Filename": "stg_orders"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_Server_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Tablename": "stg_orders_p",
+							"PR_Schema": "PMahendi",
+							"PR_Database": "ADF_Training"
 						}
 					}
 				]
