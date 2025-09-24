@@ -46,9 +46,6 @@
 					"name": "select4"
 				},
 				{
-					"name": "TGT"
-				},
-				{
 					"name": "split1"
 				},
 				{
@@ -59,9 +56,6 @@
 				},
 				{
 					"name": "select5"
-				},
-				{
-					"name": "select6"
 				}
 			],
 			"scriptLines": [
@@ -111,7 +105,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SRC",
-				"select6, TGT join(SRC_Sales_Rep_ID == Sales_Rep_ID,",
+				"SRC, DimSales join(SRC_Sales_Rep_ID == Sales_Rep_ID,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -177,29 +171,6 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> select4",
-				"DimSales select(mapColumn(",
-				"          Sales_Rep_key,",
-				"          Sales_Rep_ID,",
-				"          Sales_Rep_Name,",
-				"          Sales_Rep_Address,",
-				"          Sales_Rep_City,",
-				"          Prev_Sales_Rep_City,",
-				"          Sales_Rep_Country,",
-				"          Prev_Sales_Rep_Country,",
-				"          Sales_Rep_Email,",
-				"          Sales_Rep_Loginaccess,",
-				"          Sales_Rep_Phone,",
-				"          Prev_Sales_Rep_Phone,",
-				"          Delete_Flg,",
-				"          Create_Date,",
-				"          Date_Last_Modified,",
-				"          Created_By,",
-				"          Created_Timestamp,",
-				"          Last_Updated_By,",
-				"          Last_Update_Timestamp",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> TGT",
 				"join split(isNull(Sales_Rep_ID),",
 				"     SRC_Sales_Rep_ID==Sales_Rep_ID && (SRC_Sales_Rep_City != Sales_Rep_City || SRC_Sales_Rep_Country != Sales_Rep_Country || SRC_Sales_Rep_Phone != Sales_Rep_Phone),",
 				"     disjoint: false) ~> split1@(INSERT, UPDATE)",
@@ -237,12 +208,6 @@
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> select5",
-				"SRC select(mapColumn(",
-				"          each(match(true()),",
-				"               \"SRC_\"+$$ = $$)",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select6",
 				"select4 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['Dim_SalesRep'],",

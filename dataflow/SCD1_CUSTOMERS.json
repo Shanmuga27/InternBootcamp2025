@@ -15,15 +15,16 @@
 					"name": "STGCustomer"
 				},
 				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
 					"name": "DimCustomer"
 				}
 			],
 			"sinks": [
 				{
 					"name": "TGTCustomer"
-				},
-				{
-					"name": "TGTCustomerUpdate"
 				}
 			],
 			"transformations": [
@@ -53,26 +54,18 @@
 				},
 				{
 					"name": "derivedColumn2"
+				},
+				{
+					"name": "union1"
 				}
 			],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> STGCustomer",
-				"source(output(",
-				"          Customer_Key as integer,",
-				"          Customer_Id as integer,",
-				"          Company_Name as string,",
-				"          Created_Date as timestamp,",
-				"          Last_Modified_Date as timestamp,",
-				"          Delete_Flag as string,",
-				"          Created_Time as timestamp,",
-				"          Created_By as string,",
-				"          Last_Modified_Time as timestamp,",
-				"          Last_Updated_By as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false) ~> DimCustomer",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> DimCustomer",
 				"select1, DimCustomer join(select1@Customer_Id == DimCustomer@Customer_Id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
@@ -98,29 +91,29 @@
 				"split1@Insert alterRow(insertIf(true())) ~> insertif",
 				"split1@Update alterRow(updateIf(true())) ~> updateif",
 				"insertif select(mapColumn(",
-				"          Customer_Id = split1@Insert@Customer_Id,",
-				"          Customer_key = split1@Insert@Customer_key,",
-				"          Company_Name = split1@Insert@Company_Name,",
+				"          Customer_Id = {split1@Insert@Customer_Id},",
+				"          Customer_key = {split1@Insert@Customer_key},",
+				"          Company_Name = {split1@Insert@Company_Name},",
 				"          Delete_Flg,",
 				"          Create_Date,",
 				"          Date_Last_Modified,",
-				"          Created_By = split1@Insert@Created_By,",
+				"          Created_By = {split1@Insert@Created_By},",
 				"          Created_Timestamp,",
-				"          Last_Updated_By = split1@Insert@Last_Updated_By,",
+				"          Last_Updated_By = {split1@Insert@Last_Updated_By},",
 				"          Last_Update_Timestamp",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> select2",
 				"updateif select(mapColumn(",
-				"          Customer_Id = split1@Update@Customer_Id,",
-				"          Customer_key = split1@Update@Customer_key,",
-				"          Company_Name = split1@Update@Company_Name,",
+				"          Customer_Id = {split1@Update@Customer_Id},",
+				"          Customer_key = {split1@Update@Customer_key},",
+				"          Company_Name = {split1@Update@Company_Name},",
 				"          Delete_Flg,",
 				"          Create_Date,",
 				"          Date_Last_Modified,",
-				"          Created_By = split1@Update@Created_By,",
+				"          Created_By = {split1@Update@Created_By},",
 				"          Created_Timestamp,",
-				"          Last_Updated_By = split1@Update@Last_Updated_By,",
+				"          Last_Updated_By = {split1@Update@Last_Updated_By},",
 				"          Last_Update_Timestamp",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
@@ -133,7 +126,8 @@
 				"          Last_Updated_By = \"IN1689\",",
 				"          Last_Update_Timestamp = currentTimestamp(),",
 				"          Company_Name = initCap(Company_Name)) ~> derivedColumn2",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"derivedColumn1 union(byName: true)~> union1",
+				"union1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['Dim_Customer'],",
 				"     skipDuplicateMapInputs: true,",
@@ -150,13 +144,7 @@
 				"          Last_Updated_By,",
 				"          Last_Update_Timestamp",
 				"     ),",
-				"     partitionBy('hash', 1)) ~> TGTCustomer",
-				"derivedColumn2 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     partitionFileNames:['Dim_Customer2'],",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> TGTCustomerUpdate"
+				"     partitionBy('hash', 1)) ~> TGTCustomer"
 			]
 		}
 	}

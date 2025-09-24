@@ -1,0 +1,167 @@
+{
+	"name": "DF_STG_TO_TGT_PRACTICE_IN1689",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "SRCcustomers"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "DimCustomers"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_IN1689",
+						"type": "DatasetReference"
+					},
+					"name": "SNKcustomers"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "insertif"
+				},
+				{
+					"name": "updateif"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          customer_ID as integer,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          email as string,",
+				"          country as string,",
+				"          runid as short,",
+				"          created_date as timestamp,",
+				"          {created_by } as string,",
+				"          updated_date as string,",
+				"          updated_by as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCcustomers",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> DimCustomers",
+				"select1, DimCustomers join(select1@customer_ID == ERROR_FUNCTION(''),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join",
+				"join split(isNull(DimCustomers@customer_ID),",
+				"     (select1@customer_ID==DimCustomers@customer_ID) && (select1@Country != DimCustomers@Country),",
+				"     disjoint: true) ~> split1@(Insert, Update)",
+				"SRCcustomers select(mapColumn(",
+				"          customer_ID,",
+				"          first_name,",
+				"          last_name,",
+				"          email,",
+				"          country,",
+				"          runid,",
+				"          created_date,",
+				"          {created_by },",
+				"          updated_date,",
+				"          updated_by",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> select1",
+				"split1@Insert alterRow(insertIf(true())) ~> insertif",
+				"split1@Update alterRow(updateIf(true())) ~> updateif",
+				"insertif select(mapColumn(",
+				"          customer_ID,",
+				"          first_name,",
+				"          last_name,",
+				"          email,",
+				"          country,",
+				"          runid,",
+				"          created_date,",
+				"          {created_by },",
+				"          updated_date,",
+				"          updated_by",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> select2",
+				"updateif select(mapColumn(",
+				"          customer_ID,",
+				"          first_name,",
+				"          last_name,",
+				"          email,",
+				"          country,",
+				"          runid,",
+				"          created_date,",
+				"          {created_by },",
+				"          updated_date,",
+				"          updated_by",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> select3",
+				"derivedColumn1, select3 union(byName: true)~> union1",
+				"select2 derive(Created_By = \"IN1689\",",
+				"          created_date = currentTimestamp(),",
+				"          updated_date = toTimestamp(currentDate()),",
+				"          updated_by = \"IN1689\") ~> derivedColumn1",
+				"select3 derive(Date_Last_Modified = toTimestamp(currentDate()),",
+				"          Last_Updated_By = \"IN1689\",",
+				"          Last_Update_Timestamp = currentTimestamp(),",
+				"          Delete_Flg = \"Y\") ~> derivedColumn2",
+				"union1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_Customers'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Location_Id,",
+				"          Location_key,",
+				"          Location_Name,",
+				"          Location_City,",
+				"          Location_Country,",
+				"          Location_State,",
+				"          Location_Zipcode,",
+				"          Delete_Flg,",
+				"          Date_Last_Modified = updated_date,",
+				"          Created_By,",
+				"          Created_Timestamp = created_date,",
+				"          Last_Updated_By = updated_by,",
+				"          Last_Update_Timestamp",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> SNKcustomers"
+			]
+		}
+	}
+}

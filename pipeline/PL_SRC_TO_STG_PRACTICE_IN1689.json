@@ -1,10 +1,12 @@
 {
-	"name": "PL_SRC_TO_STG_IN1689",
+	"name": "PL_SRC_TO_STG_PRACTICE_IN1689",
 	"properties": {
 		"activities": [
 			{
-				"name": "Orders_json_to_csv",
+				"name": "Orders_json_to_csv_PRACTICE",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -62,8 +64,10 @@
 				]
 			},
 			{
-				"name": "Orderdetails_json_to_csv",
+				"name": "Orderdetails_json_to_csv_PRACTICE",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -121,7 +125,7 @@
 				]
 			},
 			{
-				"name": "DF_SRC_STG_IN1689",
+				"name": "DF_SRC_STG_PRACTICE_IN1689",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -157,22 +161,22 @@
 							},
 							"SNKcustomers": {
 								"container": "boootcamp25",
-								"folder": "IN1689/ADF_MOCK_SEP25/TARGET_FILES",
+								"folder": "IN1689/ADF_MOCK_SEP25/PRACTICE-TGT",
 								"filename": "stg_customers_IN1689.csv"
 							},
 							"SNKproducts": {
 								"container": "boootcamp25",
-								"folder": "IN1689/ADF_MOCK_SEP25/TARGET_FILES",
+								"folder": "IN1689/ADF_MOCK_SEP25/PRACTICE-TGT",
 								"filename": "stg_products_IN1689.csv"
 							},
 							"SNKorders": {
 								"container": "boootcamp25",
-								"folder": "IN1689/ADF_MOCK_SEP25/TARGET_FILES",
+								"folder": "IN1689/ADF_MOCK_SEP25/PRACTICE-TGT",
 								"filename": "stg_orders_IN1689.csv"
 							},
 							"SNKorderDetails": {
 								"container": "boootcamp25",
-								"folder": "IN1689/ADF_MOCK_SEP25/TARGET_FILES",
+								"folder": "IN1689/ADF_MOCK_SEP25/PRACTICE-TGT",
 								"filename": "stg_orderdetails_IN1689.csv"
 							}
 						}
@@ -186,7 +190,7 @@
 			}
 		],
 		"folder": {
-			"name": "ADF_MOCK_SEP25"
+			"name": "ADF-MOCK-PRACTICE"
 		},
 		"annotations": []
 	}
