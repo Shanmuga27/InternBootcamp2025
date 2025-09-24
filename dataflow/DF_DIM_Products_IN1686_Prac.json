@@ -1,0 +1,145 @@
+{
+	"name": "DF_DIM_Products_IN1686_Prac",
+	"properties": {
+		"folder": {
+			"name": "Practice"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "StgProduct"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "TGTProduct"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "TgtDimProducts",
+					"rejectedDataLinkedService": {
+						"referenceName": "LS_Azure_Blob_Storage",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "LeftJOIN"
+				},
+				{
+					"name": "Transformations"
+				},
+				{
+					"name": "StgProductSelect"
+				},
+				{
+					"name": "TGTProductSelect"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "AuditColumn"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ProductID as short,",
+				"          ProductName as string,",
+				"          Category as string,",
+				"          Price as integer,",
+				"          Created_date as string,",
+				"          Created_by as string,",
+				"          Updated_date as string,",
+				"          Updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> StgProduct",
+				"source(output(",
+				"          product_id as integer,",
+				"          product_name as string,",
+				"          category as string,",
+				"          price as string,",
+				"          created_date as string,",
+				"          created_by as string,",
+				"          updated_date as string,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TGTProduct",
+				"StgProductSelect, TGTProductSelect join(ProductID == product_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LeftJOIN",
+				"LeftJOIN derive(product_name = initCap(ProductName)) ~> Transformations",
+				"StgProduct select(mapColumn(",
+				"          ProductID,",
+				"          ProductName,",
+				"          Category,",
+				"          Price,",
+				"          Created_date,",
+				"          Created_by,",
+				"          Updated_date,",
+				"          Updated_by,",
+				"          runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> StgProductSelect",
+				"TGTProduct select(mapColumn(",
+				"          product_id,",
+				"          product_name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TGTProductSelect",
+				"Transformations derive(each(match(type==\"string\"), $$ = iifNull($$, \"UNK\", $$)),",
+				"          each(match(type == \"integer\"), $$ = iifNull($$, 0, $$))) ~> NullHandling",
+				"AuditColumn select(mapColumn(",
+				"          ProductID,",
+				"          ProductName,",
+				"          Category = NullHandling@Category,",
+				"          Price = NullHandling@Price,",
+				"          Created_date = NullHandling@Created_date,",
+				"          Created_by = NullHandling@Created_by,",
+				"          Updated_date = NullHandling@Updated_date,",
+				"          Updated_by = NullHandling@Updated_by,",
+				"          runid = NullHandling@runid,",
+				"          isActive,",
+				"          start_date,",
+				"          end_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"NullHandling derive(isActive = \"Y\",",
+				"          start_date = currentUTC(),",
+				"          end_date = currentUTC()) ~> AuditColumn",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_customers_In1686'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> TgtDimProducts"
+			]
+		}
+	}
+}
