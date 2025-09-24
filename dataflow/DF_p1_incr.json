@@ -1,0 +1,136 @@
+{
+	"name": "DF_p1_incr",
+	"properties": {
+		"folder": {
+			"name": "practice"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "srcSTGP1incr"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "tgtP1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SNKdimp1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectSTGP1"
+				},
+				{
+					"name": "selecttgtP1"
+				},
+				{
+					"name": "LEFTsrctgt"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "union"
+				},
+				{
+					"name": "surrogatePKey"
+				},
+				{
+					"name": "selectCols"
+				},
+				{
+					"name": "transf"
+				},
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          person_id as integer,",
+				"          name as string,",
+				"          phone as decimal(10,0),",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcSTGP1incr",
+				"source(output(",
+				"          person_id as integer,",
+				"          name as string,",
+				"          phone as decimal(10,0),",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string,",
+				"          p_key as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> tgtP1",
+				"srcSTGP1incr select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSTGP1",
+				"aggregate1 select(mapColumn(",
+				"          Tperson_id = person_id,",
+				"          max_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selecttgtP1",
+				"selectSTGP1, selecttgtP1 join(person_id == Tperson_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LEFTsrctgt",
+				"LEFTsrctgt split(isNull(Tperson_id),",
+				"     (person_id == Tperson_id) && (created_date > max_date),",
+				"     disjoint: true) ~> split1@(insertstream, updatestream)",
+				"split1@insertstream, split1@updatestream union(byName: true)~> union",
+				"transf keyGenerate(output(p_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogatePKey",
+				"surrogatePKey select(mapColumn(",
+				"          person_id,",
+				"          name,",
+				"          phone,",
+				"          created_date,",
+				"          created_by,",
+				"          updated_date,",
+				"          updated_by,",
+				"          runid,",
+				"          p_key",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCols",
+				"union derive(created_date = ERROR_FUNCTION('')) ~> transf",
+				"tgtP1 aggregate(groupBy(person_id),",
+				"     max_date = max(created_date)) ~> aggregate1",
+				"selectCols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['dim_p1.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKdimp1"
+			]
+		}
+	}
+}
