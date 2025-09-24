@@ -193,7 +193,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SrcProduct",
-				"select1 derive(order_date = toDate(toString(order_date),'yyyy-MM')) ~> Transformations",
+				"select1 derive(order_date = toString(order_date,'yyyy-MM')) ~> Transformations",
 				"Transformations filter(lower(status)=='completed') ~> filterStatus",
 				"filterStatus aggregate(groupBy(category,",
 				"          Country,",
