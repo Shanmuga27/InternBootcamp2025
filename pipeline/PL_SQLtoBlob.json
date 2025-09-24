@@ -46,7 +46,7 @@
 						"referenceName": "DS_SQL_Server_IN1684",
 						"type": "DatasetReference",
 						"parameters": {
-							"PR_Tablename": "dim_customers_p",
+							"PR_Tablename": "dim_products_p",
 							"PR_Schema": "PMahendi",
 							"PR_Database": "ADF_Training"
 						}
@@ -58,7 +58,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"PR_Directory": "IN1684/Practice/Target/tgt",
-							"PR_Filename": "dim_customers",
+							"PR_Filename": "dim_products",
 							"PR_Container": "boootcamp25"
 						}
 					}
