@@ -82,6 +82,9 @@
 				},
 				{
 					"name": "surrogateKey1"
+				},
+				{
+					"name": "derivedColumn3"
 				}
 			],
 			"scriptLines": [
@@ -233,9 +236,10 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select9",
-				"select7 keyGenerate(output(customer_key as long),",
+				"derivedColumn3 keyGenerate(output(customer_key as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateKey1",
+				"select7 derive(Src_created_date = ERROR_FUNCTION('')) ~> derivedColumn3",
 				"union sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['Dim_Customers.csv'],",
