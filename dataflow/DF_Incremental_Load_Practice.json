@@ -1,0 +1,106 @@
+{
+	"name": "DF_Incremental_Load_Practice",
+	"properties": {
+		"folder": {
+			"name": "Practice_DF_IN1675"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "srcEmp"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "tgtEmp"
+				}
+			],
+			"sinks": [
+				{
+					"name": "TargetEmp"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "New"
+				},
+				{
+					"name": "Update"
+				},
+				{
+					"name": "union"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "select2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          emp_id as integer,",
+				"          {name } as string,",
+				"          phone as integer,",
+				"          modified_date as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcEmp",
+				"source(output(",
+				"          emp_id as integer,",
+				"          {name } as string,",
+				"          phone as integer,",
+				"          modified_date as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> tgtEmp",
+				"srcEmp, tgtEmp join(srcEmp@emp_id == tgtEmp@emp_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join",
+				"join split(isNull(tgtEmp@emp_id),",
+				"     srcEmp@emp_id==tgtEmp@emp_id && srcEmp@modified_date>tgtEmp@modified_date || srcEmp@phone!=tgtEmp@phone || srcEmp@{name }!=tgtEmp@{name },",
+				"     disjoint: false) ~> split1@(NewRecord, ChangedRecord)",
+				"split1@NewRecord alterRow(insertIf(true())) ~> New",
+				"split1@ChangedRecord alterRow(updateIf(true())) ~> Update",
+				"select1, select2 union(byName: true)~> union",
+				"New select(mapColumn(",
+				"          emp_id = split1@NewRecord@emp_id,",
+				"          {name } = split1@NewRecord@{name },",
+				"          phone = split1@NewRecord@phone,",
+				"          modified_date = split1@NewRecord@modified_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"Update select(mapColumn(",
+				"          emp_id = split1@ChangedRecord@emp_id,",
+				"          {name } = split1@ChangedRecord@{name },",
+				"          phone = split1@ChangedRecord@phone,",
+				"          modified_date = split1@ChangedRecord@modified_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"union sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> TargetEmp"
+			]
+		}
+	}
+}

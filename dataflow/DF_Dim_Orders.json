@@ -1,0 +1,150 @@
+{
+	"name": "DF_Dim_Orders",
+	"properties": {
+		"folder": {
+			"name": "Practice_DF_IN1675"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcOrders"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "TgtOrders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "DimOrders"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join"
+				},
+				{
+					"name": "Insert"
+				},
+				{
+					"name": "select"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "Update"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "orderkey"
+				},
+				{
+					"name": "union"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          order_id as integer,",
+				"          customer_id as integer,",
+				"          order_amount as integer,",
+				"          order_date as timestamp,",
+				"          status as string,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcOrders",
+				"source(output(",
+				"          OrderID as integer,",
+				"          Orderkey as integer,",
+				"          CustomerID as integer,",
+				"          OrderAmount as integer,",
+				"          OrderDate as timestamp,",
+				"          Status as string,",
+				"          Created_Date as timestamp,",
+				"          Created_by as string,",
+				"          Updated_date as timestamp,",
+				"          Updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TgtOrders",
+				"SrcOrders, aggregate1 join(order_id == OrderID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join",
+				"split1@Insert alterRow(insertIf(true())) ~> Insert",
+				"Insert select(mapColumn(",
+				"          order_id,",
+				"          orderkey,",
+				"          customer_id,",
+				"          order_amount,",
+				"          order_date,",
+				"          status,",
+				"          created_date,",
+				"          created_by,",
+				"          updated_date,",
+				"          updated_by,",
+				"          runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select",
+				"TgtOrders aggregate(groupBy(OrderID),",
+				"     OrderDate = max(OrderDate)) ~> aggregate1",
+				"orderkey split(isNull(OrderID),",
+				"     order_date>OrderDate,",
+				"     disjoint: false) ~> split1@(Insert, Update)",
+				"split1@Update alterRow(updateIf(true())) ~> Update",
+				"Update select(mapColumn(",
+				"          order_id,",
+				"          orderkey,",
+				"          customer_id,",
+				"          order_amount,",
+				"          order_date,",
+				"          status,",
+				"          created_date,",
+				"          created_by,",
+				"          updated_date,",
+				"          updated_by,",
+				"          runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"join keyGenerate(output(orderkey as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> orderkey",
+				"select, select1 union(byName: true)~> union",
+				"union sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_Orders.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> DimOrders"
+			]
+		}
+	}
+}

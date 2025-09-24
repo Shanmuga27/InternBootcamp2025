@@ -1,9 +1,50 @@
 {
-	"name": "PL_Stg_Products",
+	"name": "PL_Dim_Customers",
 	"properties": {
 		"activities": [
 			{
-				"name": "CP_products_ADLS_to_SQL",
+				"name": "DF_Dim_Customers",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_SCD2_Customers",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcCustomers": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/mock_staging",
+								"FileName": "Stg_customer.csv"
+							},
+							"TgtCustomers": {
+								"ContainerName": "adf-mock-sep2025",
+								"FolderName": "Target/IN1675/target",
+								"FileName": "tgtCustomers.csv"
+							},
+							"dimcustomers": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/mock_dim",
+								"FileName": "Dim_Customers.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CP_customers_adls_to_sql",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -17,43 +58,6 @@
 				"typeProperties": {
 					"source": {
 						"type": "DelimitedTextSource",
-						"additionalColumns": [
-							{
-								"name": "Created_Date",
-								"value": {
-									"value": "@utcNow()",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "Created_by",
-								"value": {
-									"value": "@pipeline().Pipeline",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "Updated_Date",
-								"value": {
-									"value": "@utcNow()",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "Updated_by",
-								"value": {
-									"value": "@pipeline().Pipeline",
-									"type": "Expression"
-								}
-							},
-							{
-								"name": "runid",
-								"value": {
-									"value": "@pipeline().RunId",
-									"type": "Expression"
-								}
-							}
-						],
 						"storeSettings": {
 							"type": "AzureBlobStorageReadSettings",
 							"recursive": true,
@@ -75,7 +79,7 @@
 						"mappings": [
 							{
 								"source": {
-									"name": "CustomerID",
+									"name": "customer_id",
 									"type": "String",
 									"physicalType": "String"
 								},
@@ -87,7 +91,19 @@
 							},
 							{
 								"source": {
-									"name": "FirstName",
+									"name": "customer_key",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "customer_key",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "first_name",
 									"type": "String",
 									"physicalType": "String"
 								},
@@ -99,7 +115,7 @@
 							},
 							{
 								"source": {
-									"name": "LastName",
+									"name": "last_name",
 									"type": "String",
 									"physicalType": "String"
 								},
@@ -111,7 +127,7 @@
 							},
 							{
 								"source": {
-									"name": "Email",
+									"name": "email",
 									"type": "String",
 									"physicalType": "String"
 								},
@@ -123,7 +139,7 @@
 							},
 							{
 								"source": {
-									"name": "Country",
+									"name": "country",
 									"type": "String",
 									"physicalType": "String"
 								},
@@ -135,8 +151,45 @@
 							},
 							{
 								"source": {
-									"name": "Created_Date",
-									"type": "String"
+									"name": "isActive",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "isActive",
+									"type": "String",
+									"physicalType": "char"
+								}
+							},
+							{
+								"source": {
+									"name": "start_date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "start_date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "end_date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "end_date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "created_date",
+									"type": "String",
+									"physicalType": "String"
 								},
 								"sink": {
 									"name": "created_date",
@@ -146,8 +199,9 @@
 							},
 							{
 								"source": {
-									"name": "Created_by",
-									"type": "String"
+									"name": "created_by",
+									"type": "String",
+									"physicalType": "String"
 								},
 								"sink": {
 									"name": "created_by",
@@ -157,8 +211,9 @@
 							},
 							{
 								"source": {
-									"name": "Updated_Date",
-									"type": "String"
+									"name": "updated_date",
+									"type": "String",
+									"physicalType": "String"
 								},
 								"sink": {
 									"name": "updated_date",
@@ -168,8 +223,9 @@
 							},
 							{
 								"source": {
-									"name": "Updated_by",
-									"type": "String"
+									"name": "updated_by",
+									"type": "String",
+									"physicalType": "String"
 								},
 								"sink": {
 									"name": "updated_by",
@@ -180,7 +236,8 @@
 							{
 								"source": {
 									"name": "runid",
-									"type": "String"
+									"type": "String",
+									"physicalType": "String"
 								},
 								"sink": {
 									"name": "runid",
@@ -201,82 +258,20 @@
 						"referenceName": "DS_CSV_IN1675",
 						"type": "DatasetReference",
 						"parameters": {
-							"ContainerName": "adf-mock-sep2025",
-							"FolderName": "SourceFiles",
-							"FileName": "products.csv"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "DS_OnPremSQL_IN1675",
-						"type": "DatasetReference",
-						"parameters": {
-							"TableName": "IN1675_stg_customers",
-							"SchemaName": "DMuthuku",
-							"DatabaseName": "ADF_Training"
-						}
-					}
-				]
-			},
-			{
-				"name": "Cp_products_sql_to_adls",
-				"type": "Copy",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "SqlServerSource",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "DS_OnPremSQL_IN1675",
-						"type": "DatasetReference",
-						"parameters": {
-							"TableName": "IN1675_stg_customers",
-							"SchemaName": "DMuthuku",
-							"DatabaseName": "ADF_Training"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "DS_CSV_IN1675",
-						"type": "DatasetReference",
-						"parameters": {
 							"ContainerName": "boootcamp25",
-							"FolderName": "IN1675/mock_staging",
-							"FileName": "Stg_customer.csv"
+							"FolderName": "IN1675/mock_dim",
+							"FileName": "Dim_Customers.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_OnPremSQL_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": "Dim_Customers_IN1675",
+							"SchemaName": "DMuthuku",
+							"DatabaseName": "ADF_Training"
 						}
 					}
 				]

@@ -1,0 +1,195 @@
+{
+	"name": "DF_fact_sales_summary",
+	"properties": {
+		"folder": {
+			"name": "Practice_DF_IN1675"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcCustomers"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcProducts"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcOrders"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcOrderDetails"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "FactSalesSummary"
+				}
+			],
+			"transformations": [
+				{
+					"name": "JoinsProductAndOrderdetails"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "aggregate"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "JoinCustomersAndOrders"
+				},
+				{
+					"name": "YearMonth"
+				},
+				{
+					"name": "Filter"
+				},
+				{
+					"name": "select4"
+				},
+				{
+					"name": "JoinOrderAndOrderDetails"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          customer_id as integer,",
+				"          customer_key as integer,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          email as string,",
+				"          country as string,",
+				"          isActive as integer,",
+				"          start_date as timestamp,",
+				"          end_date as timestamp,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcCustomers",
+				"source(output(",
+				"          product_id as integer,",
+				"          product_key as integer,",
+				"          product_name as string,",
+				"          category as string,",
+				"          price as integer,",
+				"          isActive as integer,",
+				"          start_date as timestamp,",
+				"          end_date as timestamp,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcProducts",
+				"source(output(",
+				"          order_id as integer,",
+				"          orderkey as integer,",
+				"          customer_id as integer,",
+				"          order_amount as integer,",
+				"          order_date as timestamp,",
+				"          status as string,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcOrders",
+				"source(output(",
+				"          orderdetail_id as integer,",
+				"          Orderdetail_key as integer,",
+				"          order_id as integer,",
+				"          product_id as integer,",
+				"          quantity as integer,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcOrderDetails",
+				"SrcOrderDetails, SrcProducts join(SrcOrderDetails@product_id == SrcProducts@product_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinsProductAndOrderdetails",
+				"SrcProducts select(mapColumn(",
+				"          category,",
+				"          price",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"JoinOrderAndOrderDetails aggregate(groupBy(category,",
+				"          country,",
+				"          YearMonth),",
+				"     Sales = sum(quantity*price)) ~> aggregate",
+				"SrcCustomers select(mapColumn(",
+				"          customer_id,",
+				"          country",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select4, select3 join(select4@customer_id == select3@customer_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinCustomersAndOrders",
+				"SrcOrders derive(YearMonth = toString(order_date,'yyyy-MM')) ~> YearMonth",
+				"YearMonth filter(status=='Completed') ~> Filter",
+				"Filter select(mapColumn(",
+				"          order_id,",
+				"          customer_id,",
+				"          YearMonth",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4",
+				"JoinsProductAndOrderdetails, JoinCustomersAndOrders join(SrcOrderDetails@order_id == select4@order_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> JoinOrderAndOrderDetails",
+				"aggregate sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Fact_SalesSummary.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> FactSalesSummary"
+			]
+		}
+	}
+}

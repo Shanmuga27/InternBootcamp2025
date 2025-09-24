@@ -1,0 +1,85 @@
+{
+	"name": "DF_Products",
+	"properties": {
+		"folder": {
+			"name": "Practice_DF_IN1675"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcProducts"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "DimProducts"
+				}
+			],
+			"transformations": [
+				{
+					"name": "productkey"
+				},
+				{
+					"name": "AuditColumns"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          product_id as integer,",
+				"          product_name as string,",
+				"          category as string,",
+				"          price as integer,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcProducts",
+				"SrcProducts keyGenerate(output(product_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> productkey",
+				"productkey derive(isActive = toInteger(1),",
+				"          start_date = currentTimestamp(),",
+				"          end_date = toTimestamp('1900-01-01 00:00:00')) ~> AuditColumns",
+				"AuditColumns select(mapColumn(",
+				"          product_id,",
+				"          product_key,",
+				"          product_name,",
+				"          category,",
+				"          price,",
+				"          isActive,",
+				"          start_date,",
+				"          end_date,",
+				"          created_date,",
+				"          created_by,",
+				"          updated_date,",
+				"          updated_by,",
+				"          runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_Products.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> DimProducts"
+			]
+		}
+	}
+}

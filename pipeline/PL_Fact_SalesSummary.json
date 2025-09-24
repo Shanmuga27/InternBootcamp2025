@@ -1,0 +1,132 @@
+{
+	"name": "PL_Fact_SalesSummary",
+	"properties": {
+		"activities": [
+			{
+				"name": "cp_FactSalesSummary",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DF_SalesSummary",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"ContainerName": "boootcamp25",
+							"FolderName": "IN1675/mock_dim",
+							"FileName": "Fact_SalesSummary.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_OnPremSQL_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"TableName": "Fact_SalesSummary",
+							"SchemaName": "DMuthuku",
+							"DatabaseName": "ADF_Training"
+						}
+					}
+				]
+			},
+			{
+				"name": "DF_SalesSummary",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_fact_sales_summary",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcCustomers": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/mock_dim",
+								"FileName": "Dim_Customers.csv"
+							},
+							"SrcProducts": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/mock_dim",
+								"FileName": "Dim_Products.csv"
+							},
+							"SrcOrders": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/mock_dim",
+								"FileName": "Dim_Orders.csv"
+							},
+							"SrcOrderDetails": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/mock_dim",
+								"FileName": "Dim_OrderDetails.csv"
+							},
+							"FactSalesSummary": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/mock_dim",
+								"FileName": "Fact_SalesSummary.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "Practice_IN1675"
+		},
+		"annotations": []
+	}
+}

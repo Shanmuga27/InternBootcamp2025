@@ -1,0 +1,248 @@
+{
+	"name": "DF_SCD2_Customers",
+	"properties": {
+		"folder": {
+			"name": "Practice_DF_IN1675"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcCustomers"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "TgtCustomers"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "dimcustomers"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "union"
+				},
+				{
+					"name": "Auditcols1"
+				},
+				{
+					"name": "Insert"
+				},
+				{
+					"name": "Old"
+				},
+				{
+					"name": "select4"
+				},
+				{
+					"name": "Auditcols4"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "Auditcols3"
+				},
+				{
+					"name": "select7"
+				},
+				{
+					"name": "select8"
+				},
+				{
+					"name": "Auditcols2"
+				},
+				{
+					"name": "New"
+				},
+				{
+					"name": "select9"
+				},
+				{
+					"name": "surrogateKey1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          customer_id as integer,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          email as string,",
+				"          country as string,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcCustomers",
+				"source(output(",
+				"          customer_id as integer,",
+				"          customer_key as integer,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          customer_name as string,",
+				"          email as string,",
+				"          country as string,",
+				"          isActive as integer,",
+				"          start_date as timestamp,",
+				"          end_date as timestamp,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TgtCustomers",
+				"derivedColumn2, select8 join(Src_customer_id == Tgt_customer_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 split(isNull(Tgt_customer_id) ,",
+				"     Src_customer_id==Tgt_customer_id && Src_country!=Tgt_country,",
+				"     Src_customer_id==Tgt_customer_id && Src_country==Tgt_country,",
+				"     disjoint: false) ~> split1@(Insert, Old, Existing)",
+				"Insert select(mapColumn(",
+				"          customer_id = Src_customer_id,",
+				"          customer_key,",
+				"          first_name = Src_first_name,",
+				"          last_name = Src_last_name,",
+				"          email = Src_email,",
+				"          country = Src_country,",
+				"          isActive = Tgt_isActive,",
+				"          start_date,",
+				"          end_date,",
+				"          created_date = Src_created_date,",
+				"          created_by = Src_created_by,",
+				"          updated_date = Src_updated_date,",
+				"          updated_by = Src_updated_by,",
+				"          runid = Src_runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1, select4, Auditcols4, select9 union(byName: true)~> union",
+				"split1@Insert derive(Tgt_isActive = 1,",
+				"          Tgt_start_date = currentTimestamp(),",
+				"          Tgt_end_date = toTimestamp('1900-01-01'),",
+				"          Tgt_created_date = currentTimestamp(),",
+				"          Tgt_updated_date = currentTimestamp()) ~> Auditcols1",
+				"Auditcols1 alterRow(insertIf(true())) ~> Insert",
+				"Auditcols3 alterRow(updateIf(true())) ~> Old",
+				"Old select(mapColumn(",
+				"          customer_id = Tgt_customer_id,",
+				"          customer_key,",
+				"          first_name = Tgt_first_name,",
+				"          last_name = Tgt_last_name,",
+				"          email = Tgt_email,",
+				"          country = Tgt_country,",
+				"          isActive = Tgt_isActive,",
+				"          start_date = Tgt_start_date,",
+				"          end_date = Tgt_end_date,",
+				"          created_date = Tgt_created_date,",
+				"          created_by = Tgt_created_by,",
+				"          updated_date = Tgt_updated_date,",
+				"          updated_by = Tgt_updated_by,",
+				"          runid = Tgt_runid",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> select4",
+				"split1@Existing select(mapColumn(",
+				"          customer_id = Tgt_customer_id,",
+				"          customer_key,",
+				"          first_name = Tgt_first_name,",
+				"          last_name = Tgt_last_name,",
+				"          email = Tgt_email,",
+				"          country = Tgt_country,",
+				"          isActive = Tgt_isActive,",
+				"          start_date = Tgt_start_date,",
+				"          end_date = Tgt_end_date,",
+				"          created_date = Tgt_created_date,",
+				"          created_by = Tgt_created_by,",
+				"          updated_date = Tgt_updated_date,",
+				"          updated_by = Tgt_updated_by,",
+				"          runid = Tgt_runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Auditcols4",
+				"surrogateKey1 derive(isactive = 1,",
+				"          start_date = Src_created_date,",
+				"          end_date = toTimestamp('1900-01-01 10:46:00')) ~> derivedColumn2",
+				"split1@Old derive(Tgt_isActive = 0,",
+				"          Tgt_updated_date = currentTimestamp(),",
+				"          Tgt_start_date = Src_created_date,",
+				"          Tgt_end_date = currentTimestamp()) ~> Auditcols3",
+				"SrcCustomers select(mapColumn(",
+				"          each(match(true()),",
+				"               'Src_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select7",
+				"TgtCustomers select(mapColumn(",
+				"          each(match(true()),",
+				"               'Tgt_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select8",
+				"split1@Old derive(Tgt_isActive = 1,",
+				"          Tgt_created_date = currentTimestamp(),",
+				"          Tgt_updated_date = toTimestamp('1900-01-01'),",
+				"          Tgt_start_date = currentTimestamp()) ~> Auditcols2",
+				"Auditcols2 alterRow(insertIf(true())) ~> New",
+				"New select(mapColumn(",
+				"          customer_id = Src_customer_id,",
+				"          customer_key,",
+				"          first_name = Src_first_name,",
+				"          last_name = Src_last_name,",
+				"          email = Src_email,",
+				"          country = Src_country,",
+				"          isActive = Tgt_isActive,",
+				"          start_date,",
+				"          end_date,",
+				"          created_date = Src_created_date,",
+				"          created_by = Src_created_by,",
+				"          updated_date = Src_updated_date,",
+				"          updated_by = Src_updated_by,",
+				"          runid = Src_runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select9",
+				"select7 keyGenerate(output(customer_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"union sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_Customers.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> dimcustomers"
+			]
+		}
+	}
+}
