@@ -61,6 +61,12 @@
 				},
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -135,7 +141,7 @@
 				"     ignoreNoFilesFound: false) ~> FactOrder",
 				"DimCustomer select(mapColumn(",
 				"          customer_id,",
-				"          customer_name",
+				"          customer_name = country",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SrcCustomer",
@@ -147,7 +153,8 @@
 				"FactOrder select(mapColumn(",
 				"          order_id,",
 				"          customer_id,",
-				"          order_date",
+				"          order_date,",
+				"          status",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SrcOrders",
@@ -175,7 +182,12 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SrcProduct",
-				"join3 derive(Sales = quantity*price) ~> derivedColumn1"
+				"join3 derive(order_date = toDate(toString(order_date),'yyyy-MM')) ~> derivedColumn1",
+				"derivedColumn1 filter(lower(status)=='completed') ~> filter1",
+				"filter1 aggregate(groupBy(category,",
+				"          {} = ERROR_FUNCTION(''),",
+				"          order_date),",
+				"     Sales = sum(price*quantity)) ~> aggregate1"
 			]
 		}
 	}
