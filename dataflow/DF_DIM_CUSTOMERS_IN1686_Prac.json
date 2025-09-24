@@ -182,7 +182,7 @@
 				"     stepValue: 1L) ~> CustomerKey",
 				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['customers_IN1686.csv'],",
+				"     partitionFileNames:['Dim_customers_IN1686.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> TgtDimcustomers"
