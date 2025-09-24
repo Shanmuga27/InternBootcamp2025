@@ -1,0 +1,9 @@
+{
+	"name": "PL_stg_to_tgt_orderdetails",
+	"properties": {
+		"folder": {
+			"name": "practice/stg to tgt"
+		},
+		"annotations": []
+	}
+}

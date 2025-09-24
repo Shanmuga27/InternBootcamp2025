@@ -5,8 +5,6 @@
 			{
 				"name": "CP_customer_stg_customer",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
