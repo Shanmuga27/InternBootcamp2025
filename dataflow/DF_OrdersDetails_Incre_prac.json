@@ -22,21 +22,123 @@
 					"name": "TgtOrderDetails"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
+				{
+					"name": "selectSrc"
+				},
+				{
+					"name": "selectTgt"
+				},
+				{
+					"name": "surrogateOrderDetailKey"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "union1"
+				},
 				{
 					"name": "select1"
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          OrderDetailID as integer,",
+				"          OrderID as integer,",
+				"          ProductID as integer,",
+				"          Quantity as integer,",
+				"          created_date as timestamp,",
+				"          {created_by  } as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SrcOrderDetails",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          orderdetail_id as integer,",
+				"          orderdetail_key as integer,",
+				"          order_id as integer,",
+				"          product_id as integer,",
+				"          quantity as integer,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> TgtOrderDetails",
-				"SrcOrderDetails select(skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1"
+				"SrcOrderDetails select(mapColumn(",
+				"          each(match(true()),",
+				"               'src_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSrc",
+				"TgtOrderDetails select(mapColumn(",
+				"          each(match(true()),",
+				"               'tgt_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectTgt",
+				"selectSrc keyGenerate(output(orderdetail_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateOrderDetailKey",
+				"surrogateOrderDetailKey, selectTgt join(src_OrderDetailID == tgt_orderdetail_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 split(isNull(tgt_orderdetail_id),",
+				"     src_OrderDetailID==tgt_orderdetail_id,",
+				"     disjoint: false) ~> split1@(insert, update)",
+				"split1@insert derive(src_created_date = currentTimestamp(),",
+				"          src_updated_date = toTimestamp(null()),",
+				"          src_updated_by = toString(null())) ~> derivedColumn1",
+				"split1@update derive(src_updated_date = currentTimestamp(),",
+				"          src_updated_by = {src_created_by  }) ~> derivedColumn2",
+				"derivedColumn1, derivedColumn2 union(byName: true)~> union1",
+				"union1 select(mapColumn(",
+				"          orderdetail_id = src_OrderDetailID,",
+				"          orderdetail_key,",
+				"          order_id = src_OrderID,",
+				"          product_id = src_ProductID,",
+				"          quantity = src_Quantity,",
+				"          created_date = src_created_date,",
+				"          created_by = {src_created_by  },",
+				"          updated_date = src_updated_date,",
+				"          updated_by = src_updated_by,",
+				"          runid = src_runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Fact_orderdetails_IN1677_prac'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}
