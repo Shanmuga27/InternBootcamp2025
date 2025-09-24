@@ -75,6 +75,9 @@
 				},
 				{
 					"name": "filterSTATUS"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -197,7 +200,15 @@
 				"     sales_aggr = sum(Quantity*Price)) ~> aggsales",
 				"INNERorderdetailsproducts derive(order_date = toString(order_date, 'yyyy-MM')) ~> transf",
 				"aggsales filter(status == 'Completed') ~> filterSTATUS",
-				"filterSTATUS sink(allowSchemaDrift: true,",
+				"filterSTATUS select(mapColumn(",
+				"          Category,",
+				"          country,",
+				"          order_date,",
+				"          sales_aggr",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['Fact_SalesSummary_IN1685.csv'],",
 				"     skipDuplicateMapInputs: true,",
