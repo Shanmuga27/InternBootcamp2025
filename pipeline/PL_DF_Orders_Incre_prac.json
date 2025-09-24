@@ -1,0 +1,52 @@
+{
+	"name": "PL_DF_Orders_Incre_prac",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Orders_Incre_prac",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"srcOrders": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/stg",
+								"file": "stg_orders_IN1677"
+							},
+							"tgtOrdersAgg": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/tgt",
+								"file": "Fact_orders_IN1677_prac"
+							},
+							"SnkFactOrdersIN1677Pracc": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/tgt",
+								"file": "Fact_orders_IN1677_prac"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "Practice"
+		},
+		"annotations": []
+	}
+}
