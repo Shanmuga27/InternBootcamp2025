@@ -1,5 +1,5 @@
 {
-	"name": "PL_stg_to_src_orders",
+	"name": "PL_stg_to_tgt_orders_m",
 	"properties": {
 		"activities": [
 			{
@@ -120,7 +120,7 @@
 			}
 		},
 		"folder": {
-			"name": "RePractise/stg_to_src"
+			"name": "RePractise/stg_to_tgt"
 		},
 		"annotations": []
 	}

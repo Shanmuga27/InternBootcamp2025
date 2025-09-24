@@ -1,5 +1,5 @@
 {
-	"name": "PL_stg_to_src_products",
+	"name": "PL_stg_to_tgt_products_m",
 	"properties": {
 		"activities": [
 			{
@@ -52,7 +52,7 @@
 			}
 		},
 		"folder": {
-			"name": "RePractise/stg_to_src"
+			"name": "RePractise/stg_to_tgt"
 		},
 		"annotations": []
 	}
