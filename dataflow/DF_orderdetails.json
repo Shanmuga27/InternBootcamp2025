@@ -63,7 +63,7 @@
 					"name": "select4"
 				},
 				{
-					"name": "aggregate1"
+					"name": "aggOrderID"
 				},
 				{
 					"name": "alterupdate"
@@ -122,7 +122,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select4, aggregate1 join(SRC_orderdetail_id == orderdetail_id,",
+				"select4, aggOrderID join(SRC_orderdetail_id == orderdetail_id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -171,7 +171,7 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select4",
 				"TGTOrderdetails aggregate(groupBy(orderdetail_id),",
-				"     order_id = max(order_id)) ~> aggregate1",
+				"     order_id = max(order_id)) ~> aggOrderID",
 				"split1@update alterRow(updateIf(true())) ~> alterupdate",
 				"alterupdate derive({SRC_created date} = currentDate(),",
 				"          {SRC_created by} = {SRC_created by},",

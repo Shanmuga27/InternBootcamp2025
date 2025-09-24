@@ -76,6 +76,7 @@
 					},
 					"sink": {
 						"type": "SqlServerSink",
+						"preCopyScript": "truncate table dim_customers_p;",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false
 					},
