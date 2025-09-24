@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_scd1_Order_details",
+				"name": "DF_Order_details_INCR",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -17,7 +17,24 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "DF_Order_details_INCR",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"srcSTGorderdetails": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/prac_mock_STG",
+								"Param_File": "stg_order_details_IN1685.csv"
+							},
+							"tgtOrderDetails": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/prac_mock_tgt",
+								"Param_File": "tgt_order_details.csv"
+							},
+							"sink1": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/prac_mock_DW",
+								"Param_File": "Fact_orderdetails_IN1685.csv"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
@@ -27,8 +44,10 @@
 				}
 			},
 			{
-				"name": "Copy data1",
+				"name": "CP_SQL_BLOB_tgt",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -39,8 +58,54 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"enableStaging": false
-				}
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_OnPrem_SQLServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"Par_SchemaName": "RRamesh",
+							"Par_TableName": "Fact_orderdetails_IN1685",
+							"Param_DB_name": "ADF_Training"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"Param_Container": "boootcamp25",
+							"Param_Folder": "IN1685/prac_mock_tgt",
+							"Param_File": "tgt_order_details.csv"
+						}
+					}
+				]
 			}
 		],
 		"folder": {

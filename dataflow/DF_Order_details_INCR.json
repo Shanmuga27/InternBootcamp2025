@@ -12,42 +12,51 @@
 						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference"
 					},
-					"name": "srcSTGORDERS"
+					"name": "srcSTGorderdetails"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference"
 					},
-					"name": "tgtOrders"
+					"name": "tgtOrderDetails"
 				}
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
 					"name": "sink1"
 				}
 			],
 			"transformations": [
 				{
-					"name": "select1"
+					"name": "selectTGT"
 				},
 				{
-					"name": "join1"
+					"name": "LEFTSrcTgt"
 				},
 				{
-					"name": "filter1"
+					"name": "surrogateOrderDetailKey"
 				},
 				{
-					"name": "surrogateKey1"
+					"name": "split1"
+				},
+				{
+					"name": "union"
+				},
+				{
+					"name": "selectColumns"
 				}
 			],
 			"scriptLines": [
 				"source(output(",
+				"          OrderDetailID as integer,",
 				"          OrderID as integer,",
-				"          CustomerID as integer,",
-				"          OrderAmount as integer,",
-				"          OrderDate as timestamp,",
-				"          Status as integer,",
+				"          ProductID as integer,",
+				"          Quantity as integer,",
 				"          created_date as timestamp,",
 				"          created_by as string,",
 				"          updated_date as timestamp,",
@@ -56,30 +65,48 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> srcSTGORDERS",
+				"     ignoreNoFilesFound: false) ~> srcSTGorderdetails",
 				"source(output(",
-				"          order_id as string,",
-				"          order_key as string,",
-				"          customer_id as string,",
-				"          order_amount as string,",
-				"          order_date as string,",
-				"          status as string,",
-				"          created_date as string,",
+				"          OrderDetailID as integer,",
+				"          OrderID as integer,",
+				"          ProductID as integer,",
+				"          Quantity as integer,",
+				"          created_date as timestamp,",
 				"          created_by as string,",
-				"          updated_date as string,",
+				"          updated_date as timestamp,",
 				"          updated_by as string,",
-				"          runid as string",
+				"          runid as string,",
+				"          orderdetail_key as integer",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> tgtOrders",
-				"tgtOrders select(mapColumn(",
-				"          order_id,",
-				"          order_key,",
-				"          customer_id,",
-				"          order_amount,",
-				"          order_date,",
-				"          status,",
+				"     ignoreNoFilesFound: false) ~> tgtOrderDetails",
+				"tgtOrderDetails select(mapColumn(",
+				"          t_OrderDetailID = OrderDetailID,",
+				"          t_OrderID = OrderID,",
+				"          t_ProductID = ProductID,",
+				"          t_Quantity = Quantity",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectTGT",
+				"srcSTGorderdetails, selectTGT join(OrderDetailID == t_OrderDetailID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LEFTSrcTgt",
+				"union keyGenerate(output(orderdetail_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateOrderDetailKey",
+				"LEFTSrcTgt split(isNull(t_OrderDetailID),",
+				"     (OrderDetailID == t_OrderDetailID) && ((OrderID != t_OrderID) || (ProductID != t_ProductID) || (t_Quantity !=Quantity)),",
+				"     disjoint: true) ~> split1@(Insert, Update)",
+				"split1@Insert, split1@Update union(byName: true)~> union",
+				"surrogateOrderDetailKey select(mapColumn(",
+				"          orderdetail_ID = OrderDetailID,",
+				"          orderdetail_key,",
+				"          order_id = OrderID,",
+				"          product_id = ProductID,",
+				"          quantity = Quantity,",
 				"          created_date,",
 				"          created_by,",
 				"          updated_date,",
@@ -87,20 +114,13 @@
 				"          runid",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"srcSTGORDERS, select1 join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
-				"     joinType:'left',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1",
-				"join1 filter(ERROR_FUNCTION('')) ~> filter1",
-				"filter1 keyGenerate(output(undefined as long),",
-				"     startAt: 1L,",
-				"     stepValue: 1L) ~> surrogateKey1",
-				"surrogateKey1 sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectColumns",
+				"selectColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['Fact_orderdetails_IN1685.csv'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}
