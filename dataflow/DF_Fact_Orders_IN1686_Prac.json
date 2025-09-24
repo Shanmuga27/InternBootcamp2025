@@ -24,13 +24,18 @@
 			],
 			"sinks": [
 				{
-					"name": "FactOrders"
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "FactOrders",
+					"rejectedDataLinkedService": {
+						"referenceName": "LS_Azure_Blob_Storage",
+						"type": "LinkedServiceReference"
+					}
 				}
 			],
 			"transformations": [
-				{
-					"name": "SRCjoinTGT"
-				},
 				{
 					"name": "split1"
 				},
@@ -51,6 +56,9 @@
 				},
 				{
 					"name": "union1"
+				},
+				{
+					"name": "join1"
 				}
 			],
 			"scriptLines": [
@@ -84,15 +92,10 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> TgtOrders",
-				"SrcOrders, select1 join(OrderID == tgt_order_id,",
-				"     joinType:'left',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> SRCjoinTGT",
-				"OrderKey split(isNull(tgt_order_id),",
+				"join1 split(isNull(tgt_order_id),",
 				"     (CustomerID == tgt_order_id) && (OrderDate > tgt_order_date),",
 				"     disjoint: false) ~> split1@(Insert, Update)",
-				"SRCjoinTGT derive(each(match(type == \"string\"), $$ = iifNull($$,\"UNK\",$$)),",
+				"SrcOrders derive(each(match(type == \"string\"), $$ = iifNull($$,\"UNK\",$$)),",
 				"          each(match(type == \"integer\"), $$ = iifNull($$,0,$$)),",
 				"          each(match(type == \"timestamp\"), $$ = iifNull($$,toTimestamp(\"1990-01-01\") ,$$))) ~> NullHandling",
 				"TgtOrders select(mapColumn(",
@@ -121,7 +124,7 @@
 				"     skipDuplicateMapOutputs: true) ~> SelectedColumns1",
 				"split1@Update select(mapColumn(",
 				"          OrderID,",
-				"          order_key,",
+				"          Order_Key = order_key,",
 				"          CustomerID,",
 				"          OrderAmount,",
 				"          OrderDate,",
@@ -135,10 +138,17 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SelectedColumns",
 				"SelectedColumns1, SelectedColumns union(byName: true)~> union1",
+				"OrderKey, select1 join(OrderID == tgt_order_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
 				"union1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['fact_orders_IN1686.csv'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> FactOrders"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> FactOrders"
 			]
 		}
 	}
