@@ -5,6 +5,8 @@
 			{
 				"name": "TGT_CSV",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -66,6 +68,8 @@
 			{
 				"name": "DF_Fact_Order",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "TGT_CSV",
@@ -160,8 +164,18 @@
 								},
 								"sink": {
 									"name": "order_id",
-									"type": "Int32",
-									"physicalType": "int"
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Order_Key",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "order_key"
 								}
 							},
 							{
@@ -172,8 +186,8 @@
 								},
 								"sink": {
 									"name": "customer_id",
-									"type": "Int32",
-									"physicalType": "int"
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							},
 							{
@@ -184,10 +198,8 @@
 								},
 								"sink": {
 									"name": "order_amount",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 2,
-									"precision": 10
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							},
 							{
@@ -198,8 +210,8 @@
 								},
 								"sink": {
 									"name": "order_date",
-									"type": "DateTime",
-									"physicalType": "datetime"
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							},
 							{
@@ -222,8 +234,8 @@
 								},
 								"sink": {
 									"name": "created_date",
-									"type": "DateTime",
-									"physicalType": "datetime"
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							},
 							{
@@ -246,8 +258,8 @@
 								},
 								"sink": {
 									"name": "updated_date",
-									"type": "DateTime",
-									"physicalType": "datetime"
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							},
 							{

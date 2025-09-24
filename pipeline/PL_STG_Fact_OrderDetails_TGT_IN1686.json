@@ -114,7 +114,7 @@
 				}
 			},
 			{
-				"name": "CSV_SQL__FACT_Order",
+				"name": "CSV_SQL__FACT_Orderdetails",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -162,8 +162,8 @@
 								},
 								"sink": {
 									"name": "orderdetail_id",
-									"type": "Int32",
-									"physicalType": "int"
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							},
 							{
@@ -174,7 +174,8 @@
 								},
 								"sink": {
 									"name": "orderdetail_key",
-									"physicalType": "int"
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							},
 							{
@@ -185,8 +186,8 @@
 								},
 								"sink": {
 									"name": "order_id",
-									"type": "Int32",
-									"physicalType": "int"
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							},
 							{
@@ -197,8 +198,8 @@
 								},
 								"sink": {
 									"name": "product_id",
-									"type": "Int32",
-									"physicalType": "int"
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							},
 							{
@@ -209,8 +210,8 @@
 								},
 								"sink": {
 									"name": "quantity",
-									"type": "Int32",
-									"physicalType": "int"
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							},
 							{
@@ -221,8 +222,8 @@
 								},
 								"sink": {
 									"name": "created_date",
-									"type": "DateTime",
-									"physicalType": "datetime"
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							},
 							{
@@ -245,8 +246,8 @@
 								},
 								"sink": {
 									"name": "updated_date",
-									"type": "DateTime",
-									"physicalType": "datetime"
+									"type": "String",
+									"physicalType": "nvarchar"
 								}
 							},
 							{
