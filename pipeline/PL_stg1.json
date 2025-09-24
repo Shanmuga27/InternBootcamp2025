@@ -1,0 +1,221 @@
+{
+	"name": "PL_stg1",
+	"properties": {
+		"activities": [
+			{
+				"name": "CP_src_stg_p1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "created_date",
+								"value": {
+									"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'Indian Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "created_by",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "updated_date",
+								"value": {
+									"value": "@formatDateTime(convertTimeZone(utcnow(),'UTC','Indian Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "updated_by",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "runid",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"Param_Container": "boootcamp25",
+							"Param_Folder": "IN1685",
+							"Param_File": "src_person.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"Param_Container": "boootcamp25",
+							"Param_Folder": "IN1685/A_stg",
+							"Param_File": "stg_p1_incr.csv"
+						}
+					}
+				]
+			},
+			{
+				"name": "CP_src_stg_p2",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "created_date",
+								"value": {
+									"value": "@formatDateTime(convertTimeZone(utcNow(),'UTC','Indian Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "created_by",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "updated_date",
+								"value": {
+									"value": "@formatDateTime(convertTimeZone(utcNow(),'UTC','Indian Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "updated_by",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "runid",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"Param_Container": "boootcamp25",
+							"Param_Folder": "IN1685",
+							"Param_File": "src_person.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"Param_Container": "boootcamp25",
+							"Param_Folder": "IN1685/A_stg",
+							"Param_File": "stg_p2.csv"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "practice"
+		},
+		"annotations": []
+	}
+}
