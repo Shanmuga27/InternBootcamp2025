@@ -39,13 +39,13 @@
 					"name": "join1"
 				},
 				{
-					"name": "filter1"
-				},
-				{
 					"name": "select2"
 				},
 				{
 					"name": "surrogateKey1"
+				},
+				{
+					"name": "split1"
 				}
 			],
 			"scriptLines": [
@@ -103,8 +103,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1 filter(isNull(order_id)) ~> filter1",
-				"filter1 select(mapColumn(",
+				"split1@insert select(mapColumn(",
 				"          order_id,",
 				"          customer_id,",
 				"          order_amount,",
@@ -122,6 +121,8 @@
 				"SRCorders keyGenerate(output(order_key as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateKey1",
+				"join1 split(isNull(tgt_customer_id),",
+				"     disjoint: false) ~> split1@(insert)",
 				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
