@@ -141,7 +141,7 @@
 				"     broadcast: 'auto')~> join1",
 				"union1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['fact_orders_IN1686.csv'],",
+				"     partitionFileNames:['fact_orderdetails_IN1686.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> FactOrderDetails"
