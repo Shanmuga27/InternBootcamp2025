@@ -1,10 +1,12 @@
 {
-	"name": "PL_STG_Fact_Orders_TGT_IN1686_Prac",
+	"name": "PL_STG_Fact_OrderDetails_TGT_IN1686",
 	"properties": {
 		"activities": [
 			{
 				"name": "TGT_CSV",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -46,7 +48,7 @@
 						"referenceName": "DS_SQL_IN1686",
 						"type": "DatasetReference",
 						"parameters": {
-							"Tablename": "fact_orders_IN1686",
+							"Tablename": "fact_orderdetails_IN1686",
 							"DB_Name": "ADF_Training"
 						}
 					}
@@ -58,13 +60,13 @@
 						"parameters": {
 							"Container": "adf-mock-sep2025",
 							"Folder": "Target/IN1686/srcTGT",
-							"File": "fact_orders_IN1686.csv"
+							"File": "fact_orderdetails_IN1686.csv"
 						}
 					}
 				]
 			},
 			{
-				"name": "DF_Fact_Order",
+				"name": "DF_Fact_OrderDetails",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
@@ -84,23 +86,23 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_Fact_Orders_IN1686_Prac",
+						"referenceName": "DF_Fact_Orders_DetialsIN1686_Prac_",
 						"type": "DataFlowReference",
 						"datasetParameters": {
-							"SrcOrders": {
+							"SrcOrdersDetails": {
 								"Container": "adf-mock-sep2025",
 								"Folder": "Target/IN1686",
-								"File": "stg_orders_IN1686.csv"
+								"File": "stg_orderdetails_IN1686.csv"
 							},
-							"TgtOrders": {
+							"TgtOrdersDetails": {
 								"Container": "adf-mock-sep2025",
 								"Folder": "Target/IN1686/srcTGT",
-								"File": "fact_orders_IN1686.csv"
+								"File": "fact_orderdetails_IN1686.csv"
 							},
-							"FactOrders": {
+							"FactOrderDetails": {
 								"Container": "adf-mock-sep2025",
 								"Folder": "Target/IN1686/TGT",
-								"File": "fact_orders_IN1686.csv"
+								"File": "fact_orderdetails_IN1686.csv"
 							}
 						}
 					},
@@ -116,7 +118,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "DF_Fact_Order",
+						"activity": "DF_Fact_OrderDetails",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -154,6 +156,29 @@
 						"mappings": [
 							{
 								"source": {
+									"name": "OrderDetailID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "orderdetail_id",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "orderdetail_key",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "orderdetail_key",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
 									"name": "OrderID",
 									"type": "String",
 									"physicalType": "String"
@@ -166,52 +191,26 @@
 							},
 							{
 								"source": {
-									"name": "CustomerID",
+									"name": "ProductID",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "customer_id",
+									"name": "product_id",
 									"type": "Int32",
 									"physicalType": "int"
 								}
 							},
 							{
 								"source": {
-									"name": "OrderAmount",
+									"name": "Quantity",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "order_amount",
-									"type": "Decimal",
-									"physicalType": "decimal",
-									"scale": 2,
-									"precision": 10
-								}
-							},
-							{
-								"source": {
-									"name": "OrderDate",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "order_date",
-									"type": "DateTime",
-									"physicalType": "datetime"
-								}
-							},
-							{
-								"source": {
-									"name": "Status",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "status",
-									"type": "String",
-									"physicalType": "nvarchar"
+									"name": "quantity",
+									"type": "Int32",
+									"physicalType": "int"
 								}
 							},
 							{
@@ -289,7 +288,7 @@
 						"parameters": {
 							"Container": "adf-mock-sep2025",
 							"Folder": "Target/IN1686/TGT",
-							"File": "fact_orders_IN1686.csv"
+							"File": "fact_orderdetails_IN1686.csv"
 						}
 					}
 				],
@@ -298,7 +297,7 @@
 						"referenceName": "DS_SQL_IN1686",
 						"type": "DatasetReference",
 						"parameters": {
-							"Tablename": "fact_orders_IN1686",
+							"Tablename": "fact_orderdetails_IN1686",
 							"DB_Name": "ADF_Training"
 						}
 					}
