@@ -106,6 +106,75 @@
 						}
 					}
 				]
+			},
+			{
+				"name": "CP_BLOB_SQL_FCT",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DF_Order_details_INCR",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"Param_Container": "boootcamp25",
+							"Param_Folder": "IN1685/prac_mock_DW",
+							"Param_File": "Fact_orderdetails_IN1685.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_OnPrem_SQLServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"Par_SchemaName": "RRamesh",
+							"Par_TableName": "Fact_orderdetails_IN1685",
+							"Param_DB_name": "ADF_Training"
+						}
+					}
+				]
 			}
 		],
 		"folder": {
