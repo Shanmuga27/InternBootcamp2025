@@ -1,0 +1,132 @@
+{
+	"name": "PL_fctSummary",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_FctSummary",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_FctSummary",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"srcCust": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/prac_mock_DW",
+								"Param_File": "Dim_customers_IN1685.csv"
+							},
+							"srcPRODUCTS": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/prac_mock_DW",
+								"Param_File": "Dim_products_IN1685.csv"
+							},
+							"srcORDERS": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/prac_mock_DW",
+								"Param_File": "Fact_orders_IN1685.csv"
+							},
+							"sourceORDERDETAILS": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/prac_mock_DW",
+								"Param_File": "Fact_orderdetails_IN1685.csv"
+							},
+							"SNKfactsalessummary": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/prac_mock_DW",
+								"Param_File": "Fact_SalesSummary_IN1685.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CP_BLOB_SQL_fct",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DF_FctSummary",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"Param_Container": "boootcamp25",
+							"Param_Folder": "IN1685/prac_mock_DW",
+							"Param_File": "Fact_SalesSummary_IN1685.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_OnPrem_SQLServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"Par_SchemaName": "RRamesh",
+							"Par_TableName": "Fact_SalesSummary_IN1685.csv",
+							"Param_DB_name": "ADF_Training"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "practice"
+		},
+		"annotations": []
+	}
+}

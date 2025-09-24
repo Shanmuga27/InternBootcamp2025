@@ -1,0 +1,209 @@
+{
+	"name": "DF_FctSummary",
+	"properties": {
+		"folder": {
+			"name": "practice"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "srcCust"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "srcPRODUCTS"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "srcORDERS"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sourceORDERDETAILS"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SNKfactsalessummary"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectCUST"
+				},
+				{
+					"name": "selectPRODUCTS"
+				},
+				{
+					"name": "selectORDERS"
+				},
+				{
+					"name": "selectORDERDETAILS"
+				},
+				{
+					"name": "INNERcustorders"
+				},
+				{
+					"name": "INNERordersorderdetails"
+				},
+				{
+					"name": "INNERorderdetailsproducts"
+				},
+				{
+					"name": "aggsales"
+				},
+				{
+					"name": "transf"
+				},
+				{
+					"name": "filterSTATUS"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          customer_id as integer,",
+				"          customer_key as short,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          customer_name as string,",
+				"          email as string,",
+				"          country as string,",
+				"          created_date as string,",
+				"          created_by as string,",
+				"          updated_date as string,",
+				"          updated_by as string,",
+				"          runid as string,",
+				"          isActive as boolean,",
+				"          start_date as timestamp,",
+				"          end_date as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcCust",
+				"source(output(",
+				"          ProductID as integer,",
+				"          ProductName as string,",
+				"          Category as string,",
+				"          Price as decimal(10,2),",
+				"          created_date as string,",
+				"          created_by as string,",
+				"          updated_date as string,",
+				"          updated_by as string,",
+				"          runid as string,",
+				"          isActive as boolean,",
+				"          start_date as timestamp,",
+				"          end_date as string,",
+				"          Product_key as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcPRODUCTS",
+				"source(output(",
+				"          order_id as integer,",
+				"          order_key as short,",
+				"          customer_id as short,",
+				"          order_amount as short,",
+				"          order_date as timestamp,",
+				"          status as string,",
+				"          created_date as string,",
+				"          created_by as string,",
+				"          updated_date as string,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcORDERS",
+				"source(output(",
+				"          OrderDetailID as integer,",
+				"          orderdetail_key as short,",
+				"          OrderID as short,",
+				"          ProductID as short,",
+				"          Quantity as integer,",
+				"          created_date as string,",
+				"          created_by as string,",
+				"          updated_date as string,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceORDERDETAILS",
+				"srcCust select(mapColumn(",
+				"          customer_id,",
+				"          country",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCUST",
+				"srcPRODUCTS select(mapColumn(",
+				"          ProductID,",
+				"          Category,",
+				"          Price",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectPRODUCTS",
+				"srcORDERS select(mapColumn(",
+				"          order_id,",
+				"          customer_id,",
+				"          order_date,",
+				"          status",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectORDERS",
+				"sourceORDERDETAILS select(mapColumn(",
+				"          OrderID,",
+				"          ProductID,",
+				"          Quantity",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectORDERDETAILS",
+				"selectCUST, selectORDERS join(selectCUST@customer_id == selectORDERS@customer_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> INNERcustorders",
+				"INNERcustorders, selectORDERDETAILS join(order_id == OrderID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> INNERordersorderdetails",
+				"INNERordersorderdetails, selectPRODUCTS join(selectORDERDETAILS@ProductID == selectPRODUCTS@ProductID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> INNERorderdetailsproducts",
+				"transf aggregate(groupBy(Category,",
+				"          country,",
+				"          order_date,",
+				"          status),",
+				"     sales_aggr = sum(Quantity*Price)) ~> aggsales",
+				"INNERorderdetailsproducts derive(order_date = toString(order_date, 'yyyy-MM')) ~> transf",
+				"aggsales filter(status == 'Completed') ~> filterSTATUS",
+				"filterSTATUS sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Fact_SalesSummary_IN1685.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKfactsalessummary"
+			]
+		}
+	}
+}
