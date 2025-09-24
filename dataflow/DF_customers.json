@@ -264,10 +264,11 @@
 				"          {TGT_updated by} = {TGT_updated by}) ~> transformation",
 				"select1 derive(isActive = \"Y\",",
 				"          start_date = currentDate(),",
-				"          end_date = toString(null())) ~> derivedColumn2",
+				"          end_date = toString(null()),",
+				"          customer_name = concat(SRC_FirstName,SRC_LastName)) ~> derivedColumn2",
 				"select4 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['Dim_customers'],",
+				"     partitionFileNames:['dim_customers'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> SNKTgtCustomers"
