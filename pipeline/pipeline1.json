@@ -92,6 +92,11 @@
 								"Param_Container": "boootcamp25",
 								"Param_Folder": "IN1685/prac_mock_tgt",
 								"Param_File": "scd2_Dim_customers_IN1685.csv"
+							},
+							"sink1": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/prac_mock_DW",
+								"Param_File": "Dim_customers_IN1685.csv"
 							}
 						}
 					},
@@ -101,6 +106,75 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "Copy data2",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DF_scd2_customers",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference",
+						"parameters": {
+							"Param_Container": "boootcamp25",
+							"Param_Folder": "IN1685/prac_mock_DW",
+							"Param_File": "Dim_customers_IN1685.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_OnPrem_SQLServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"Par_SchemaName": "RRamesh",
+							"Par_TableName": "Dim_customers_IN1685",
+							"Param_DB_name": "ADF_Training"
+						}
+					}
+				]
 			}
 		],
 		"folder": {

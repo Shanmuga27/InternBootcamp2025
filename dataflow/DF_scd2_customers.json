@@ -22,10 +22,19 @@
 					"name": "tgt"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
-					"name": "selectTGT"
+					"name": "selectTGT",
+					"description": "Renaming tgt to selectTGT with columns 't_customer_id"
 				},
 				{
 					"name": "selectSRC"
@@ -148,7 +157,7 @@
 				"selectSRC derive(isActive = 'Y',",
 				"          start_date = currentTimestamp(),",
 				"          end_date = toTimestamp(null()),",
-				"          customer_name = null()) ~> derivedColumn2",
+				"          customer_name = toString(null())) ~> derivedColumn2",
 				"derivedColumn5 keyGenerate(output(customer_key as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateKey1",
@@ -177,7 +186,13 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"union1 derive(customer_name = concat(FirstName, LastName)) ~> derivedColumn5"
+				"union1 derive(customer_name = concat(FirstName, ' ' ,LastName)) ~> derivedColumn5",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_customers_IN1685.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}
