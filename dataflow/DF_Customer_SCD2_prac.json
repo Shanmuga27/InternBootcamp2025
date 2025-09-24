@@ -22,7 +22,15 @@
 					"name": "tgtCustomer"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "sinkTgtScd2"
+				}
+			],
 			"transformations": [
 				{
 					"name": "src"
@@ -56,6 +64,12 @@
 				},
 				{
 					"name": "union1"
+				},
+				{
+					"name": "selectSCD2"
+				},
+				{
+					"name": "derivedColumnTrans"
 				}
 			],
 			"scriptLines": [
@@ -122,9 +136,14 @@
 				"split1@update alterRow(updateIf(true())) ~> alterRowUpdate",
 				"alterRowInsert derive(src_created_date = currentTimestamp(),",
 				"          src_updated_date = toTimestamp(null()),",
-				"          src_updated_by = toString(null())) ~> derivedColumnSrc",
+				"          src_updated_by = toString(null()),",
+				"          isActive = 'Y',",
+				"          start_date = currentTimestamp(),",
+				"          end_date = toTimestamp(null())) ~> derivedColumnSrc",
 				"alterRowUpdate derive(src_updated_date = currentTimestamp(),",
-				"          src_updated_by = {src_created_by  }) ~> derivedColumnTgt",
+				"          src_updated_by = {src_created_by  },",
+				"          isActive = 'N',",
+				"          end_date = currentTimestamp()) ~> derivedColumnTgt",
 				"src select(mapColumn(",
 				"          src_CustomerID,",
 				"          src_FirstName,",
@@ -140,7 +159,33 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"derivedColumnSrc, derivedColumnTgt union(byName: true)~> union1"
+				"derivedColumnSrc, derivedColumnTgt union(byName: true)~> union1",
+				"derivedColumnTrans select(mapColumn(",
+				"          customer_id = src_CustomerID,",
+				"          customer_key = src_customer_key,",
+				"          first_name = src_FirstName,",
+				"          last_name = src_LastName,",
+				"          customer_name,",
+				"          email = src_Email,",
+				"          country = src_Country,",
+				"          isActive,",
+				"          start_date,",
+				"          end_date,",
+				"          created_date = src_created_date,",
+				"          created_by = {src_created_by  },",
+				"          updated_date = src_updated_date,",
+				"          updated_by = src_updated_by,",
+				"          runid = src_runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSCD2",
+				"union1 derive(customer_name = concat(src_FirstName,' ',src_LastName)) ~> derivedColumnTrans",
+				"selectSCD2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Dim_customers_IN1677_prac'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkTgtScd2"
 			]
 		}
 	}

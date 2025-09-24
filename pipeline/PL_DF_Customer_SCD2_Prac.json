@@ -1,0 +1,52 @@
+{
+	"name": "PL_DF_Customer_SCD2_Prac",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Customer_SCD2_prac",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"srcCustomer": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/stg",
+								"file": "stg_customers_IN1677"
+							},
+							"tgtCustomer": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/tgt",
+								"file": "Dim_customers_IN1677_prac"
+							},
+							"sinkTgtScd2": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/tgt",
+								"file": "Dim_customers_IN1677_prac"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "Practice"
+		},
+		"annotations": []
+	}
+}
