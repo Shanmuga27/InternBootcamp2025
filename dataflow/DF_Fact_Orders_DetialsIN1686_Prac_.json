@@ -1,0 +1,155 @@
+{
+	"name": "DF_Fact_Orders_DetialsIN1686_Prac_",
+	"properties": {
+		"folder": {
+			"name": "Practice"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "SrcOrdersDetails"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "TgtOrdersDetails"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference"
+					},
+					"name": "FactOrderDetails",
+					"rejectedDataLinkedService": {
+						"referenceName": "LS_Azure_Blob_Storage",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "split1"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "OrderDetailsKey"
+				},
+				{
+					"name": "SelectedColumns1"
+				},
+				{
+					"name": "SelectedColumns"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "join1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          OrderID as integer,",
+				"          CustomerID as integer,",
+				"          OrderAmount as short,",
+				"          OrderDate as date,",
+				"          Status as string,",
+				"          Created_date as string,",
+				"          Created_by as string,",
+				"          Updated_date as string,",
+				"          Updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcOrdersDetails",
+				"source(output(",
+				"          order_id as integer,",
+				"          customer_id as integer,",
+				"          order_amount as integer,",
+				"          order_date as date,",
+				"          status as string,",
+				"          created_date as string,",
+				"          created_by as string,",
+				"          updated_date as string,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TgtOrdersDetails",
+				"join1 split(isNull(tgt_order_id),",
+				"     (CustomerID == tgt_order_id) && (OrderDate > tgt_order_date),",
+				"     disjoint: false) ~> split1@(Insert, Update)",
+				"SrcOrdersDetails derive(each(match(type == \"string\"), $$ = iifNull($$,\"UNK\",$$)),",
+				"          each(match(type == \"integer\"), $$ = iifNull($$,0,$$)),",
+				"          each(match(type == \"timestamp\"), $$ = iifNull($$,toTimestamp(\"1990-01-01\") ,$$))) ~> NullHandling",
+				"TgtOrdersDetails select(mapColumn(",
+				"          tgt_order_id = order_id,",
+				"          tgt_order_date = order_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"NullHandling keyGenerate(output(order_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> OrderDetailsKey",
+				"split1@Insert select(mapColumn(",
+				"          OrderID,",
+				"          Order_Key = order_key,",
+				"          CustomerID,",
+				"          OrderAmount,",
+				"          Created_by,",
+				"          OrderDate,",
+				"          Status,",
+				"          Created_date,",
+				"          Updated_date,",
+				"          Updated_by,",
+				"          runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectedColumns1",
+				"split1@Update select(mapColumn(",
+				"          OrderID,",
+				"          Order_Key = order_key,",
+				"          CustomerID,",
+				"          OrderAmount,",
+				"          OrderDate,",
+				"          Status,",
+				"          Created_date,",
+				"          Created_by,",
+				"          Updated_date,",
+				"          Updated_by,",
+				"          runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectedColumns",
+				"SelectedColumns1, SelectedColumns union(byName: true)~> union1",
+				"OrderDetailsKey, select1 join(OrderID == tgt_order_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"union1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['fact_orders_IN1686.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> FactOrderDetails"
+			]
+		}
+	}
+}
