@@ -46,6 +46,9 @@
 				},
 				{
 					"name": "split1"
+				},
+				{
+					"name": "window1"
 				}
 			],
 			"scriptLines": [
@@ -121,8 +124,11 @@
 				"SRCorders keyGenerate(output(order_key as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateKey1",
-				"join1 split(isNull(tgt_customer_id),",
+				"window1 split(order_date > max_date,",
 				"     disjoint: false) ~> split1@(insert)",
+				"join1 window(over(tgt_order_date),",
+				"     asc(tgt_order_date, true),",
+				"     max_date = max(tgt_order_date)) ~> window1",
 				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
