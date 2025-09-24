@@ -83,7 +83,8 @@
 									"path": "$['OrderID']"
 								},
 								"sink": {
-									"name": "order_id"
+									"name": "order_id",
+									"type": "Int32"
 								}
 							},
 							{
@@ -91,7 +92,8 @@
 									"path": "$['CustomerID']"
 								},
 								"sink": {
-									"name": "customer_id"
+									"name": "customer_id",
+									"type": "Int32"
 								}
 							},
 							{
@@ -99,7 +101,8 @@
 									"path": "$['OrderAmount']"
 								},
 								"sink": {
-									"name": "order_amount"
+									"name": "order_amount",
+									"type": "Decimal"
 								}
 							},
 							{
@@ -107,7 +110,8 @@
 									"path": "$['OrderDate']"
 								},
 								"sink": {
-									"name": "order_date"
+									"name": "order_date",
+									"type": "DateTime"
 								}
 							},
 							{
@@ -115,7 +119,53 @@
 									"path": "$['Status']"
 								},
 								"sink": {
-									"name": "status"
+									"name": "status",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['created date']"
+								},
+								"sink": {
+									"name": "created date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"path": "$['created by ']"
+								},
+								"sink": {
+									"name": "created by ",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['updated date']"
+								},
+								"sink": {
+									"name": "updated date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"path": "$['updated by']"
+								},
+								"sink": {
+									"name": "updated by",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$[' runid']"
+								},
+								"sink": {
+									"name": " runid",
+									"type": "String"
 								}
 							}
 						]

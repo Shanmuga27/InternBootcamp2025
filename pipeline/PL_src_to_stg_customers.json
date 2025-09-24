@@ -81,7 +81,7 @@
 							{
 								"source": {
 									"name": "CustomerID",
-									"type": "Int64",
+									"type": "Int32",
 									"physicalType": "String"
 								},
 								"sink": {
@@ -130,6 +130,61 @@
 								},
 								"sink": {
 									"name": "country",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "created date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "created date",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "created by ",
+									"type": "String"
+								},
+								"sink": {
+									"name": "created by ",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "updated date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "updated date",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "updated by",
+									"type": "String"
+								},
+								"sink": {
+									"name": "updated by",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "runid",
+									"type": "String"
+								},
+								"sink": {
+									"name": "runid",
+									"type": "String",
 									"physicalType": "String"
 								}
 							}
