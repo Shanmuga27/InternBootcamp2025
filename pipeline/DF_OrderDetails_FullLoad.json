@@ -1,0 +1,9 @@
+{
+	"name": "DF_OrderDetails_FullLoad",
+	"properties": {
+		"folder": {
+			"name": "Practice"
+		},
+		"annotations": []
+	}
+}
