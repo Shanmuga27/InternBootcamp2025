@@ -1,5 +1,5 @@
 {
-	"name": "DF_order",
+	"name": "DF_orderdetails",
 	"properties": {
 		"folder": {
 			"name": "practice/STG to TGT"
@@ -12,14 +12,14 @@
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "SRCOrder"
+					"name": "SRCOrderdetails"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "TGTOrder"
+					"name": "TGTOrderdetails"
 				}
 			],
 			"sinks": [
@@ -28,12 +28,12 @@
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "SNKOrder"
+					"name": "SNKOrderdetails"
 				}
 			],
 			"transformations": [
 				{
-					"name": "surrogateOrder"
+					"name": "surrogateOrderdetails"
 				},
 				{
 					"name": "select1"
@@ -45,13 +45,13 @@
 					"name": "split1"
 				},
 				{
-					"name": "alterInsert"
+					"name": "alterRow1"
 				},
 				{
 					"name": "select2"
 				},
 				{
-					"name": "transformation"
+					"name": "derivedColumn2"
 				},
 				{
 					"name": "union1"
@@ -66,10 +66,10 @@
 					"name": "aggregate1"
 				},
 				{
-					"name": "alterUpdate"
+					"name": "alterRow2"
 				},
 				{
-					"name": "transformation2"
+					"name": "derivedColumn3"
 				},
 				{
 					"name": "select6"
@@ -90,7 +90,7 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> SRCOrder",
+				"     ignoreNoFilesFound: false) ~> SRCOrderdetails",
 				"source(output(",
 				"          order_id as integer,",
 				"          order_key as integer,",
@@ -106,11 +106,11 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> TGTOrder",
-				"SRCOrder keyGenerate(output(order_key as long),",
+				"     ignoreNoFilesFound: false) ~> TGTOrderdetails",
+				"SRCOrderdetails keyGenerate(output(order_key as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> surrogateOrder",
-				"surrogateOrder select(mapColumn(",
+				"     stepValue: 1L) ~> surrogateOrderdetails",
+				"surrogateOrderdetails select(mapColumn(",
 				"          order_id = OrderID,",
 				"          order_key,",
 				"          customer_id = CustomerID,",
@@ -131,41 +131,18 @@
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
 				"join1 split(isNull(order_id),",
-				"     SRC_order_date > order_date,",
+				"     SRC_order_id > order_id,",
 				"     disjoint: false) ~> split1@(insert, update)",
-				"split1@insert alterRow(insertIf(true())) ~> alterInsert",
-				"transformation select(mapColumn(",
-				"          order_id,",
-				"          order_key = SRC_order_key,",
-				"          customer_id = SRC_customer_id,",
-				"          order_amount = SRC_order_amount,",
-				"          order_date,",
-				"          status = SRC_status,",
-				"          {created date} = {SRC_created date},",
-				"          {created by} = {SRC_created by},",
-				"          {updated date} = {SRC_updated date},",
-				"          {updated by} = {SRC_updated by},",
-				"          runid = SRC_runid",
+				"split1@insert alterRow() ~> alterRow1",
+				"derivedColumn2 select(mapColumn(",
+				"          {undefined}",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
-				"alterInsert derive({SRC_created date} = currentDate(),",
-				"          {SRC_created by} = {SRC_created by},",
-				"          {SRC_updated date} = currentDate(),",
-				"          {SRC_updated by} = {SRC_updated by}) ~> transformation",
+				"alterRow1 derive() ~> derivedColumn2",
 				"select2, select6 union(byName: true)~> union1",
 				"union1 select(mapColumn(",
-				"          order_id,",
-				"          order_key,",
-				"          customer_id,",
-				"          order_amount,",
-				"          order_date,",
-				"          status,",
-				"          {created date},",
-				"          {created by},",
-				"          {updated date},",
-				"          {updated by},",
-				"          runid",
+				"          {undefined}",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select3",
@@ -175,34 +152,30 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select4",
-				"TGTOrder aggregate(groupBy(order_id),",
-				"     order_date = max(order_date)) ~> aggregate1",
-				"split1@update alterRow(updateIf(true())) ~> alterUpdate",
-				"alterUpdate derive({SRC_created date} = currentDate(),",
-				"          {SRC_created by} = {SRC_created by},",
-				"          {SRC_updated date} = currentDate(),",
-				"          {SRC_updated by} = {SRC_updated by}) ~> transformation2",
-				"transformation2 select(mapColumn(",
-				"          order_id = SRC_order_id,",
-				"          order_key = SRC_order_key,",
-				"          customer_id = SRC_customer_id,",
-				"          order_amount = SRC_order_amount,",
-				"          order_date,",
-				"          status = SRC_status,",
-				"          {created date} = {SRC_created date},",
-				"          {created by} = {SRC_created by},",
-				"          {updated date} = {SRC_updated date},",
-				"          {updated by} = {SRC_updated by},",
-				"          runid = SRC_runid",
+				"TGTOrderdetails aggregate(groupBy(order_id),",
+				"     order_date = max(order_id)) ~> aggregate1",
+				"split1@update alterRow() ~> alterRow2",
+				"alterRow2 derive() ~> derivedColumn3",
+				"derivedColumn3 select(mapColumn(",
+				"          SRC_order_id,",
+				"          SRC_order_key,",
+				"          SRC_customer_id,",
+				"          SRC_order_amount,",
+				"          SRC_order_date,",
+				"          SRC_status,",
+				"          {SRC_created date},",
+				"          {SRC_created by},",
+				"          {SRC_updated date},",
+				"          {SRC_updated by},",
+				"          SRC_runid,",
+				"          order_date",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select6",
 				"select3 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['fact_orders'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> SNKOrder"
+				"     skipDuplicateMapOutputs: true) ~> SNKOrderdetails"
 			]
 		}
 	}

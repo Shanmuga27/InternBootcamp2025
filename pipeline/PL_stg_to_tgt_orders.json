@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Data flow1",
+				"name": "DF_orders",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -15,6 +15,27 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_order",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCOrder": {
+								"PR_Directory": "IN1684/Practice/Target/stg",
+								"PR_Filename": "stg_orders",
+								"PR_Container": "boootcamp25"
+							},
+							"TGTOrder": {
+								"PR_Directory": "IN1684/Practice/Target/tgt",
+								"PR_Filename": "fact_orders",
+								"PR_Container": "boootcamp25"
+							},
+							"SNKOrder": {
+								"PR_Directory": "IN1684/Practice/Target/tgt",
+								"PR_Filename": "fact_orders",
+								"PR_Container": "boootcamp25"
+							}
+						}
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
@@ -23,11 +44,11 @@
 				}
 			},
 			{
-				"name": "Copy data1",
+				"name": "CP_src_tgt",
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Data flow1",
+						"activity": "DF_orders",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -42,8 +63,54 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"enableStaging": false
-				}
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Practice/Target/tgt",
+							"PR_Filename": "fact_orders",
+							"PR_Container": "boootcamp25"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_Server_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Tablename": "fact_orders_p",
+							"PR_Schema": "PMahendi",
+							"PR_Database": "ADF_Training"
+						}
+					}
+				]
 			}
 		],
 		"folder": {
