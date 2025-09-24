@@ -3,75 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
-				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "SqlServerSource",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings",
-							"copyBehavior": "FlattenHierarchy"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "DS_EX_IN1674",
-						"type": "DatasetReference",
-						"parameters": {
-							"schemaname": "CKumaram",
-							"tablename": "Locations_DM",
-							"Database": "ADF_Training"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "Ds_blob_IN1674",
-						"type": "DatasetReference",
-						"parameters": {
-							"filename": "Dm_Location",
-							"folder": "IN1674/STG_FILES",
-							"container": "boootcamp25"
-						}
-					}
-				]
-			},
-			{
-				"name": "Data flow1",
+				"name": "Cus prac",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -83,23 +16,28 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "LocationsSCD2",
+						"referenceName": "DF_Customersprac_IN1674",
 						"type": "DataFlowReference",
-						"datasetParameters": {
-							"srcLOC": {
-								"filename": "STG_Locations.csv",
-								"folder": "IN1674/Workshop_Target_File",
-								"container": "boootcamp25"
+						"parameters": {
+							"pipname": {
+								"value": "'@{pipeline().Pipeline}'",
+								"type": "Expression"
 							},
-							"tgtLOC": {
-								"filename": "Dm_Location",
-								"folder": "IN1674/Workshop_Target_File",
-								"container": "boootcamp25"
+							"runid": {
+								"value": "'@{pipeline().RunId}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"srcCus": {
+								"filename": "customers.csv",
+								"folder": "SourceFiles",
+								"container": "adf-mock-sep2025"
 							},
 							"sink1": {
-								"filename": "Dm_Location",
-								"folder": "IN1674/Workshop_Target_File",
-								"container": "boootcamp25"
+								"filename": "STG_Customersprac.csv",
+								"folder": "Mock-Practice",
+								"container": "adf-mock-sep2025"
 							}
 						}
 					},
@@ -111,11 +49,16 @@
 				}
 			},
 			{
-				"name": "Copy data2",
-				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [],
+				"name": "proprac",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Cus prac",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -125,60 +68,50 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
+					"dataflow": {
+						"referenceName": "DF_Productsprac_IN1674",
+						"type": "DataFlowReference",
+						"parameters": {
+							"pipname": {
+								"value": "'@{pipeline().Pipeline}'",
+								"type": "Expression"
+							},
+							"pipid": {
+								"value": "'@{pipeline().RunId}'",
+								"type": "Expression"
+							}
 						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
+						"datasetParameters": {
+							"srcproducts": {
+								"filename": "products.csv",
+								"folder": "SourceFiles",
+								"container": "adf-mock-sep2025"
+							},
+							"sink1": {
+								"filename": "STG_Prodctprac.csv",
+								"folder": "Mock-Practice",
+								"container": "adf-mock-sep2025"
+							}
 						}
 					},
-					"sink": {
-						"type": "SqlServerSink",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false,
-						"tableOption": "autoCreate"
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "Ds_blob_IN1674",
-						"type": "DatasetReference",
-						"parameters": {
-							"filename": "Dm_Location_Final.csv",
-							"folder": "IN1674/Workshop_Target_File",
-							"container": "boootcamp25"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "DS_EX_IN1674",
-						"type": "DatasetReference",
-						"parameters": {
-							"schemaname": "CKumaram",
-							"tablename": "Location_Final_TB",
-							"Database": "ADF_Training"
-						}
-					}
-				]
+					"traceLevel": "Fine"
+				}
 			},
 			{
-				"name": "Copy data3",
-				"type": "Copy",
-				"dependsOn": [],
+				"name": "ordersprac",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "proprac",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -188,333 +121,91 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
-					"sink": {
-						"type": "SqlServerSink",
-						"writeBehavior": "insert",
-						"sqlWriterUseTableLock": false,
-						"tableOption": "autoCreate"
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"name": "Location_Id",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Location_Id",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Name",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Name",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "City",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "City",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Country",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Country",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "State",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "State",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Zipcode",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Zipcode",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Location_key",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Location_key",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Delete_Flg",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Delete_Flg",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Active_Flag",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Active_Flag",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Date_Last_Modified",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Date_Last_Modified",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Created_By",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Created_By",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Created_Timestamp",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Created_Timestamp",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Last_Updated_By",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Last_Updated_By",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Last_Update_Timestamp",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Last_Update_Timestamp",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Last_Modified_Time",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Last_Modified_Time",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Last_Modified_Date",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Last_Modified_Date",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Location_Zipcode",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Location_Zipcode",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Location_Name",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Location_Name",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Location_Country",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Location_Country",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Location_City",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Location_City",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Location_State",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Location_State",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Create_Date",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Create_Date",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							},
-							{
-								"source": {
-									"name": "Delete_Flag",
-									"type": "String",
-									"physicalType": "String"
-								},
-								"sink": {
-									"name": "Delete_Flag",
-									"type": "String",
-									"physicalType": "nvarchar"
-								}
-							}
-						],
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "Ds_blob_IN1674",
-						"type": "DatasetReference",
+					"dataflow": {
+						"referenceName": "DF_Ordersprac_IN1674",
+						"type": "DataFlowReference",
 						"parameters": {
-							"filename": "Dm_Location_Final.csv",
-							"folder": "IN1674/Workshop_Target_File",
-							"container": "boootcamp25"
+							"name": {
+								"value": "'@{pipeline().Pipeline}'",
+								"type": "Expression"
+							},
+							"id": {
+								"value": "'@{pipeline().RunId}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"source1": {
+								"filename": "orders.json",
+								"folder": "SourceFiles",
+								"container": "adf-mock-sep2025"
+							},
+							"sink1": {
+								"filename": "STG_Ordersprac.csv",
+								"folder": "Mock-Practice",
+								"container": "adf-mock-sep2025"
+							}
 						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "ordersdetails",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "ordersprac",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
 				],
-				"outputs": [
-					{
-						"referenceName": "DS_EX_IN1674",
-						"type": "DatasetReference",
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Orderdetailsprc_IN1674",
+						"type": "DataFlowReference",
 						"parameters": {
-							"schemaname": "CKumaram",
-							"tablename": "Location_Final_TAB",
-							"Database": "ADF_Training"
+							"name": {
+								"value": "'@{pipeline().Pipeline}'",
+								"type": "Expression"
+							},
+							"id": {
+								"value": "'@{pipeline().RunId}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"orderdetsrc": {
+								"filename": "orderdetails.json",
+								"folder": "SourceFiles",
+								"container": "adf-mock-sep2025"
+							},
+							"sink1": {
+								"filename": "STG_OrdersDetailprac.csv",
+								"folder": "Mock-Practice",
+								"container": "adf-mock-sep2025"
+							}
 						}
-					}
-				]
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"parameters": {

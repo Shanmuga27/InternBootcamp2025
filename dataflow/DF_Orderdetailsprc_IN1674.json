@@ -1,0 +1,75 @@
+{
+	"name": "DF_Orderdetailsprc_IN1674",
+	"properties": {
+		"folder": {
+			"name": "mocktest_practise"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Json_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "orderdetsrc"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     name as string,",
+				"     id as string",
+				"}",
+				"source(output(",
+				"          OrderDetailID as short,",
+				"          OrderID as short,",
+				"          ProductID as short,",
+				"          Quantity as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> orderdetsrc",
+				"orderdetsrc derive({created date} = currentDate(),",
+				"          {created by } = $name,",
+				"          {updated date} = currentDate(),",
+				"          {updated by} = $name,",
+				"          runid = $id) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          orderdetail_id = OrderDetailID,",
+				"          order_id = OrderID,",
+				"          product_id = ProductID,",
+				"          quantity = Quantity,",
+				"          {created date},",
+				"          {created by },",
+				"          {updated date},",
+				"          {updated by},",
+				"          runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
