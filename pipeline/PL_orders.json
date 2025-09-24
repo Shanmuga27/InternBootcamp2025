@@ -91,7 +91,7 @@
 					"scripts": [
 						{
 							"type": "Query",
-							"text": "\nselect *\nfrom RRamesh.STG_IN1685_stg_orders\nwhere STG_IN1685_stg_orders.OrderDate > (select max(OrderDate) from RRamesh.Fact_orders_IN1685)"
+							"text": "select *\nfrom RRamesh.STG_IN1685_stg_orders\nwhere STG_IN1685_stg_orders.OrderDate > (select max(OrderDate) from RRamesh.Fact_orders_IN1685);"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
