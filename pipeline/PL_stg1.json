@@ -21,7 +21,7 @@
 							{
 								"name": "created_date",
 								"value": {
-									"value": "@formatDateTime(convertTimeZone(utcnow(), 'UTC', 'Indian Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+									"value": "@formatDateTime(convertTimeZone(utcnow(),'UTC','India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
 									"type": "Expression"
 								}
 							},
@@ -35,7 +35,7 @@
 							{
 								"name": "updated_date",
 								"value": {
-									"value": "@formatDateTime(convertTimeZone(utcnow(),'UTC','Indian Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+									"value": "@formatDateTime(convertTimeZone(utcnow(),'UTC','India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
 									"type": "Expression"
 								}
 							},
@@ -126,7 +126,7 @@
 							{
 								"name": "created_date",
 								"value": {
-									"value": "@formatDateTime(convertTimeZone(utcNow(),'UTC','Indian Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+									"value": "@formatDateTime(convertFromUtc(utcNow(), 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
 									"type": "Expression"
 								}
 							},
@@ -140,7 +140,7 @@
 							{
 								"name": "updated_date",
 								"value": {
-									"value": "@formatDateTime(convertTimeZone(utcNow(),'UTC','Indian Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
+									"value": "@formatDateTime(convertFromUtc(utcNow(), 'India Standard Time'), 'dd-MM-yyyy HH:mm:ss')",
 									"type": "Expression"
 								}
 							},
