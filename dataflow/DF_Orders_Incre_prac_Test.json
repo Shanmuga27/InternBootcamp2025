@@ -1,0 +1,164 @@
+{
+	"name": "DF_Orders_Incre_prac_Test",
+	"properties": {
+		"folder": {
+			"name": "Module_Practice"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "srcOrders"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "tgtOrdersAgg"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "SnkFactOrdersIN1677Pracc"
+				}
+			],
+			"transformations": [
+				{
+					"name": "surrogateOrderKey"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "joinAgg"
+				},
+				{
+					"name": "aggregateMaxOrderDate"
+				},
+				{
+					"name": "derivedColumnorderdate"
+				},
+				{
+					"name": "selectSrc"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "TransformationInsert"
+				},
+				{
+					"name": "TransformationUpdate"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          OrderID as integer,",
+				"          CustomerID as integer,",
+				"          OrderAmount as integer,",
+				"          OrderDate as date,",
+				"          Status as string,",
+				"          created_date as timestamp,",
+				"          {created_by  } as string,",
+				"          updated_date as string,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcOrders",
+				"source(output(",
+				"          order_id as integer,",
+				"          order_key as string,",
+				"          customer_id as string,",
+				"          order_amount as string,",
+				"          order_date as date,",
+				"          status as string,",
+				"          created_date as string,",
+				"          created_by as string,",
+				"          updated_date as string,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> tgtOrdersAgg",
+				"srcOrders keyGenerate(output(order_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateOrderKey",
+				"split1@update select(mapColumn(",
+				"          order_id = src_OrderID,",
+				"          order_key = src_order_key,",
+				"          customer_id = src_CustomerID,",
+				"          order_amount = src_OrderAmount,",
+				"          order_date = src_OrderDate,",
+				"          status = src_Status,",
+				"          created_date = src_created_date,",
+				"          created_by = {src_created_by  },",
+				"          updated_date = src_updated_date,",
+				"          updated_by = src_updated_by,",
+				"          runid = src_runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"joinAgg split((src_OrderID==order_id)&&(src_OrderDate>max_order_date),",
+				"     isNull(order_id),",
+				"     disjoint: false) ~> split1@(update, insert)",
+				"selectSrc, derivedColumnorderdate join(src_OrderID == order_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinAgg",
+				"tgtOrdersAgg aggregate(groupBy(order_id),",
+				"     max_order_date = max(order_date)) ~> aggregateMaxOrderDate",
+				"aggregateMaxOrderDate derive(order_date = iifNull(max_order_date, toDate('1990-01-01'), max_order_date)) ~> derivedColumnorderdate",
+				"surrogateOrderKey select(mapColumn(",
+				"          each(match(true()),",
+				"               'src_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectSrc",
+				"split1@insert select(mapColumn(",
+				"          order_id = src_OrderID,",
+				"          order_key = src_order_key,",
+				"          customer_id = src_CustomerID,",
+				"          order_amount = src_OrderAmount,",
+				"          order_date = src_OrderDate,",
+				"          status = src_Status,",
+				"          created_date = src_created_date,",
+				"          created_by = {src_created_by  },",
+				"          updated_date = src_updated_date,",
+				"          updated_by = src_updated_by,",
+				"          runid = src_runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"TransformationInsert, TransformationUpdate union(byName: true)~> union1",
+				"select2 derive(created_date = currentTimestamp()) ~> TransformationInsert",
+				"select1 derive(updated_date = currentTimestamp(),",
+				"          updated_by = created_by) ~> TransformationUpdate",
+				"union1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Fact_orders_IN1677_prac'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SnkFactOrdersIN1677Pracc"
+			]
+		}
+	}
+}
