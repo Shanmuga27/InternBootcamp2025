@@ -8,14 +8,211 @@
 		"typeProperties": {
 			"sources": [
 				{
-					"name": "source1"
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCCustomers"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCProducts"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCOrders"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCOrderDetails"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SNKSalesSummary"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "select4"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "join3"
+				},
+				{
+					"name": "select5"
+				},
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "transformation"
+				},
+				{
+					"name": "filter"
+				}
+			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source1"
+				"source(output(",
+				"          customer_id as integer,",
+				"          customer_key as short,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          customer_name as string,",
+				"          email as string,",
+				"          country as string,",
+				"          isActive as boolean,",
+				"          start_date as date,",
+				"          end_date as string,",
+				"          {created date} as date,",
+				"          {created by} as string,",
+				"          {updated date} as date,",
+				"          {updated by} as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCCustomers",
+				"source(output(",
+				"          product_id as integer,",
+				"          product_key as short,",
+				"          product_name as string,",
+				"          category as string,",
+				"          price as float,",
+				"          isActive as boolean,",
+				"          start_date as date,",
+				"          end_date as string,",
+				"          {created date} as string,",
+				"          {created by} as string,",
+				"          {updated date} as string,",
+				"          {updated by} as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCProducts",
+				"source(output(",
+				"          order_id as integer,",
+				"          order_key as short,",
+				"          customer_id as short,",
+				"          order_amount as short,",
+				"          order_date as date,",
+				"          status as string,",
+				"          {created date} as date,",
+				"          {created by} as string,",
+				"          {updated date} as date,",
+				"          {updated by} as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCOrders",
+				"source(output(",
+				"          orderdetail_id as integer,",
+				"          orderdetail_key as short,",
+				"          order_id as integer,",
+				"          product_id as integer,",
+				"          quantity as integer,",
+				"          {created date} as date,",
+				"          {created by} as string,",
+				"          {updated date} as date,",
+				"          {updated by} as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCOrderDetails",
+				"SRCCustomers select(mapColumn(",
+				"          customer_id,",
+				"          country",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"SRCProducts select(mapColumn(",
+				"          product_id,",
+				"          category,",
+				"          price",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"filter select(mapColumn(",
+				"          order_id,",
+				"          customer_id,",
+				"          order_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"SRCOrderDetails select(mapColumn(",
+				"          orderdetail_id,",
+				"          order_id,",
+				"          product_id,",
+				"          quantity",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4",
+				"select3, select1 join(select3@customer_id == select1@customer_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"select4, join1 join(select3@order_id == select4@order_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2, select2 join(select4@product_id == select2@product_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join3",
+				"aggregate1 select(mapColumn(",
+				"          Country = country,",
+				"          Category = category,",
+				"          Sales,",
+				"          YearMonth = order_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select5",
+				"join3 aggregate(groupBy(category,",
+				"          country,",
+				"          order_date),",
+				"     Sales = sum(quantity*price)) ~> aggregate1",
+				"SRCOrders derive(order_date = toString(order_date, \"yyyy-MM\")) ~> transformation",
+				"transformation filter(status == \"Completed\") ~> filter",
+				"select5 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['fact_SalesSummary'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKSalesSummary"
 			]
 		}
 	}

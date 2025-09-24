@@ -1,0 +1,182 @@
+{
+	"name": "PL_SalesSummary",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_SalesSummary",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_salessummary",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCCustomers": {
+								"PR_Directory": "IN1684/Practice/Target/tgt",
+								"PR_Filename": "dim_customers",
+								"PR_Container": "boootcamp25"
+							},
+							"SRCProducts": {
+								"PR_Directory": "IN1684/Practice/Target/tgt",
+								"PR_Filename": "dim_products",
+								"PR_Container": "boootcamp25"
+							},
+							"SRCOrders": {
+								"PR_Directory": "IN1684/Practice/Target/tgt",
+								"PR_Filename": "fact_orders",
+								"PR_Container": "boootcamp25"
+							},
+							"SRCOrderDetails": {
+								"PR_Directory": "IN1684/Practice/Target/tgt",
+								"PR_Filename": "fact_orderdetails",
+								"PR_Container": "boootcamp25"
+							},
+							"SNKSalesSummary": {
+								"PR_Directory": "IN1684/Practice/Target/tgt",
+								"PR_Filename": "fact_SalesSummary",
+								"PR_Container": "boootcamp25"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CP_SalesSummary_SQL",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "DF_SalesSummary",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"preCopyScript": "truncate table fact_SalesSummary_p;",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Country",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Country",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Category",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Category",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Sales",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Sales",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "YearMonth",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "YearMonth",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Practice/Target/tgt",
+							"PR_Filename": "fact_SalesSummary",
+							"PR_Container": "boootcamp25"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_Server_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Tablename": "fact_SalesSummary_p",
+							"PR_Schema": "PMahendi",
+							"PR_Database": "ADF_Training"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "practice/stg to tgt"
+		},
+		"annotations": []
+	}
+}
