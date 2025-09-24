@@ -15,6 +15,43 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_aggregate",
+						"type": "DataFlowReference",
+						"parameters": {
+							"filename": {
+								"value": "'@{pipeline().parameters.filename}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"source1": {
+								"container": "boootcamp25",
+								"folder": "IN1680/mock",
+								"file": "dim_customers.csv"
+							},
+							"source2": {
+								"container": "boootcamp25",
+								"folder": "IN1680/mock",
+								"file": "dim_products.csv"
+							},
+							"source3": {
+								"container": "boootcamp25",
+								"folder": "IN1680/mock",
+								"file": "dim_orders.csv"
+							},
+							"source4": {
+								"container": "boootcamp25",
+								"folder": "IN1680/mock",
+								"file": "fact_orderdetails.csv"
+							},
+							"sink1": {
+								"container": "boootcamp25",
+								"folder": "IN1680/mock",
+								"file": "Fact_SalesSummary.csv"
+							}
+						}
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
@@ -23,6 +60,12 @@
 				}
 			}
 		],
+		"parameters": {
+			"filename": {
+				"type": "string",
+				"defaultValue": "Fact_SalesSummary.csv"
+			}
+		},
 		"folder": {
 			"name": "RePractise/stg_to_tgt"
 		},
