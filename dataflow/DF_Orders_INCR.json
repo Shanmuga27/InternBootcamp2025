@@ -60,7 +60,7 @@
 				"          CustomerID as short,",
 				"          OrderAmount as short,",
 				"          OrderDate as date,",
-				"          Status as string,",
+				"          Status as integer,",
 				"          created_date as timestamp,",
 				"          created_by as string,",
 				"          updated_date as timestamp,",

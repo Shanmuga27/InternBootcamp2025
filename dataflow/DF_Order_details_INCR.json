@@ -1,5 +1,5 @@
 {
-	"name": "DF_scd1_Order_details",
+	"name": "DF_Order_details_INCR",
 	"properties": {
 		"folder": {
 			"name": "practice"
@@ -43,11 +43,11 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          OrderID as short,",
-				"          CustomerID as short,",
-				"          OrderAmount as short,",
-				"          OrderDate as date,",
-				"          Status as string,",
+				"          OrderID as integer,",
+				"          CustomerID as integer,",
+				"          OrderAmount as integer,",
+				"          OrderDate as timestamp,",
+				"          Status as integer,",
 				"          created_date as timestamp,",
 				"          created_by as string,",
 				"          updated_date as timestamp,",
@@ -94,7 +94,7 @@
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
 				"join1 filter(ERROR_FUNCTION('')) ~> filter1",
-				"filter1 keyGenerate(output({undefined} as long),",
+				"filter1 keyGenerate(output(undefined as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateKey1",
 				"surrogateKey1 sink(allowSchemaDrift: true,",

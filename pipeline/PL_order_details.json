@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_scd1_Order_details",
+						"referenceName": "DF_Order_details_INCR",
 						"type": "DataFlowReference"
 					},
 					"compute": {
