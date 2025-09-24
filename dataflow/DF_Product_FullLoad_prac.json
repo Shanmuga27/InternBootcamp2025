@@ -1,0 +1,17 @@
+{
+	"name": "DF_Product_FullLoad_prac",
+	"properties": {
+		"folder": {
+			"name": "Module_Practice"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				""
+			]
+		}
+	}
+}

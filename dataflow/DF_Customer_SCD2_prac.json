@@ -1,0 +1,147 @@
+{
+	"name": "DF_Customer_SCD2_prac",
+	"properties": {
+		"folder": {
+			"name": "Module_Practice"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "srcCustomer"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "tgtCustomer"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "src"
+				},
+				{
+					"name": "tgt"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "cusKey"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "alterRowInsert"
+				},
+				{
+					"name": "alterRowUpdate"
+				},
+				{
+					"name": "derivedColumnSrc"
+				},
+				{
+					"name": "derivedColumnTgt"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "union1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerID as integer,",
+				"          FirstName as string,",
+				"          LastName as string,",
+				"          Email as string,",
+				"          Country as string,",
+				"          CreatedDate as date,",
+				"          created_date as timestamp,",
+				"          {created_by  } as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcCustomer",
+				"source(output(",
+				"          customer_id as integer,",
+				"          customer_key as integer,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          customer_name as string,",
+				"          email as string,",
+				"          country as string,",
+				"          isActive as string,",
+				"          start_date as string,",
+				"          end_date as string,",
+				"          created_date as string,",
+				"          created_by as string,",
+				"          updated_date as string,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> tgtCustomer",
+				"cusKey select(mapColumn(",
+				"          each(match(true()),",
+				"               'src_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> src",
+				"tgtCustomer select(mapColumn(",
+				"          each(match(true()  ),",
+				"               'tgt_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> tgt",
+				"select1, tgt join(src_CustomerID == tgt_customer_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"srcCustomer keyGenerate(output(customer_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> cusKey",
+				"join1 split(isNull(tgt_customer_id)||(src_Country==tgt_country),",
+				"     !isNull(tgt_customer_id)&&(src_Country==tgt_country),",
+				"     disjoint: false) ~> split1@(insert, update)",
+				"split1@insert alterRow(insertIf(true())) ~> alterRowInsert",
+				"split1@update alterRow(updateIf(true())) ~> alterRowUpdate",
+				"alterRowInsert derive(src_created_date = currentTimestamp(),",
+				"          src_updated_date = toTimestamp(null()),",
+				"          src_updated_by = toString(null())) ~> derivedColumnSrc",
+				"alterRowUpdate derive(src_updated_date = currentTimestamp(),",
+				"          src_updated_by = {src_created_by  }) ~> derivedColumnTgt",
+				"src select(mapColumn(",
+				"          src_CustomerID,",
+				"          src_FirstName,",
+				"          src_LastName,",
+				"          src_Email,",
+				"          src_Country,",
+				"          src_created_date,",
+				"          {src_created_by  },",
+				"          src_updated_date,",
+				"          src_updated_by,",
+				"          src_runid,",
+				"          src_customer_key",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"derivedColumnSrc, derivedColumnTgt union(byName: true)~> union1"
+			]
+		}
+	}
+}
