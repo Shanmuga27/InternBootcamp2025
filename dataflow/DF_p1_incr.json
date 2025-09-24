@@ -121,7 +121,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectCols",
-				"union derive(created_date = ERROR_FUNCTION('')) ~> transf",
+				"union derive(created_date = greatest(created_date)) ~> transf",
 				"tgtP1 aggregate(groupBy(person_id),",
 				"     max_date = max(created_date)) ~> aggregate1",
 				"selectCols sink(allowSchemaDrift: true,",
