@@ -1,0 +1,148 @@
+{
+	"name": "DF_SCD3",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "alterRow2"
+				},
+				{
+					"name": "select4"
+				},
+				{
+					"name": "select6"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "derivedColumn4"
+				},
+				{
+					"name": "select7"
+				},
+				{
+					"name": "select8"
+				},
+				{
+					"name": "derivedColumn5"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          emp_id as integer,",
+				"          {name } as string,",
+				"          phone as string,",
+				"          modified_date as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          emp_id as integer,",
+				"          {name } as string,",
+				"          phone as string,",
+				"          isactive as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source2",
+				"derivedColumn2, select8 join(Src_emp_id == Tgt_emp_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 split(isNull(Tgt_emp_id),",
+				"     Src_emp_id==Tgt_emp_id && Src_phone!=Tgt_phone,",
+				"     Src_emp_id==Tgt_emp_id && Src_phone==Tgt_phone,",
+				"     disjoint: false) ~> split1@(Insert, Old, Existing)",
+				"alterRow1 select(mapColumn(",
+				"          emp_id = Src_emp_id,",
+				"          {name } = {Src_name },",
+				"          phone = Src_phone,",
+				"          isactive,",
+				"          prev_phone",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1, select4, select6 union(byName: true)~> union1",
+				"split1@Insert derive(isactive = 1,",
+				"          prev_phone = 'unk') ~> derivedColumn1",
+				"derivedColumn1 alterRow(insertIf(true())) ~> alterRow1",
+				"derivedColumn4 alterRow(updateIf(true())) ~> alterRow2",
+				"alterRow2 select(mapColumn(",
+				"          emp_id = Tgt_emp_id,",
+				"          {name } = {Tgt_name },",
+				"          phone = Tgt_phone,",
+				"          prev_phone,",
+				"          isactive",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> select4",
+				"split1@Existing select(mapColumn(",
+				"          emp_id = Tgt_emp_id,",
+				"          {name } = {Tgt_name },",
+				"          phone = Tgt_phone,",
+				"          isactive = Tgt_isactive,",
+				"          prev_phone = Tgt_prev_phone",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select6",
+				"select7 derive(isactive = 1,",
+				"          prev_phone = 'unk') ~> derivedColumn2",
+				"split1@Old derive(isactive = 0,",
+				"          prev_phone = Tgt_phone,",
+				"          Tgt_phone = Src_phone) ~> derivedColumn4",
+				"source1 select(mapColumn(",
+				"          each(match(true()),",
+				"               'Src_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select7",
+				"derivedColumn5 select(mapColumn(",
+				"          each(match(true()),",
+				"               'Tgt_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select8",
+				"source2 derive(prev_phone = 'unk') ~> derivedColumn5"
+			]
+		}
+	}
+}
