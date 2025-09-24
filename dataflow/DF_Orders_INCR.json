@@ -1,5 +1,5 @@
 {
-	"name": "DF_Orders_scd1",
+	"name": "DF_Orders_INCR",
 	"properties": {
 		"folder": {
 			"name": "practice"
@@ -28,7 +28,7 @@
 						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "SNKFctOrders"
 				}
 			],
 			"transformations": [
@@ -126,7 +126,7 @@
 				"     partitionFileNames:['Fact_orders_IN1685.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink1"
+				"     partitionBy('hash', 1)) ~> SNKFctOrders"
 			]
 		}
 	}
