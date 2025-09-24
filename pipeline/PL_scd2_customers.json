@@ -108,7 +108,7 @@
 				}
 			},
 			{
-				"name": "Copy data2",
+				"name": "CP_Dim_BLOB_SQL",
 				"type": "Copy",
 				"dependsOn": [
 					{
