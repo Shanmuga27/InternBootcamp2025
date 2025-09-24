@@ -25,6 +25,12 @@
 					"dataflow": {
 						"referenceName": "DF_stg_to_tgt_orderdetails",
 						"type": "DataFlowReference",
+						"parameters": {
+							"filename": {
+								"value": "'@{pipeline().parameters.filename}'",
+								"type": "Expression"
+							}
+						},
 						"datasetParameters": {
 							"SRCorders": {
 								"container": "boootcamp25",
@@ -185,7 +191,7 @@
 		"parameters": {
 			"filename": {
 				"type": "string",
-				"defaultValue": "dim_orderdetails.csv"
+				"defaultValue": "fact_orderdetails.csv"
 			}
 		},
 		"folder": {
