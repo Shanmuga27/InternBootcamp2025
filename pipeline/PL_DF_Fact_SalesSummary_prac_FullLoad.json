@@ -15,6 +15,37 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Fact_SalesSummary_prac",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"DimCustomer": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/tgt",
+								"file": "Dim_customers_IN1677_prac"
+							},
+							"DimProduct": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/tgt",
+								"file": "Dim_products_IN1677_prac"
+							},
+							"FactOrderDetails": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/tgt",
+								"file": "Fact_orderdetails_IN1677_prac"
+							},
+							"FactOrder": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/tgt",
+								"file": "Fact_orders_IN1677_prac"
+							},
+							"SnkFactSalesSummary": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/tgt",
+								"file": "Fact_SalesSummary_IN1677_prac"
+							}
+						}
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"

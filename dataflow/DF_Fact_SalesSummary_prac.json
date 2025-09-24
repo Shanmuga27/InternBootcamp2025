@@ -220,6 +220,12 @@
 				"     partitionFileNames:['Fact_SalesSummary_IN1677_prac'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Country,",
+				"          Category = category,",
+				"          Sales,",
+				"          YearMonth = order_date",
+				"     ),",
 				"     partitionBy('hash', 1)) ~> SnkFactSalesSummary"
 			]
 		}
