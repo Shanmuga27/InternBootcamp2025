@@ -64,6 +64,108 @@
 						}
 					}
 				]
+			},
+			{
+				"name": "DF_Fact_Order",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Fact_Orders_IN1686_Prac",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcOrders": {
+								"Container": "adf-mock-sep2025",
+								"Folder": "Target/IN1686",
+								"File": "stg_orders_IN1686.csv"
+							},
+							"TgtOrders": {
+								"Container": "adf-mock-sep2025",
+								"Folder": "Target/IN1686/srcTGT",
+								"File": "fact_orders_IN1686.csv"
+							},
+							"FactOrders": {
+								"Container": "adf-mock-sep2025",
+								"Folder": "Target/IN1686/TGT",
+								"File": "fact_orders_IN1686.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CSV_SQL__FACT_Order",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "adf-mock-sep2025",
+							"Folder": "Target/IN1686",
+							"File": "stg_orders_IN1686.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Tablename": "fact_orders_IN1686",
+							"DB_Name": "ADF_Training"
+						}
+					}
+				]
 			}
 		],
 		"folder": {
