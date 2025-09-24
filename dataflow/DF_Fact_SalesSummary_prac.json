@@ -36,37 +36,48 @@
 					"name": "FactOrder"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "SnkFactSalesSummary"
+				}
+			],
 			"transformations": [
 				{
 					"name": "SrcCustomer"
 				},
 				{
-					"name": "join1"
+					"name": "joinCusomerOrders"
 				},
 				{
 					"name": "SrcOrders"
 				},
 				{
-					"name": "join2"
+					"name": "joinOrderdetails"
 				},
 				{
 					"name": "SrcOrderDetails"
 				},
 				{
-					"name": "join3"
+					"name": "joinOrders"
 				},
 				{
 					"name": "SrcProduct"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "Transformations"
 				},
 				{
-					"name": "filter1"
+					"name": "filterStatus"
 				},
 				{
-					"name": "aggregate1"
+					"name": "aggregateSalary"
+				},
+				{
+					"name": "select1"
 				}
 			],
 			"scriptLines": [
@@ -149,7 +160,7 @@
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1",
+				"     broadcast: 'auto')~> joinCusomerOrders",
 				"FactOrder select(mapColumn(",
 				"          order_id,",
 				"          customer_id,",
@@ -158,11 +169,11 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SrcOrders",
-				"join1, SrcOrderDetails join(SrcOrders@order_id == SrcOrderDetails@order_id,",
+				"joinCusomerOrders, SrcOrderDetails join(SrcOrders@order_id == SrcOrderDetails@order_id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join2",
+				"     broadcast: 'auto')~> joinOrderdetails",
 				"FactOrderDetails select(mapColumn(",
 				"          order_id,",
 				"          product_id,",
@@ -170,11 +181,11 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SrcOrderDetails",
-				"join2, SrcProduct join(SrcOrderDetails@product_id == SrcProduct@product_id,",
+				"joinOrderdetails, SrcProduct join(SrcOrderDetails@product_id == SrcProduct@product_id,",
 				"     joinType:'inner',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join3",
+				"     broadcast: 'auto')~> joinOrders",
 				"DimProduct select(mapColumn(",
 				"          product_id = ProductID,",
 				"          category = Category,",
@@ -182,12 +193,34 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SrcProduct",
-				"join3 derive(order_date = toDate(toString(order_date),'yyyy-MM')) ~> derivedColumn1",
-				"derivedColumn1 filter(lower(status)=='completed') ~> filter1",
-				"filter1 aggregate(groupBy(category,",
-				"          {} = ERROR_FUNCTION(''),",
+				"select1 derive(order_date = toDate(toString(order_date),'yyyy-MM')) ~> Transformations",
+				"Transformations filter(lower(status)=='completed') ~> filterStatus",
+				"filterStatus aggregate(groupBy(category,",
+				"          Country,",
 				"          order_date),",
-				"     Sales = sum(price*quantity)) ~> aggregate1"
+				"     Sales = sum(price*quantity)) ~> aggregateSalary",
+				"joinOrders select(mapColumn(",
+				"          customer_id = SrcCustomer@customer_id,",
+				"          Country = customer_name,",
+				"          order_id = SrcOrders@order_id,",
+				"          customer_id = SrcOrders@customer_id,",
+				"          order_date,",
+				"          status,",
+				"          order_id = SrcOrderDetails@order_id,",
+				"          product_id = SrcOrderDetails@product_id,",
+				"          quantity,",
+				"          product_id = SrcProduct@product_id,",
+				"          category,",
+				"          price",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"aggregateSalary sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Fact_SalesSummary_IN1677_prac'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SnkFactSalesSummary"
 			]
 		}
 	}
