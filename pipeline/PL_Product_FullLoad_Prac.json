@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Data flow1",
+				"name": "DF_Tgt_Product",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -15,6 +15,22 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Product_FullLoad_prac",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcProduct": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/stg",
+								"file": "stg_products_IN1677"
+							},
+							"SnkDimProductsIN1677Prac": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/tgt",
+								"file": "Dim_products_IN1677_prac"
+							}
+						}
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
