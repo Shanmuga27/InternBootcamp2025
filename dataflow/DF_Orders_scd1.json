@@ -24,6 +24,10 @@
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
 					"name": "sink1"
 				}
 			],
@@ -32,13 +36,22 @@
 					"name": "select1"
 				},
 				{
-					"name": "join1"
+					"name": "LEFTSrcTgt"
 				},
 				{
-					"name": "filter1"
+					"name": "surrogateORDERKEY"
 				},
 				{
-					"name": "surrogateKey1"
+					"name": "aggregate1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "select2"
 				}
 			],
 			"scriptLines": [
@@ -58,9 +71,9 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> srcSTGORDERS",
 				"source(output(",
-				"          order_id as string,",
-				"          order_key as string,",
-				"          customer_id as string,",
+				"          order_id as integer,",
+				"          order_key as integer,",
+				"          customer_id as integer,",
 				"          order_amount as string,",
 				"          order_date as string,",
 				"          status as string,",
@@ -73,13 +86,33 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> tgtOrders",
-				"tgtOrders select(mapColumn(",
-				"          order_id,",
+				"aggregate1 select(mapColumn(",
+				"          torder_id = order_id,",
+				"          max_order_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"srcSTGORDERS, select1 join(OrderID == torder_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LEFTSrcTgt",
+				"union1 keyGenerate(output(order_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateORDERKEY",
+				"tgtOrders aggregate(groupBy(order_id),",
+				"     max_order_date = max(order_date)) ~> aggregate1",
+				"LEFTSrcTgt split(isNull(torder_id),",
+				"     ( OrderID == torder_id ) && (toString(OrderDate)>max_order_date),",
+				"     disjoint: true) ~> split1@(InsertStream, UpdateStream)",
+				"split1@InsertStream, split1@UpdateStream union(byName: true)~> union1",
+				"surrogateORDERKEY select(mapColumn(",
+				"          order_id = OrderID,",
 				"          order_key,",
-				"          customer_id,",
-				"          order_amount,",
-				"          order_date,",
-				"          status,",
+				"          customer_id = CustomerID,",
+				"          order_amount = OrderAmount,",
+				"          order_date = OrderDate,",
+				"          status = Status,",
 				"          created_date,",
 				"          created_by,",
 				"          updated_date,",
@@ -87,20 +120,13 @@
 				"          runid",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"srcSTGORDERS, select1 join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
-				"     joinType:'left',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> join1",
-				"join1 filter(ERROR_FUNCTION('')) ~> filter1",
-				"filter1 keyGenerate(output({undefined} as long),",
-				"     startAt: 1L,",
-				"     stepValue: 1L) ~> surrogateKey1",
-				"surrogateKey1 sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['Fact_orders_IN1685.csv'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}
