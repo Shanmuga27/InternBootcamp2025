@@ -1,0 +1,178 @@
+{
+	"name": "PL_STG_Dim_Customer_TGT_IN1686_Prac",
+	"properties": {
+		"activities": [
+			{
+				"name": "SRCTGT_ SQL_CSV",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_SQL_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Tablename": "Dim_customers_IN1686",
+							"DB_Name": "ADF_Training"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_CSV1_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Container": "adf-mock-sep2025",
+							"Folder": "Target/IN1686/srcTGT",
+							"File": "Dim_customers_IN1686.csv"
+						}
+					}
+				]
+			},
+			{
+				"name": "Dim_customers_IN1686",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_DIM_CUSTOMERS_IN1686",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"StgCustomers": {
+								"Container": "adf-mock-sep2025",
+								"Folder": "Target/IN1686",
+								"File": "stg_customers_IN1686.csv"
+							},
+							"TGTCustomer": {
+								"Container": "adf-mock-sep2025",
+								"Folder": "Target/IN1686/srcTGT",
+								"File": "Dim_customers_IN1686.csv"
+							},
+							"TgtDimcustomers": {
+								"Container": "adf-mock-sep2025",
+								"Folder": "Target/IN1686/TGT",
+								"File": "Dim_customers_IN1686.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "CSV_SQL",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Dim_customers_IN1686",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Excel_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"DatasetSheetName": "adf-mock-sep2025",
+							"Folder": "Target/IN1686/TGT",
+							"FileName": "Dim_customers_IN1686.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_IN1686",
+						"type": "DatasetReference",
+						"parameters": {
+							"Tablename": "Dim_customers_IN1686.csv",
+							"DB_Name": "ADF_Training"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Practice"
+		},
+		"annotations": []
+	}
+}
