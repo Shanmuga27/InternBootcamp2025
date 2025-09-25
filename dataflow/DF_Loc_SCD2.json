@@ -50,7 +50,7 @@
 					"name": "derivedColumn1"
 				},
 				{
-					"name": "derivedColumn2",
+					"name": "transformations",
 					"description": "ZipCode"
 				},
 				{
@@ -63,10 +63,10 @@
 					"name": "selectTGT"
 				},
 				{
-					"name": "selectSRCcolumns"
+					"name": "SELECTinscols"
 				},
 				{
-					"name": "select1"
+					"name": "SELECTupdcols"
 				}
 			],
 			"scriptLines": [
@@ -108,7 +108,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> tgtLOC",
-				"derivedColumn2, selectTGT join(Location_Id == T_Location_Id,",
+				"transformations, selectTGT join(Location_Id == T_Location_Id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -120,8 +120,7 @@
 				"          Last_Modified_Time = currentTimestamp(),",
 				"          Delete_Flag = 'Y',",
 				"          Active_Flag = 'N') ~> derivedColumn1",
-				"srcLOC derive(Location_Zipcode = iif(length(Location_Zipcode)==6, Location_Zipcode, iif(length(Location_Zipcode)>6, rtrim(Location_Zipcode), lpad(Location_Zipcode,6,'0')))\r",
-				") ~> derivedColumn2",
+				"srcLOC derive(Location_Zipcode = iif(length(Location_Zipcode)==6, Location_Zipcode, iif(length(Location_Zipcode)>6, rtrim(Location_Zipcode), lpad(Location_Zipcode,6,'0')))) ~> transformations",
 				"split1@InsertStream alterRow(insertIf(true())) ~> alterRowInsert",
 				"derivedColumn1 alterRow(updateIf(true())) ~> alterRowUpdate",
 				"tgtLOC select(mapColumn(",
@@ -159,7 +158,7 @@
 				"          Last_Updated_By",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> selectSRCcolumns",
+				"     skipDuplicateMapOutputs: true) ~> SELECTinscols",
 				"alterRowUpdate select(mapColumn(",
 				"          Locations_S_Key,",
 				"          Location_Id,",
@@ -177,14 +176,14 @@
 				"          Last_Updated_By",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"selectSRCcolumns sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTupdcols",
+				"SELECTinscols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['SCD2_Locations_tgt1.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sink1",
-				"select1 sink(allowSchemaDrift: true,",
+				"SELECTupdcols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['SCD2_Locations_t2.csv'],",
 				"     skipDuplicateMapInputs: true,",
