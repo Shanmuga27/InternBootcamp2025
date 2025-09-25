@@ -1,0 +1,27 @@
+{
+	"name": "DF_mod_cust",
+	"properties": {
+		"folder": {
+			"name": "Mod_prac"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SRCcustomers"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCcustomers"
+			]
+		}
+	}
+}
