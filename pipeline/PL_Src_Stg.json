@@ -29,6 +29,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -157,9 +158,9 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"container": "boootcamp25",
-										"directory": "IN1677/mock_test_practice/stg",
+										"directory": "IN1677/mock_test_practice/stg/test",
 										"file": {
-											"value": "@concat('stg_',item().Name,'_IN1677')",
+											"value": "@concat('stg_',replace(item().Name,'.csv',''),'_IN1677.csv')",
 											"type": "Expression"
 										}
 									}
