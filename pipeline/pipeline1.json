@@ -242,7 +242,7 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"SRCstgorders": {
-								"Param_Container": "  boootcamp25",
+								"Param_Container": "boootcamp25",
 								"Param_Folder": "IN1685/prac_mock_STG",
 								"Param_File": "stg_orders_IN1685.csv"
 							},
