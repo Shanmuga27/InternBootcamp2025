@@ -13,14 +13,92 @@
 						"type": "DatasetReference"
 					},
 					"name": "SRCcustomers"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "TGTcustomers"
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "SELECTcustomers"
+				},
+				{
+					"name": "LEFTsrctgt"
+				},
+				{
+					"name": "split1"
+				}
+			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          CustomerID as integer,",
+				"          FirstName as string,",
+				"          LastName as string,",
+				"          Gender as string,",
+				"          DateOfBirth as date,",
+				"          Email as string,",
+				"          Phone as string,",
+				"          AddressLine1 as string,",
+				"          AddressLine2 as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Country as string,",
+				"          PostalCode as integer,",
+				"          MaritalStatus as string,",
+				"          Occupation as string,",
+				"          AnnualIncome as double,",
+				"          RiskCategory as string,",
+				"          created_date as timestamp,",
+				"          updated_date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> SRCcustomers"
+				"     ignoreNoFilesFound: false) ~> SRCcustomers",
+				"source(output(",
+				"          CustomerID as integer,",
+				"          FirstName as string,",
+				"          LastName as string,",
+				"          Gender as string,",
+				"          DateOfBirth as date,",
+				"          Email as string,",
+				"          Phone as string,",
+				"          AddressLine1 as string,",
+				"          AddressLine2 as string,",
+				"          City as string,",
+				"          State as string,",
+				"          Country as string,",
+				"          PostalCode as string,",
+				"          MaritalStatus as string,",
+				"          Occupation as string,",
+				"          AnnualIncome as string,",
+				"          RiskCategory as string,",
+				"          created_by as string,",
+				"          created_date as string,",
+				"          updated_date as string,",
+				"          updated_by as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TGTcustomers",
+				"TGTcustomers select(mapColumn(",
+				"          T_CustomerID = CustomerID,",
+				"          T_State = State",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTcustomers",
+				"SRCcustomers, SELECTcustomers join(CustomerID == T_CustomerID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LEFTsrctgt",
+				"LEFTsrctgt split((isNull(T_CustomerID)) || (State != T_State),",
+				"     (State != T_State),",
+				"     disjoint: true) ~> split1@(INSERTstream, UPDATEstream)"
 			]
 		}
 	}
