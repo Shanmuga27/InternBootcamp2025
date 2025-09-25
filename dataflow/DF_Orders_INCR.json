@@ -52,6 +52,9 @@
 				},
 				{
 					"name": "SELECTcols"
+				},
+				{
+					"name": "trans"
 				}
 			],
 			"scriptLines": [
@@ -97,7 +100,7 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> LEFTSrcTgt",
-				"UNIONstreams keyGenerate(output(order_key as long),",
+				"trans keyGenerate(output(order_key as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> SURROGATEorderkey",
 				"TGTorders aggregate(groupBy(order_id),",
@@ -121,6 +124,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SELECTcols",
+				"UNIONstreams derive() ~> trans",
 				"SELECTcols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['Fact_orders_IN1685.csv'],",
