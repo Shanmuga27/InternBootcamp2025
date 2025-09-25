@@ -12,14 +12,14 @@
 						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference"
 					},
-					"name": "srcSTGORDERS"
+					"name": "SRCstgorders"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference"
 					},
-					"name": "tgtOrders"
+					"name": "TGTorders"
 				}
 			],
 			"sinks": [
@@ -33,25 +33,25 @@
 			],
 			"transformations": [
 				{
-					"name": "select1"
+					"name": "SELECTtgtcols"
 				},
 				{
 					"name": "LEFTSrcTgt"
 				},
 				{
-					"name": "surrogateORDERKEY"
+					"name": "SURROGATEorderkey"
 				},
 				{
-					"name": "aggregate1"
+					"name": "AGGRmaxdate"
 				},
 				{
 					"name": "split1"
 				},
 				{
-					"name": "union1"
+					"name": "UNIONstreams"
 				},
 				{
-					"name": "select2"
+					"name": "SELECTcols"
 				}
 			],
 			"scriptLines": [
@@ -69,7 +69,7 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> srcSTGORDERS",
+				"     ignoreNoFilesFound: false) ~> SRCstgorders",
 				"source(output(",
 				"          order_id as integer,",
 				"          order_key as integer,",
@@ -85,28 +85,28 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> tgtOrders",
-				"aggregate1 select(mapColumn(",
+				"     ignoreNoFilesFound: false) ~> TGTorders",
+				"AGGRmaxdate select(mapColumn(",
 				"          torder_id = order_id,",
 				"          max_order_date",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"srcSTGORDERS, select1 join(OrderID == torder_id,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTtgtcols",
+				"SRCstgorders, SELECTtgtcols join(OrderID == torder_id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> LEFTSrcTgt",
-				"union1 keyGenerate(output(order_key as long),",
+				"UNIONstreams keyGenerate(output(order_key as long),",
 				"     startAt: 1L,",
-				"     stepValue: 1L) ~> surrogateORDERKEY",
-				"tgtOrders aggregate(groupBy(order_id),",
-				"     max_order_date = max(order_date)) ~> aggregate1",
+				"     stepValue: 1L) ~> SURROGATEorderkey",
+				"TGTorders aggregate(groupBy(order_id),",
+				"     max_order_date = max(order_date)) ~> AGGRmaxdate",
 				"LEFTSrcTgt split(isNull(torder_id),",
 				"     ( OrderID == torder_id ) && (toString(OrderDate)>max_order_date),",
-				"     disjoint: true) ~> split1@(InsertStream, UpdateStream)",
-				"split1@InsertStream, split1@UpdateStream union(byName: true)~> union1",
-				"surrogateORDERKEY select(mapColumn(",
+				"     disjoint: true) ~> split1@(INSERTstream, UPDATEstream)",
+				"split1@INSERTstream, split1@UPDATEstream union(byName: true)~> UNIONstreams",
+				"SURROGATEorderkey select(mapColumn(",
 				"          order_id = OrderID,",
 				"          order_key,",
 				"          customer_id = CustomerID,",
@@ -120,8 +120,8 @@
 				"          runid",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select2",
-				"select2 sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTcols",
+				"SELECTcols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['Fact_orders_IN1685.csv'],",
 				"     skipDuplicateMapInputs: true,",

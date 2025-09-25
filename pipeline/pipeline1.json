@@ -208,7 +208,7 @@
 									"parameters": {
 										"Par_SchemaName": "RRamesh",
 										"Par_TableName": {
-											"value": "@concat('stg_IN1685',item().name)",
+											"value": "@concat('stg_IN1685',replace(item().name,'.csv',''))",
 											"type": "Expression"
 										},
 										"Param_DB_name": "ADF_Training"

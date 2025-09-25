@@ -33,7 +33,7 @@
 						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference"
 					},
-					"name": "sourceORDERDETAILS"
+					"name": "srcORDERDETAILS"
 				}
 			],
 			"sinks": [
@@ -77,7 +77,7 @@
 					"name": "filterSTATUS"
 				},
 				{
-					"name": "select1"
+					"name": "selectColumns"
 				}
 			],
 			"scriptLines": [
@@ -149,7 +149,7 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> sourceORDERDETAILS",
+				"     ignoreNoFilesFound: false) ~> srcORDERDETAILS",
 				"srcCust select(mapColumn(",
 				"          customer_id,",
 				"          country",
@@ -171,7 +171,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> selectORDERS",
-				"sourceORDERDETAILS select(mapColumn(",
+				"srcORDERDETAILS select(mapColumn(",
 				"          OrderID,",
 				"          ProductID,",
 				"          Quantity",
@@ -207,8 +207,8 @@
 				"          sales_aggr",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectColumns",
+				"selectColumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['Fact_SalesSummary_IN1685.csv'],",
 				"     skipDuplicateMapInputs: true,",
