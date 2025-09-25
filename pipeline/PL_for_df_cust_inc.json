@@ -87,6 +87,12 @@
 					"dataflow": {
 						"referenceName": "DF_cust_incre",
 						"type": "DataFlowReference",
+						"parameters": {
+							"filename": {
+								"value": "'@{pipeline().parameters.filename}'",
+								"type": "Expression"
+							}
+						},
 						"datasetParameters": {
 							"source1": {
 								"container": "boootcamp25",
@@ -95,7 +101,12 @@
 							},
 							"source2": {
 								"container": "boootcamp25",
-								"folder": "IN1680/int_t",
+								"folder": "IN1680/inc_t",
+								"file": "customers.csv"
+							},
+							"sink1": {
+								"container": "boootcamp25",
+								"folder": "IN1680/int_o",
 								"file": "customers.csv"
 							}
 						}
@@ -106,8 +117,89 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "Copy data2",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Data flow1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"customer_id"
+							]
+						},
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680/int_o",
+							"file": "customers.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_Server_IN1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "KRavi",
+							"TableName": "dim_customers",
+							"DatabaseName": "ADF_Training"
+						}
+					}
+				]
 			}
 		],
+		"parameters": {
+			"filename": {
+				"type": "string",
+				"defaultValue": "customers.csv"
+			}
+		},
 		"folder": {
 			"name": "exercise"
 		},

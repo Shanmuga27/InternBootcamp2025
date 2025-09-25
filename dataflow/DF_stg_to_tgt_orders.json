@@ -49,9 +49,6 @@
 				},
 				{
 					"name": "window1"
-				},
-				{
-					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -59,14 +56,14 @@
 				"     filename as string",
 				"}",
 				"source(output(",
-				"          order_id as integer,",
-				"          customer_id as string,",
-				"          order_amount as integer,",
+				"          order_id as short,",
+				"          customer_id as short,",
+				"          order_amount as short,",
 				"          order_date as timestamp,",
 				"          status as string,",
 				"          {created date} as timestamp,",
 				"          {created by } as string,",
-				"          {updated date} as timestamp,",
+				"          {updated date} as string,",
 				"          {updated by} as string,",
 				"          { runid} as string",
 				"     ),",
@@ -127,12 +124,10 @@
 				"SRCorders keyGenerate(output(order_key as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> surrogateKey1",
-				"derivedColumn1 split(order_date > max_date,",
+				"window1 split(order_date > max_date,",
 				"     disjoint: false) ~> split1@(insert)",
-				"join1 window(over(tgt_order_date),",
-				"     asc(tgt_order_date, true),",
+				"join1 window(desc(order_date, true),",
 				"     max_date = max(tgt_order_date)) ~> window1",
-				"window1 derive(column1 = toString(order_amount, 'MMM-yyyy')) ~> derivedColumn1",
 				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
