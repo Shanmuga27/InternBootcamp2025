@@ -5,8 +5,6 @@
 			{
 				"name": "DF_mod_cust",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -25,6 +23,16 @@
 								"Param_Container": "adf-module-sep2025",
 								"Param_Folder": "SourceFiles",
 								"Param_File": "customer.csv"
+							},
+							"TGTcustomers": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/mod_tgt",
+								"Param_File": "tgt_cust.csv"
+							},
+							"SNKcustomer": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/mod_dw",
+								"Param_File": "mod_dim_customer.csv"
 							}
 						}
 					},

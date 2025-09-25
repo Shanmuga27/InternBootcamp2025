@@ -22,7 +22,15 @@
 					"name": "TGTcustomers"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SNKcustomer"
+				}
+			],
 			"transformations": [
 				{
 					"name": "SELECTcustomers"
@@ -47,6 +55,9 @@
 				},
 				{
 					"name": "Transformations"
+				},
+				{
+					"name": "SURROGATEcustomer"
 				}
 			],
 			"scriptLines": [
@@ -121,8 +132,19 @@
 				"UNIONstreams derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
 				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
 				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
-				"NullHandling derive(Age = minus(year(currentDate()), year(toDate(DateOfBirth))),",
-				"          FullName = iif(Gender=='M', 'Mr.'+FirstName+LastName, iif(Gender=='F' && (MaritalStatus=='Single' || MaritalStatus=='Divorced' || MaritalStatus=='Widowed'), 'Ms.'+FirstName+LastName, iif(Gender=='F' && (MaritalStatus=='Married'), 'Mrs.'+FirstName+LastName, 'NULL')))) ~> Transformations"
+				"NullHandling derive(Age = year(currentDate())-year(toDate(DateOfBirth,'dd-MM-yyyy')),",
+				"          FullName = iif(Gender=='M', 'Mr.'+FirstName+LastName, iif(Gender=='F' && (MaritalStatus=='Single' || MaritalStatus=='Divorced' || MaritalStatus=='Widowed'), 'Ms.'+FirstName+LastName, iif(Gender=='F' && (MaritalStatus=='Married'), 'Mrs.'+FirstName+LastName, 'NULL'))),",
+				"          Gender = iif(Gender=='M', 'Male', iif(Gender=='F', 'Female', iif(Gender=='O', 'Other', 'invalid'))),",
+				"          Sector = iif(Occupation=='Teacher', 'Education', iif(Occupation=='Business analyst' || Occupation=='Manager', 'IT', iif(Occupation=='Engineer', 'Engineering', iif(Occupation=='Doctor', 'Medicine', iif(Occupation=='Banker', 'Finance', iif(Occupation=='Lawyer', 'Law', 'invalid'))))))) ~> Transformations",
+				"Transformations keyGenerate(output(customer_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SURROGATEcustomer",
+				"SURROGATEcustomer sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['mod_dim_customer.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKcustomer"
 			]
 		}
 	}
