@@ -20,7 +20,9 @@
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference"
 					},
-					"fieldList": [],
+					"fieldList": [
+						"childItems"
+					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
 						"recursive": true,
@@ -135,6 +137,34 @@
 							}
 						}
 					]
+				}
+			},
+			{
+				"name": "Script1",
+				"type": "Script",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "LS_SQLServer_IN1684",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"DataBase": "ADF_Training"
+					}
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
 				}
 			}
 		],

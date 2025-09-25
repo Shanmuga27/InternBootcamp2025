@@ -21,7 +21,7 @@
 							{
 								"name": "current date",
 								"value": {
-									"value": "@formatDateTime(utcNow())",
+									"value": "@formatDateTime(utcNow(),'dd-MMMM-yyyy')",
 									"type": "Expression"
 								}
 							},
