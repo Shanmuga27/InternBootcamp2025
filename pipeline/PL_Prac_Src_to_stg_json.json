@@ -226,7 +226,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"TableName": {
-											"value": "@concat('stag',item().name, '_IN1675')\n",
+											"value": "@concat('stag_',replace(item().name,'.json',''), '_IN1675')\n",
 											"type": "Expression"
 										},
 										"SchemaName": "DMuthuku",
