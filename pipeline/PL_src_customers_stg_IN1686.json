@@ -301,11 +301,11 @@
 		"variables": {
 			"Created_by": {
 				"type": "String",
-				"defaultValue": "\"IN1686 Sanjay Komala\""
+				"defaultValue": "IN1686 Sanjay Komala"
 			},
 			"Updated_by": {
 				"type": "String",
-				"defaultValue": "\"IN1686 Sanjay Komala\""
+				"defaultValue": "IN1686 Sanjay Komala"
 			}
 		},
 		"folder": {
