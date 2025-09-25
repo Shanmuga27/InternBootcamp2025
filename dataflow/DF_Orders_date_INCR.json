@@ -1,0 +1,140 @@
+{
+	"name": "DF_Orders_date_INCR",
+	"properties": {
+		"folder": {
+			"name": "practice"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstgorders"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "TGTorders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SNKFctOrders"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SELECTtgtcols"
+				},
+				{
+					"name": "LEFTSrcTgt"
+				},
+				{
+					"name": "SURROGATEorderkey"
+				},
+				{
+					"name": "AGGRmaxdate"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "UNIONstreams"
+				},
+				{
+					"name": "SELECTcols"
+				},
+				{
+					"name": "trans"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          OrderID as short,",
+				"          CustomerID as short,",
+				"          OrderAmount as short,",
+				"          OrderDate as date,",
+				"          Status as integer,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCstgorders",
+				"source(output(",
+				"          order_id as integer,",
+				"          order_key as integer,",
+				"          customer_id as integer,",
+				"          order_amount as string,",
+				"          order_date as string,",
+				"          status as string,",
+				"          created_date as string,",
+				"          created_by as string,",
+				"          updated_date as string,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TGTorders",
+				"AGGRmaxdate select(mapColumn(",
+				"          torder_id = order_id,",
+				"          max_order_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTtgtcols",
+				"SRCstgorders, SELECTtgtcols join(OrderID == torder_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LEFTSrcTgt",
+				"trans keyGenerate(output(order_key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> SURROGATEorderkey",
+				"TGTorders aggregate(groupBy(order_id),",
+				"     max_order_date = max(order_date)) ~> AGGRmaxdate",
+				"LEFTSrcTgt split(isNull(torder_id),",
+				"     ( OrderID == torder_id ) && (toString(OrderDate)>max_order_date),",
+				"     disjoint: true) ~> split1@(INSERTstream, UPDATEstream)",
+				"split1@INSERTstream, split1@UPDATEstream union(byName: true)~> UNIONstreams",
+				"SURROGATEorderkey select(mapColumn(",
+				"          order_id = OrderID,",
+				"          order_key,",
+				"          customer_id = CustomerID,",
+				"          order_amount = OrderAmount,",
+				"          order_date = OrderDate,",
+				"          status = Status,",
+				"          created_date,",
+				"          created_by,",
+				"          updated_date,",
+				"          updated_by,",
+				"          runid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTcols",
+				"UNIONstreams derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'yyyy-MM-dd HH:mm:ss'))),",
+				"          column1 = ERROR_FUNCTION('')) ~> trans",
+				"SELECTcols sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Fact_orders_IN1685.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKFctOrders"
+			]
+		}
+	}
+}

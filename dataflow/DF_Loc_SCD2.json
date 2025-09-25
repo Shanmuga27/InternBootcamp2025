@@ -47,7 +47,7 @@
 					"name": "split1"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "updateauditflag"
 				},
 				{
 					"name": "transformations",
@@ -119,10 +119,11 @@
 				"split1@UpdateStream derive(Last_Modified_Date = currentTimestamp(),",
 				"          Last_Modified_Time = currentTimestamp(),",
 				"          Delete_Flag = 'Y',",
-				"          Active_Flag = 'N') ~> derivedColumn1",
+				"          Active_Flag = 'N',",
+				"          column1 = ERROR_FUNCTION('')) ~> updateauditflag",
 				"srcLOC derive(Location_Zipcode = iif(length(Location_Zipcode)==6, Location_Zipcode, iif(length(Location_Zipcode)>6, rtrim(Location_Zipcode), lpad(Location_Zipcode,6,'0')))) ~> transformations",
 				"split1@InsertStream alterRow(insertIf(true())) ~> alterRowInsert",
-				"derivedColumn1 alterRow(updateIf(true())) ~> alterRowUpdate",
+				"updateauditflag alterRow(updateIf(true())) ~> alterRowUpdate",
 				"tgtLOC select(mapColumn(",
 				"          T_Locations_S_Key = Locations_S_Key,",
 				"          T_Location_Id = Location_Id,",
