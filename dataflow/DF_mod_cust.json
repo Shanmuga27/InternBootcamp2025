@@ -32,6 +32,21 @@
 				},
 				{
 					"name": "split1"
+				},
+				{
+					"name": "INSERTcols"
+				},
+				{
+					"name": "UPDATEcols"
+				},
+				{
+					"name": "UNIONstreams"
+				},
+				{
+					"name": "NullHandling"
+				},
+				{
+					"name": "Transformations"
 				}
 			],
 			"scriptLines": [
@@ -40,7 +55,7 @@
 				"          FirstName as string,",
 				"          LastName as string,",
 				"          Gender as string,",
-				"          DateOfBirth as date,",
+				"          DateOfBirth as string,",
 				"          Email as string,",
 				"          Phone as string,",
 				"          AddressLine1 as string,",
@@ -98,7 +113,16 @@
 				"     broadcast: 'auto')~> LEFTsrctgt",
 				"LEFTsrctgt split((isNull(T_CustomerID)) || (State != T_State),",
 				"     (State != T_State),",
-				"     disjoint: true) ~> split1@(INSERTstream, UPDATEstream)"
+				"     disjoint: true) ~> split1@(INSERTstream, UPDATEstream)",
+				"split1@INSERTstream derive(created_date = currentTimestamp(),",
+				"          updated_date = currentTimestamp()) ~> INSERTcols",
+				"split1@UPDATEstream derive(updated_date = currentTimestamp()) ~> UPDATEcols",
+				"INSERTcols, UPDATEcols union(byName: true)~> UNIONstreams",
+				"UNIONstreams derive(each(match(type=='string'), $$ = iifNull($$, 'UNK')),",
+				"          each(match(type=='integer'), $$ = iifNull($#, 0)),",
+				"          each(match(type=='timestamp'), $$ = iifNull($$, toTimestamp('1900-01-01 00:00:00', 'yyyy-MM-dd HH:mm:ss')))) ~> NullHandling",
+				"NullHandling derive(Age = minus(year(currentDate()), year(toDate(DateOfBirth))),",
+				"          FullName = iif(Gender=='M', 'Mr.'+FirstName+LastName, iif(Gender=='F' && (MaritalStatus=='Single' || MaritalStatus=='Divorced' || MaritalStatus=='Widowed'), 'Ms.'+FirstName+LastName, iif(Gender=='F' && (MaritalStatus=='Married'), 'Mrs.'+FirstName+LastName, 'NULL')))) ~> Transformations"
 			]
 		}
 	}
