@@ -5,6 +5,8 @@
 			{
 				"name": "GM_src",
 				"type": "GetMetadata",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -29,6 +31,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -39,6 +42,8 @@
 			{
 				"name": "ForEachsrc",
 				"type": "ForEach",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "GM_src",
@@ -217,6 +222,47 @@
 							]
 						}
 					]
+				}
+			},
+			{
+				"name": "DF_Orders_date_INCR",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Orders_date_INCR",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCstgorders": {
+								"Param_Container": "  boootcamp25",
+								"Param_Folder": "IN1685/prac_mock_STG",
+								"Param_File": "stg_orders_IN1685.csv"
+							},
+							"TGTorders": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/prac_mock_tgt",
+								"Param_File": "tgt_orders_date.csv"
+							},
+							"SNKFctOrders": {
+								"Param_Container": "boootcamp25",
+								"Param_Folder": "IN1685/prac_mock_DW",
+								"Param_File": "fct_orders_date.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
 				}
 			}
 		],

@@ -42,9 +42,6 @@
 					"name": "SURROGATEorderkey"
 				},
 				{
-					"name": "AGGRmaxdate"
-				},
-				{
 					"name": "split1"
 				},
 				{
@@ -89,9 +86,9 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> TGTorders",
-				"AGGRmaxdate select(mapColumn(",
-				"          torder_id = order_id,",
-				"          max_order_date",
+				"TGTorders select(mapColumn(",
+				"          each(match(true()),",
+				"               \"T_\"+$$ = $$)",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SELECTtgtcols",
@@ -103,10 +100,8 @@
 				"trans keyGenerate(output(order_key as long),",
 				"     startAt: 1L,",
 				"     stepValue: 1L) ~> SURROGATEorderkey",
-				"TGTorders aggregate(groupBy(order_id),",
-				"     max_order_date = max(order_date)) ~> AGGRmaxdate",
-				"LEFTSrcTgt split(isNull(torder_id),",
-				"     ( OrderID == torder_id ) && (toString(OrderDate)>max_order_date),",
+				"LEFTSrcTgt split(isNull(T_order_id),",
+				"     ( OrderID == T_order_id ) && (toString(OrderDate)>greatest(T_order_date)),",
 				"     disjoint: true) ~> split1@(INSERTstream, UPDATEstream)",
 				"split1@INSERTstream, split1@UPDATEstream union(byName: true)~> UNIONstreams",
 				"SURROGATEorderkey select(mapColumn(",
@@ -130,7 +125,7 @@
 				"          column1 = ERROR_FUNCTION('')) ~> trans",
 				"SELECTcols sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['Fact_orders_IN1685.csv'],",
+				"     partitionFileNames:['fct_orders_date.csv'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> SNKFctOrders"
