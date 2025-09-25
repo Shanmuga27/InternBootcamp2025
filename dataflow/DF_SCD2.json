@@ -46,9 +46,6 @@
 					"name": "select4"
 				},
 				{
-					"name": "select6"
-				},
-				{
 					"name": "derivedColumn2"
 				},
 				{
@@ -59,6 +56,18 @@
 				},
 				{
 					"name": "select8"
+				},
+				{
+					"name": "derivedColumn5"
+				},
+				{
+					"name": "alterRow3"
+				},
+				{
+					"name": "select9"
+				},
+				{
+					"name": "select10"
 				}
 			],
 			"scriptLines": [
@@ -84,41 +93,30 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
-				"join1 split(isNull(Tgt_emp_id) || (Src_emp_id==Tgt_emp_id && Src_phone!=Tgt_phone),",
-				"     Src_emp_id==Tgt_emp_id && Src_phone!=Tgt_phone,",
+				"join1 split(isNull(Tgt_emp_id) ,",
+				"     !isNull(Tgt_emp_id)&&(Src_emp_id==Tgt_emp_id&&Src_phone!=Tgt_phone) ,",
 				"     Src_emp_id==Tgt_emp_id && Src_phone==Tgt_phone,",
 				"     disjoint: false) ~> split1@(Insert, Old, Existing)",
 				"alterRow1 select(mapColumn(",
-				"          emp_id = {split1@Insert@emp_id},",
-				"          {name } = {split1@Insert@name },",
-				"          phone = {split1@Insert@phone},",
+				"          emp_id = Src_emp_id,",
+				"          {name } = {Src_name },",
+				"          phone = Src_phone,",
 				"          isactive",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1, select4, select6 union(byName: true)~> union1",
+				"select1, select4, select9, select10 union(byName: true)~> union1",
 				"split1@Insert derive(isactive = 1) ~> derivedColumn1",
 				"derivedColumn1 alterRow(insertIf(true())) ~> alterRow1",
 				"derivedColumn4 alterRow(updateIf(true())) ~> alterRow2",
 				"alterRow2 select(mapColumn(",
-				"          emp_id = {split1@Old@emp_id},",
-				"          {name } = {split1@Old@name },",
-				"          phone = {split1@Old@phone},",
-				"          isactive,",
-				"          emp_id = {split1@Old@emp_id},",
-				"          {name } = {split1@Old@name },",
-				"          phone = {split1@Old@phone}",
+				"          emp_id = Tgt_emp_id,",
+				"          {name } = {Tgt_name },",
+				"          phone = Tgt_phone,",
+				"          isactive",
 				"     ),",
 				"     skipDuplicateMapInputs: false,",
 				"     skipDuplicateMapOutputs: false) ~> select4",
-				"split1@Existing select(mapColumn(",
-				"          emp_id = {split1@Existing@emp_id},",
-				"          {name } = {split1@Existing@name },",
-				"          phone = {split1@Existing@phone},",
-				"          isactive",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select6",
 				"select7 derive(isactive = 1) ~> derivedColumn2",
 				"split1@Old derive(isactive = 0) ~> derivedColumn4",
 				"source1 select(mapColumn(",
@@ -132,7 +130,25 @@
 				"               'Tgt_'+$$ = $$)",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select8"
+				"     skipDuplicateMapOutputs: true) ~> select8",
+				"split1@Old derive(isactive = 1) ~> derivedColumn5",
+				"derivedColumn5 alterRow(insertIf(true())) ~> alterRow3",
+				"alterRow3 select(mapColumn(",
+				"          emp_id = Src_emp_id,",
+				"          {name } = {Src_name },",
+				"          phone = Src_phone,",
+				"          isactive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select9",
+				"split1@Existing select(mapColumn(",
+				"          emp_id = Tgt_emp_id,",
+				"          {name } = {Tgt_name },",
+				"          phone = Tgt_phone,",
+				"          isactive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select10"
 			]
 		}
 	}

@@ -29,6 +29,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -151,7 +152,7 @@
 										"ContainerName": "boootcamp25",
 										"FolderName": "IN1675/Mock/Stg",
 										"FileName": {
-											"value": "@replace(item().name,'.json','.csv')\n",
+											"value": "@replace(item().name, '.json', '')",
 											"type": "Expression"
 										}
 									}
@@ -213,7 +214,7 @@
 										"ContainerName": "boootcamp25",
 										"FolderName": "IN1675/Mock/Stg",
 										"FileName": {
-											"value": "@replace(item().name, '.json', '.csv')\n",
+											"value": "@replace(item().name, '.json', '')\n",
 											"type": "Expression"
 										}
 									}
@@ -225,7 +226,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"TableName": {
-											"value": "@concat('staging_', replace(item().name, '.csv', ''), '_IN1675')\n",
+											"value": "@concat('stag',item().name, '_IN1675')\n",
 											"type": "Expression"
 										},
 										"SchemaName": "DMuthuku",

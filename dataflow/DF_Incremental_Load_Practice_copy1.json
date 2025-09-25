@@ -1,5 +1,5 @@
 {
-	"name": "DF_Incremental_Load_Practice",
+	"name": "DF_Incremental_Load_Practice_copy1",
 	"properties": {
 		"folder": {
 			"name": "Practice_DF_IN1675"
@@ -50,7 +50,7 @@
 					"name": "select2"
 				},
 				{
-					"name": "surrogateKey1"
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -72,20 +72,19 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> tgtEmp",
-				"surrogateKey1, tgtEmp join(srcEmp@emp_id == tgtEmp@emp_id,",
+				"srcEmp, tgtEmp join(srcEmp@emp_id == tgtEmp@emp_id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join",
 				"join split(isNull(tgtEmp@emp_id),",
-				"     srcEmp@emp_id==tgtEmp@emp_id && srcEmp@modified_date>tgtEmp@modified_date || srcEmp@phone!=tgtEmp@phone || srcEmp@{name }!=tgtEmp@{name },",
+				"     srcEmp@emp_id==tgtEmp@emp_id && srcEmp@modified_date>tgtEmp@modified_date ,",
 				"     disjoint: false) ~> split1@(NewRecord, ChangedRecord)",
 				"split1@NewRecord alterRow(insertIf(true())) ~> New",
 				"split1@ChangedRecord alterRow(updateIf(true())) ~> Update",
 				"select1, select2 union(byName: true)~> union",
 				"New select(mapColumn(",
 				"          emp_id = split1@NewRecord@emp_id,",
-				"          EmpKey,",
 				"          {name } = split1@NewRecord@{name },",
 				"          phone = split1@NewRecord@phone,",
 				"          modified_date = split1@NewRecord@modified_date",
@@ -94,16 +93,14 @@
 				"     skipDuplicateMapOutputs: true) ~> select1",
 				"Update select(mapColumn(",
 				"          emp_id = split1@ChangedRecord@emp_id,",
-				"          EmpKey,",
 				"          {name } = split1@ChangedRecord@{name },",
 				"          phone = split1@ChangedRecord@phone,",
 				"          modified_date = split1@ChangedRecord@modified_date",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
-				"srcEmp keyGenerate(output(EmpKey as long),",
-				"     startAt: 1L,",
-				"     stepValue: 1L) ~> surrogateKey1",
+				"tgtEmp aggregate(groupBy(emp_id),",
+				"     modified_date = max()) ~> aggregate1",
 				"union sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
