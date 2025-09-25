@@ -64,9 +64,6 @@
 				},
 				{
 					"name": "TransformationUpdate"
-				},
-				{
-					"name": "derivedColumn1"
 				}
 			],
 			"scriptLines": [
@@ -122,7 +119,7 @@
 				"joinAgg split((src_OrderID==order_id)&&(src_OrderDate>max_order_date),",
 				"     isNull(order_id),",
 				"     disjoint: false) ~> split1@(update, insert)",
-				"derivedColumn1, derivedColumnorderdate join(src_OrderID == order_id,",
+				"selectSrc, derivedColumnorderdate join(src_OrderID == order_id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
@@ -155,7 +152,6 @@
 				"select2 derive(created_date = currentTimestamp()) ~> TransformationInsert",
 				"select1 derive(updated_date = currentTimestamp(),",
 				"          updated_by = created_by) ~> TransformationUpdate",
-				"selectSrc derive(src_OrderDate = toString(src_OrderDate,'yyyy-MM')) ~> derivedColumn1",
 				"union1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['Fact_orders_IN1677_prac'],",
