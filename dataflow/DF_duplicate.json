@@ -1,0 +1,70 @@
+{
+	"name": "DF_duplicate",
+	"properties": {
+		"folder": {
+			"name": "Testing"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "tgtCustomers"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SNKduplicates"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AGGR"
+				},
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          customer_id as integer,",
+				"          customer_key as integer,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          customer_name as string,",
+				"          email as string,",
+				"          country as string,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string,",
+				"          isActive as string,",
+				"          start_date as timestamp,",
+				"          end_date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> tgtCustomers",
+				"tgtCustomers aggregate(groupBy(customer_id),",
+				"     ct_tgt = count(customer_id)) ~> AGGR",
+				"AGGR split(ct_tgt>1,",
+				"     ct_tgt<=1,",
+				"     disjoint: true) ~> split1@(Duplicates, NonDuplicates)",
+				"split1@Duplicates sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['test_customers_duplicates.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKduplicates"
+			]
+		}
+	}
+}
