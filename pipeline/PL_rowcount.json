@@ -1,0 +1,136 @@
+{
+	"name": "PL_rowcount",
+	"properties": {
+		"activities": [
+			{
+				"name": "LK_src_stg",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "select count(*) as ct \nfrom STG_IN1685_stg_customers;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_OnPrem_SQLServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"Par_SchemaName": "RRamesh",
+							"Par_TableName": "STG_IN1685_stg_customers",
+							"Param_DB_name": "ADF_Training"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "LK_tgt_dim",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "SET_srcvar",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "select count(*) as ct_tgt\r\nfrom Dim_customers_IN1685",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_OnPrem_SQLServer",
+						"type": "DatasetReference",
+						"parameters": {
+							"Par_SchemaName": "RRamesh",
+							"Par_TableName": "Dim_customers_IN1685",
+							"Param_DB_name": "ADF_Training"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "SET_srcvar",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LK_src_stg",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "ct_src",
+					"value": {
+						"value": "@activity('LK_src_stg').output.value",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "SET_tgtvar",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LK_tgt_dim",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "ct_tgt",
+					"value": {
+						"value": "@activity('LK_tgt_dim').output.value",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"ct_src": {
+				"type": "String"
+			},
+			"ct_tgt": {
+				"type": "Array"
+			}
+		},
+		"folder": {
+			"name": "Testing"
+		},
+		"annotations": []
+	}
+}
