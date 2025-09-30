@@ -118,11 +118,42 @@
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "IF_rowcount",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "SET_tgtvar",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('ct_src'), variables('ct_tgt'))",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "FAIL_rowcount",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "Row counts are not equal",
+								"errorCode": "500"
+							}
+						}
+					]
+				}
 			}
 		],
 		"variables": {
 			"ct_src": {
-				"type": "String"
+				"type": "Array"
 			},
 			"ct_tgt": {
 				"type": "Array"
