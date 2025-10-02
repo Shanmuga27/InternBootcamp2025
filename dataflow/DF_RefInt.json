@@ -1,0 +1,98 @@
+{
+	"name": "DF_RefInt",
+	"properties": {
+		"folder": {
+			"name": "Testing"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SRCstgorders"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "TGTfctorders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SNKrefint"
+				}
+			],
+			"transformations": [
+				{
+					"name": "RIGHTsrctgt"
+				},
+				{
+					"name": "SELECTtgt"
+				},
+				{
+					"name": "FILTERorphanrows"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          OrderID as integer,",
+				"          CustomerID as integer,",
+				"          OrderAmount as integer,",
+				"          OrderDate as timestamp,",
+				"          Status as string,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCstgorders",
+				"source(output(",
+				"          order_id as integer,",
+				"          order_key as integer,",
+				"          customer_id as integer,",
+				"          order_amount as integer,",
+				"          order_date as timestamp,",
+				"          status as string,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TGTfctorders",
+				"SRCstgorders, SELECTtgt join(OrderID == t_order_id,",
+				"     joinType:'right',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> RIGHTsrctgt",
+				"TGTfctorders select(mapColumn(",
+				"          each(match(true()),",
+				"               \"t_\"+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTtgt",
+				"RIGHTsrctgt filter(isNull(OrderID)) ~> FILTERorphanrows",
+				"FILTERorphanrows sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['test_orders_RefInt.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKrefint"
+			]
+		}
+	}
+}
