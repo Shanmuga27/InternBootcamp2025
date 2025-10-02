@@ -33,7 +33,8 @@
 			],
 			"transformations": [
 				{
-					"name": "RIGHTsrctgt"
+					"name": "RIGHTsrctgt",
+					"description": "Right outer join on 'SRC' and 'FCT'"
 				},
 				{
 					"name": "SELECTtgt"
