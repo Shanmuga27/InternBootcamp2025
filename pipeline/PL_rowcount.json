@@ -174,10 +174,10 @@
 		],
 		"variables": {
 			"ct_src": {
-				"type": "Array"
+				"type": "Integer"
 			},
 			"ct_tgt": {
-				"type": "Array"
+				"type": "Integer"
 			}
 		},
 		"folder": {
