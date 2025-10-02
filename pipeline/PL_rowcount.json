@@ -16,18 +16,23 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "SqlServerSource",
-						"sqlReaderQuery": "select count(*) as ct \nfrom STG_IN1685_stg_customers;",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
 					},
 					"dataset": {
-						"referenceName": "DS_OnPrem_SQLServer",
+						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference",
 						"parameters": {
-							"Par_SchemaName": "RRamesh",
-							"Par_TableName": "STG_IN1685_stg_customers",
-							"Param_DB_name": "ADF_Training"
+							"Param_Container": "boootcamp25",
+							"Param_Folder": "IN1685/prac_mock_STG",
+							"Param_File": "stg_customers_IN1685.csv"
 						}
 					},
 					"firstRowOnly": false
@@ -54,18 +59,23 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "SqlServerSource",
-						"sqlReaderQuery": "select count(*) as ct_tgt\r\nfrom Dim_customers_IN1685",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
 					},
 					"dataset": {
-						"referenceName": "DS_OnPrem_SQLServer",
+						"referenceName": "DS_CSV_IN1685",
 						"type": "DatasetReference",
 						"parameters": {
-							"Par_SchemaName": "RRamesh",
-							"Par_TableName": "Dim_customers_IN1685",
-							"Param_DB_name": "ADF_Training"
+							"Param_Container": "boootcamp25",
+							"Param_Folder": "IN1685/prac_mock_DW",
+							"Param_File": "Dim_customers_IN1685.csv"
 						}
 					},
 					"firstRowOnly": false
@@ -90,7 +100,7 @@
 				"typeProperties": {
 					"variableName": "ct_src",
 					"value": {
-						"value": "@activity('LK_src_stg').output.value",
+						"value": "@activity('LK_src_stg').output.count",
 						"type": "Expression"
 					}
 				}
@@ -114,7 +124,7 @@
 				"typeProperties": {
 					"variableName": "ct_tgt",
 					"value": {
-						"value": "@activity('LK_tgt_dim').output.value",
+						"value": "@activity('LK_tgt_dim').output.count",
 						"type": "Expression"
 					}
 				}
@@ -138,13 +148,24 @@
 					},
 					"ifFalseActivities": [
 						{
-							"name": "FAIL_rowcount",
+							"name": "FAILrowcount",
 							"type": "Fail",
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
-								"message": "Row counts are not equal",
+								"message": "Inequal rowsin src and tgt",
 								"errorCode": "500"
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "WAITrowcount",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 5
 							}
 						}
 					]
