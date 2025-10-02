@@ -1,0 +1,115 @@
+{
+	"name": "DF_CLC",
+	"properties": {
+		"folder": {
+			"name": "Testing"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SRCcustomers"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "TGTcustomers"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1685",
+						"type": "DatasetReference"
+					},
+					"name": "SNKclc"
+				}
+			],
+			"transformations": [
+				{
+					"name": "LEFTtgtsrc",
+					"description": "Left join on 'tgt' and 'SRC'"
+				},
+				{
+					"name": "FILTERcustomername"
+				},
+				{
+					"name": "SELECTtgt"
+				},
+				{
+					"name": "SELECTclc"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerID as short,",
+				"          FirstName as string,",
+				"          LastName as string,",
+				"          Email as string,",
+				"          Country as string,",
+				"          CreatedDate as date,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCcustomers",
+				"source(output(",
+				"          customer_id as short,",
+				"          customer_key as short,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          customer_name as string,",
+				"          email as string,",
+				"          country as string,",
+				"          created_date as string,",
+				"          created_by as string,",
+				"          updated_date as string,",
+				"          updated_by as string,",
+				"          runid as string,",
+				"          isActive as boolean,",
+				"          start_date as timestamp,",
+				"          end_date as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TGTcustomers",
+				"SELECTtgt, SRCcustomers join(t_customer_id == CustomerID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LEFTtgtsrc",
+				"LEFTtgtsrc filter(t_first_name != FirstName) ~> FILTERcustomername",
+				"TGTcustomers select(mapColumn(",
+				"          each(match(true()),",
+				"               \"t_\"+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTtgt",
+				"FILTERcustomername select(mapColumn(",
+				"          t_customer_id,",
+				"          t_first_name,",
+				"          CustomerID,",
+				"          FirstName",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SELECTclc",
+				"SELECTclc sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['test_clc_customers.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKclc"
+			]
+		}
+	}
+}
