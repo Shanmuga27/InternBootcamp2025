@@ -1,0 +1,46 @@
+{
+	"name": "testingexc",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Ds_blob_IN1674",
+						"type": "DatasetReference"
+					},
+					"name": "metadatatest"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "NUllcheck"
+				},
+				{
+					"name": "Distinctcolumn"
+				},
+				{
+					"name": "lookup1"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: false,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> metadatatest",
+				"metadatatest derive({Customer id} = isNUll(CustomerID)|| IsNUll(CustomerName),",
+				"          Date = toDate(CustomerSince, 'yyyy-MM-dd'),",
+				"          Customer_Name = isMatch('[^a-zA-Z ]'),",
+				"          {flag } = status != 'Active' && status != 'Inactive',",
+				"          cusomerflag = iif(yearsBetween(currentDate(), CustomerSince) > 5, 'Loyal', 'New')\r",
+				") ~> NUllcheck",
+				"NUllcheck aggregate(groupBy({Customer id} = ERROR_FUNCTION('GROUP BY Region__NEW_LINE_R____NEW_LINE_N__')),",
+				"     customerid = ERROR_FUNCTION('COUNT(DISTINCT CustomerID)')) ~> Distinctcolumn",
+				"Distinctcolumn lookup(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1"
+			]
+		}
+	}
+}
