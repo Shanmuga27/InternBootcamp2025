@@ -3,8 +3,8 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "DF_RowCount_Test",
-				"type": "ExecuteDataFlow",
+				"name": "LKP_Src_Location_RowCount",
+				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -15,14 +15,182 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
 					},
-					"traceLevel": "Fine"
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"directory": "IN1677/workshop/src_",
+							"file": "Locations.csv"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "LKP_Tgt_Location_RowCount",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"directory": "IN1677/workshop/tgt/loc",
+							"file": "Dim_Location"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Var_Src_count",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_Src_Location_RowCount",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "SrcCnt",
+					"value": {
+						"value": "@activity('LKP_Src_Location_RowCount').output.count",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Var_Tgt_count",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_Tgt_Location_RowCount",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "TgtCnt",
+					"value": {
+						"value": "@activity('LKP_Tgt_Location_RowCount').output.count",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "If_Con_RowCount",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Var_Src_count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Var_Tgt_count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('SrcCnt'),variables('TgtCnt'))",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Var_Result_if_not_match",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "result",
+								"value": "'Src to Tgt RowCount doesn't Match'"
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Var_Result_if_match",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "result",
+								"value": "'Src to Tgt RowCount Matches'"
+							}
+						}
+					]
 				}
 			}
 		],
+		"variables": {
+			"SrcCnt": {
+				"type": "Integer"
+			},
+			"TgtCnt": {
+				"type": "Integer"
+			},
+			"result": {
+				"type": "String"
+			}
+		},
 		"folder": {
 			"name": "Practice/Testing"
 		},
