@@ -168,12 +168,74 @@
 				}
 			},
 			{
-				"name": "If Condition1",
+				"name": "If_Con_Null",
 				"type": "IfCondition",
-				"dependsOn": [],
-				"userProperties": []
+				"dependsOn": [
+					{
+						"activity": "LKP_Src",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "LKP_Tgt",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "LKP_Tgt_Null_Errors",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@and(equals(activity('LKP_Src').output.count,\n    activity('LKP_Tgt').output.count),\n    equals(activity('LKP_Tgt_Null_Errors').output.count,0))",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Var_Null",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Null",
+								"value": false
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Var_No_Null",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Null",
+								"value": true
+							}
+						}
+					]
+				}
 			}
 		],
+		"variables": {
+			"Null": {
+				"type": "Boolean"
+			}
+		},
 		"folder": {
 			"name": "Practice/Testing"
 		},
