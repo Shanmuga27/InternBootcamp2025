@@ -1,0 +1,59 @@
+{
+	"name": "DF_FactOrders_DateFormat",
+	"properties": {
+		"folder": {
+			"name": "Module_Practice/Testing"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "Tgt"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "sinkDateFormatError"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filterMisMatchDateFormat"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          order_id as short,",
+				"          order_key as short,",
+				"          customer_id as short,",
+				"          order_amount as short,",
+				"          order_date as string,",
+				"          status as string,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as string,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Tgt",
+				"Tgt filter(isNull(toTimestamp(order_date,'yyyy-MM-dd'))) ~> filterMisMatchDateFormat",
+				"filterMisMatchDateFormat sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['DateFormatErrors'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkDateFormatError"
+			]
+		}
+	}
+}
