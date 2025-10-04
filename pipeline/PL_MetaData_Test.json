@@ -1,0 +1,195 @@
+{
+	"name": "PL_MetaData_Test",
+	"properties": {
+		"activities": [
+			{
+				"name": "MetaData_Src_location",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_Excel",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"directory": "IN1677/workshop/src",
+							"file": "Locations.xlsx",
+							"sheet_no": 0
+						}
+					},
+					"fieldList": [
+						"columnCount",
+						"itemName"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					}
+				}
+			},
+			{
+				"name": "MetaData_Tgt_Location",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"directory": "IN1677/workshop/tgt/loc",
+							"file": "Dim_Location"
+						}
+					},
+					"fieldList": [
+						"columnCount",
+						"itemName"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "If_Con_Meta_ColCnt_Match",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "MetaData_Src_location",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "MetaData_Tgt_Location",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(activity('MetaData_Src_location').output.columnCount,activity('MetaData_Tgt_Location').output.columnCount)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Var_Col_Count_Dont_Match",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Column_Count",
+								"value": false
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Var_Col_Count_Match",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Column_Count",
+								"value": true
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "If_Con_Meta_ItemName_Match",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "If_Con_Meta_ColCnt_Match",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(activity('MetaData_Src_location').output.itemName,activity('MetaData_Tgt_Location').output.itemName)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "var_ItemName_Dont_Match",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Item_Name",
+								"value": false
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "var_ItemName_Match",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Item_Name",
+								"value": true
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"Column_Count": {
+				"type": "Boolean"
+			},
+			"Item_Name": {
+				"type": "Boolean"
+			}
+		},
+		"folder": {
+			"name": "Practice/Testing"
+		},
+		"annotations": []
+	}
+}
