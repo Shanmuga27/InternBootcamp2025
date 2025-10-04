@@ -21,7 +21,7 @@
 						"datasetParameters": {
 							"FactOrders": {
 								"container": "boootcamp25",
-								"directory": "IN1677/"
+								"directory": "IN1677/mock_test_practice/tgt"
 							}
 						}
 					},
