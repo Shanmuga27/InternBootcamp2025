@@ -1,5 +1,5 @@
 {
-	"name": "DF_Locations_Null",
+	"name": "DF_FactOrders_Null_Test",
 	"properties": {
 		"folder": {
 			"name": "Module_Practice/Testing"
@@ -15,16 +15,24 @@
 					"name": "FactOrders"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "sinkNullErrors"
+				}
+			],
 			"transformations": [
 				{
-					"name": "split2"
+					"name": "split"
 				}
 			],
 			"scriptLines": [
 				"source(output(",
-				"          order_id as short,",
-				"          order_key as short,",
+				"          order_id as integer,",
+				"          order_key as integer,",
 				"          customer_id as short,",
 				"          order_amount as short,",
 				"          order_date as date,",
@@ -39,7 +47,13 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> FactOrders",
 				"FactOrders split(isNull(order_id),",
-				"     disjoint: false) ~> split2@(Null)"
+				"     disjoint: true) ~> split@(Null)",
+				"split@Null sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Null_Errors'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkNullErrors"
 			]
 		}
 	}
