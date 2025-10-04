@@ -27,8 +27,7 @@
 					},
 					"fieldList": [
 						"columnCount",
-						"itemName",
-						"itemType"
+						"itemName"
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
@@ -60,8 +59,7 @@
 					},
 					"fieldList": [
 						"columnCount",
-						"itemName",
-						"itemType"
+						"itemName"
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
@@ -71,8 +69,138 @@
 						"type": "DelimitedTextReadSettings"
 					}
 				}
+			},
+			{
+				"name": "If_metadatamatch",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "metadata_of_src_locations",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "metadata_of_tgt_locations",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(activity('metadata_of_src_locations').output.columnCount, activity('metadata_of_tgt_locations').output.columnCount)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Set_src_col_count_notmatch",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "column_count",
+								"value": false
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Set_src_col_count_match",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "column_count",
+								"value": true
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "If_metadata_filename",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "If_metadatamatch",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(activity('metadata_of_src_locations').output.itemName,activity('metadata_of_tgt_locations').output.itemName )",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Set_src_file_name_notmatch",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "item_name",
+								"value": false
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Set_src_file_name_match",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "item_name",
+								"value": true
+							}
+						},
+						{
+							"name": "Set_src_file_name_match_copy1",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "item_name",
+								"value": true
+							}
+						}
+					]
+				}
 			}
 		],
+		"variables": {
+			"column_count": {
+				"type": "Boolean"
+			},
+			"item_name": {
+				"type": "Boolean"
+			}
+		},
 		"folder": {
 			"name": "QA workshop"
 		},
