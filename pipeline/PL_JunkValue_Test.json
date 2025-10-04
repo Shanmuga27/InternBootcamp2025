@@ -52,7 +52,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('LKP_Orders').output.value",
+						"value": "@take(activity('LKP_Orders').output.value,100)",
 						"type": "Expression"
 					},
 					"isSequential": true,
@@ -69,7 +69,7 @@
 								},
 								"ifFalseActivities": [
 									{
-										"name": "Var_No_JunkValue",
+										"name": "Var_Valid",
 										"type": "SetVariable",
 										"dependsOn": [],
 										"policy": {
@@ -78,14 +78,41 @@
 										},
 										"userProperties": [],
 										"typeProperties": {
-											"variableName": "res",
-											"value": false
+											"variableName": "resvalid",
+											"value": {
+												"value": "@add(variables('valid'), 1)",
+												"type": "Expression"
+											}
+										}
+									},
+									{
+										"name": "Var_increment2",
+										"type": "SetVariable",
+										"dependsOn": [
+											{
+												"activity": "Var_Valid",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "valid",
+											"value": {
+												"value": "@variables('resvalid')",
+												"type": "Expression"
+											}
 										}
 									}
 								],
 								"ifTrueActivities": [
 									{
-										"name": "Var_JunkValue",
+										"name": "Var_Junk",
 										"type": "SetVariable",
 										"dependsOn": [],
 										"policy": {
@@ -94,8 +121,35 @@
 										},
 										"userProperties": [],
 										"typeProperties": {
-											"variableName": "res",
-											"value": true
+											"variableName": "resjunk",
+											"value": {
+												"value": "@add(variables('junk'), 1)",
+												"type": "Expression"
+											}
+										}
+									},
+									{
+										"name": "Var_increment1",
+										"type": "SetVariable",
+										"dependsOn": [
+											{
+												"activity": "Var_Junk",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "junk",
+											"value": {
+												"value": "@variables('resjunk')",
+												"type": "Expression"
+											}
 										}
 									}
 								]
@@ -106,8 +160,17 @@
 			}
 		],
 		"variables": {
-			"res": {
-				"type": "Boolean"
+			"resjunk": {
+				"type": "Integer"
+			},
+			"resvalid": {
+				"type": "Integer"
+			},
+			"junk": {
+				"type": "Integer"
+			},
+			"valid": {
+				"type": "Integer"
 			}
 		},
 		"folder": {
