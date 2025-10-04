@@ -1,6 +1,278 @@
 {
 	"name": "PL_row_count",
 	"properties": {
+		"activities": [
+			{
+				"name": "CP_customers_tgt_customers",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680/workshop",
+							"file": "Customers.xlsx"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680/workshop_tgt",
+							"file": "Customers.xlsx"
+						}
+					}
+				]
+			},
+			{
+				"name": "LKP_src_customers",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "CP_customers_tgt_customers",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680/workshop",
+							"file": "Customers.xlsx"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "LKP_tgt_customers",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "CP_customers_tgt_customers",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680/workshop_tgt",
+							"file": "Customers.xlsx"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "set_src_count",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_src_customers",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "src_count",
+					"value": {
+						"value": "@activity('LKP_src_customers').output.count",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set_tgt_customers",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_tgt_customers",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "tgt_count",
+					"value": {
+						"value": "@activity('LKP_tgt_customers').output.count",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "If_row_count_equals",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "set_src_count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "set_tgt_customers",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('src_count'), variables('tgt_count'))",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "set_result_fail",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "result",
+								"value": "\"Not equal\""
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "set_result_equal",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "result",
+								"value": "\"equals\""
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"src_count": {
+				"type": "Integer"
+			},
+			"tgt_count": {
+				"type": "Integer"
+			},
+			"result": {
+				"type": "String"
+			}
+		},
 		"folder": {
 			"name": "QA workshop"
 		},
