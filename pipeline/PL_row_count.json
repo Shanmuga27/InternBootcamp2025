@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "CP_customers_tgt_customers",
+				"name": "CP_locations_po_tgt_locations",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -16,14 +16,11 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "DelimitedTextSource",
+						"type": "ExcelSource",
 						"storeSettings": {
 							"type": "AzureBlobStorageReadSettings",
 							"recursive": true,
 							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
 						}
 					},
 					"sink": {
@@ -49,12 +46,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_Blob_1680",
+						"referenceName": "DS_blob_excel_IN1680",
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "boootcamp25",
 							"folder": "IN1680/workshop",
-							"file": "Customers.xlsx"
+							"file": "Locations.xlsx",
+							"sheetindex": 0
 						}
 					}
 				],
@@ -65,17 +63,17 @@
 						"parameters": {
 							"container": "boootcamp25",
 							"folder": "IN1680/workshop_tgt",
-							"file": "Customers.xlsx"
+							"file": "Locations.csv"
 						}
 					}
 				]
 			},
 			{
-				"name": "LKP_src_customers",
+				"name": "LKP_src_locations",
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "CP_customers_tgt_customers",
+						"activity": "CP_locations_po_tgt_locations",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -91,34 +89,32 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "DelimitedTextSource",
+						"type": "ExcelSource",
 						"storeSettings": {
 							"type": "AzureBlobStorageReadSettings",
 							"recursive": true,
 							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
 						}
 					},
 					"dataset": {
-						"referenceName": "DS_Blob_1680",
+						"referenceName": "DS_blob_excel_IN1680",
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "boootcamp25",
 							"folder": "IN1680/workshop",
-							"file": "Customers.xlsx"
+							"file": "Locations.xlsx",
+							"sheetindex": 0
 						}
 					},
 					"firstRowOnly": false
 				}
 			},
 			{
-				"name": "LKP_tgt_customers",
+				"name": "LKP_tgt_locations",
 				"type": "Lookup",
 				"dependsOn": [
 					{
-						"activity": "CP_customers_tgt_customers",
+						"activity": "CP_locations_po_tgt_locations",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -150,7 +146,7 @@
 						"parameters": {
 							"container": "boootcamp25",
 							"folder": "IN1680/workshop_tgt",
-							"file": "Customers.xlsx"
+							"file": "Locations.csv"
 						}
 					},
 					"firstRowOnly": false
@@ -161,7 +157,7 @@
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "LKP_src_customers",
+						"activity": "LKP_src_locations",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -175,17 +171,17 @@
 				"typeProperties": {
 					"variableName": "src_count",
 					"value": {
-						"value": "@activity('LKP_src_customers').output.count",
+						"value": "@activity('LKP_src_locations').output.count",
 						"type": "Expression"
 					}
 				}
 			},
 			{
-				"name": "set_tgt_customers",
+				"name": "set_tgt_count",
 				"type": "SetVariable",
 				"dependsOn": [
 					{
-						"activity": "LKP_tgt_customers",
+						"activity": "LKP_tgt_locations",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -199,7 +195,7 @@
 				"typeProperties": {
 					"variableName": "tgt_count",
 					"value": {
-						"value": "@activity('LKP_tgt_customers').output.count",
+						"value": "@activity('LKP_tgt_locations').output.count",
 						"type": "Expression"
 					}
 				}
@@ -215,7 +211,7 @@
 						]
 					},
 					{
-						"activity": "set_tgt_customers",
+						"activity": "set_tgt_count",
 						"dependencyConditions": [
 							"Succeeded"
 						]
