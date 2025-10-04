@@ -74,7 +74,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "boootcamp25",
-							"directory": "IN1677/mock_test_practice/tgt",
+							"directory": "IN1677/mock_test_practice/src",
 							"file": "orders"
 						}
 					},
