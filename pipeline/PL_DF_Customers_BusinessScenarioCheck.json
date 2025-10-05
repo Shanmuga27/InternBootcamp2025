@@ -1,0 +1,87 @@
+{
+	"name": "PL_DF_Customers_BusinessScenarioCheck",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Customers_BusinessScenarioCheck",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_FactOrders_BusinessScenrio_Check",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcCustomers": {
+								"container": "boootcamp25"
+							},
+							"DimCustomers": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/tgt",
+								"file": "Dim_customers_IN1677_prac"
+							},
+							"sinkValidCustomers": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/test",
+								"file": "InValidCustomersTransformation"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "DF_Customers_BusinessScenarioCheck",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					}
+				}
+			}
+		],
+		"folder": {
+			"name": "Practice/Testing"
+		},
+		"annotations": []
+	}
+}

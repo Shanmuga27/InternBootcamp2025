@@ -80,10 +80,10 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join2",
-				"join2 filter(customer_name==FullName) ~> filterNames",
+				"join2 filter(customer_name!=FullName) ~> filterNames",
 				"filterNames sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['ValidCustomerTransformations'],",
+				"     partitionFileNames:['InValidCustomersTransformation'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sinkValidCustomers"
