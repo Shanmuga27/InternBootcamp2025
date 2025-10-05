@@ -21,24 +21,30 @@
 					"name": "SNKtgtnulcustomers"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "split1"
+				}
+			],
 			"scriptLines": [
 				"parameters{",
 				"     file as string",
 				"}",
 				"source(output(",
-				"          anime_id as string,",
-				"          name as string,",
-				"          genre as string,",
-				"          type as string,",
-				"          episodes as string,",
-				"          rating as string,",
-				"          members as string",
+				"          Location_Key as short,",
+				"          Location_Id as short,",
+				"          Name as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          State as string,",
+				"          Zipcode as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> srctgtlocations",
-				"srctgtlocations sink(allowSchemaDrift: true,",
+				"srctgtlocations split(isNull(Name),",
+				"     disjoint: false) ~> split1@(nullvalues)",
+				"split1@nullvalues sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          anime_id as string,",

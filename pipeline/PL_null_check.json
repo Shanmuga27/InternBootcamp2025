@@ -43,12 +43,84 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "LKP_null_count",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "DF_tgt_customers_null_check",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680/workshop_tgt",
+							"file": "Location_null.csv"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "set_null_count",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_null_count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "null_count",
+					"value": {
+						"value": "@activity('LKP_null_count').output.count",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"parameters": {
 			"file": {
 				"type": "string",
 				"defaultValue": "Location_null.csv"
+			}
+		},
+		"variables": {
+			"null_count": {
+				"type": "Integer"
 			}
 		},
 		"folder": {
