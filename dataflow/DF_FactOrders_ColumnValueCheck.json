@@ -1,0 +1,67 @@
+{
+	"name": "DF_FactOrders_ColumnValueCheck",
+	"properties": {
+		"folder": {
+			"name": "Module_Practice/Testing"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "TgtFactOrders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "sinkValidFactOrders"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColCheck"
+				},
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          order_id as integer,",
+				"          order_key as integer,",
+				"          customer_id as integer,",
+				"          order_amount as integer,",
+				"          order_date as date,",
+				"          status as string,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as timestamp,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TgtFactOrders",
+				"TgtFactOrders derive(OrderAmountCheck = iif(order_amount>0, 'Valid', 'Invalid'),",
+				"          OrderIdCheck =  iif(isNull(order_id), 0, 1),",
+				"          OrderStatusCheck = iif(status=='Completed'||status=='Pending'||status=='Cancelled', 'Valid', 'Invalid')) ~> derivedColCheck",
+				"derivedColCheck split(OrderAmountCheck=='Valid' && OrderIdCheck==1 && OrderStatusCheck=='Valid',",
+				"     OrderAmountCheck=='Invalid' && OrderIdCheck==0 && OrderStatusCheck=='Invalid',",
+				"     disjoint: true) ~> split1@(Valid, Invalid)",
+				"split1@Valid sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['ValidFactOrders'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkValidFactOrders"
+			]
+		}
+	}
+}

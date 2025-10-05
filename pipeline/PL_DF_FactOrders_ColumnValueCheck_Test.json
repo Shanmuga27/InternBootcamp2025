@@ -1,0 +1,175 @@
+{
+	"name": "PL_DF_FactOrders_ColumnValueCheck_Test",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_FactOrders_ColumnValueCheck",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_FactOrders_ColumnValueCheck",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"TgtFactOrders": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/tgt",
+								"file": "Fact_orders_IN1677_prac"
+							},
+							"sinkValidFactOrders": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/test",
+								"file": "ValidFactOrders"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "LKP_Src_Orders",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "DF_FactOrders_ColumnValueCheck",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"directory": "IN1677/mock_test_practice/src",
+							"file": "orders"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ValidFactOrders",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "DF_FactOrders_ColumnValueCheck",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"directory": "IN1677/mock_test_practice/test",
+							"file": "ValidFactOrders"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "If_Con_Matches",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "LKP_Src_Orders",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "ValidFactOrders",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(activity('LKP_Src_Orders').output.count,activity('ValidFactOrders').output.count )",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Set variable1",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": []
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"res": {
+				"type": "Boolean"
+			}
+		},
+		"folder": {
+			"name": "Practice/Testing"
+		},
+		"annotations": []
+	}
+}
