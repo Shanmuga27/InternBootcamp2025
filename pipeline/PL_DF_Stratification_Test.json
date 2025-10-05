@@ -124,7 +124,11 @@
 								"secureOutput": false,
 								"secureInput": false
 							},
-							"userProperties": []
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Result",
+								"value": true
+							}
 						}
 					]
 				}
