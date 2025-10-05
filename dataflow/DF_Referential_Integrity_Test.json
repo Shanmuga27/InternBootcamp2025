@@ -1,0 +1,90 @@
+{
+	"name": "DF_Referential_Integrity_Test",
+	"properties": {
+		"folder": {
+			"name": "Module_Practice/Testing"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "SrcDimOrders"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "SrcFactOrderDetails"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "SnkInvalidReferentialIntegrityOrders"
+				}
+			],
+			"transformations": [
+				{
+					"name": "RightJoinOrdersOrderdetails"
+				},
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          order_id as integer,",
+				"          order_key as integer,",
+				"          customer_id as integer,",
+				"          order_amount as integer,",
+				"          order_date as date,",
+				"          status as string,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as string,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcDimOrders",
+				"source(output(",
+				"          orderdetail_id as integer,",
+				"          orderdetail_key as integer,",
+				"          order_id as integer,",
+				"          product_id as integer,",
+				"          quantity as integer,",
+				"          created_date as timestamp,",
+				"          created_by as string,",
+				"          updated_date as string,",
+				"          updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcFactOrderDetails",
+				"SrcDimOrders, SrcFactOrderDetails join(SrcDimOrders@order_id == SrcFactOrderDetails@order_id,",
+				"     joinType:'right',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> RightJoinOrdersOrderdetails",
+				"RightJoinOrdersOrderdetails split(isNull(SrcFactOrderDetails@order_id),",
+				"     disjoint: false) ~> split1@(Invalid)",
+				"split1@Invalid sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Invalid_RI_Orders'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SnkInvalidReferentialIntegrityOrders"
+			]
+		}
+	}
+}
