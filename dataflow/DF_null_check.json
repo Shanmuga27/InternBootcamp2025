@@ -1,6 +1,9 @@
 {
 	"name": "DF_null_check",
 	"properties": {
+		"folder": {
+			"name": "QA workshop"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
