@@ -1,0 +1,80 @@
+{
+	"name": "DF_stratification_check",
+	"properties": {
+		"folder": {
+			"name": "QA workshop"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCUnionOrders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKordersStratificationNotmet"
+				}
+			],
+			"transformations": [
+				{
+					"name": "split1"
+				},
+				{
+					"name": "split2"
+				},
+				{
+					"name": "split3"
+				},
+				{
+					"name": "unionOldandRecent"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          OrderID as string,",
+				"          CustomerID as string,",
+				"          ProductID as string,",
+				"          OrderDate as date,",
+				"          Amount as short,",
+				"          OrderType as string,",
+				"          rownumber as boolean",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCUnionOrders",
+				"SRCUnionOrders split(OrderDate < addMonths(currentDate(), -12) ,",
+				"     OrderDate > addMonths(currentDate(), -12),",
+				"     disjoint: true) ~> split1@(old, New)",
+				"split1@old split(OrderType != 'Old',",
+				"     disjoint: false) ~> split2@(oldcheck)",
+				"split1@New split(OrderType != 'Recent',",
+				"     disjoint: false) ~> split3@(recentCheck)",
+				"split2@oldcheck, split3@recentCheck union(byName: true)~> unionOldandRecent",
+				"unionOldandRecent sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          anime_id as string,",
+				"          name as string,",
+				"          genre as string,",
+				"          type as string,",
+				"          episodes as string,",
+				"          rating as string,",
+				"          members as string",
+				"     ),",
+				"     partitionFileNames:['unionOrdersStratificationNotmet.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKordersStratificationNotmet"
+			]
+		}
+	}
+}

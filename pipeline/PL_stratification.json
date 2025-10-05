@@ -1,0 +1,119 @@
+{
+	"name": "PL_stratification",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_stratification",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_stratification_check",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCUnionOrders": {
+								"container": "boootcamp25",
+								"folder": "IN1680/ex4",
+								"file": "unionOrders.csv"
+							},
+							"SNKordersStratificationNotmet": {
+								"container": "boootcamp25",
+								"folder": "IN1680/workshop_tgt",
+								"file": "unionOrdersStratificationNotmet.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "LKP_stratification_not_met",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "DF_stratification",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680/workshop_tgt",
+							"file": "unionOrdersStratificationNotmet.csv"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "set_stratification_not_match_count",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_stratification_not_met",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "stratification_not_match_count",
+					"value": {
+						"value": "@activity('LKP_stratification_not_met').output.count",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"stratification_not_match_count": {
+				"type": "Integer"
+			}
+		},
+		"folder": {
+			"name": "QA workshop"
+		},
+		"annotations": []
+	}
+}
