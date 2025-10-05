@@ -1,0 +1,151 @@
+{
+	"name": "PL_DF_Referential_Integrity_Test",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Referential_Integrity_Test",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Referential_Integrity_Test",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcDimOrders": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/tgt",
+								"file": "Fact_orders_IN1677_prac"
+							},
+							"SrcFactOrderDetails": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/tgt",
+								"file": "Fact_orderdetails_IN1677_prac"
+							},
+							"SnkInvalidReferentialIntegrityOrders": {
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/test",
+								"file": "Invalid_RI_Orders"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "LKP_Invalid_RI_Orders",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "DF_Referential_Integrity_Test",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"directory": "IN1677/mock_test_practice/test",
+							"file": "Invalid_RI_Orders"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "If Condition",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "LKP_Invalid_RI_Orders",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(activity('LKP_Invalid_RI_Orders').output.count, 0)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Var_Invalid",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Result",
+								"value": false
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Var_Valid",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Result",
+								"value": true
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"Result": {
+				"type": "Boolean"
+			}
+		},
+		"folder": {
+			"name": "Practice/Testing"
+		},
+		"annotations": []
+	}
+}
