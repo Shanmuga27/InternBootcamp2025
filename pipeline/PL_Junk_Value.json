@@ -1,0 +1,171 @@
+{
+	"name": "PL_Junk_Value",
+	"properties": {
+		"activities": [
+			{
+				"name": "LKP_Orders",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Practice/Target/tgt",
+							"PR_Filename": "fact_orders"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach_Iterate",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "LKP_Orders",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('LKP_Orders').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "If_Junk_Check",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@or(equals(item().order_amount,0),\nequals(item().order_date,'1990-01-01' ))",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Var_Valid",
+										"type": "SetVariable",
+										"dependsOn": [],
+										"policy": {
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "Name",
+											"value": "\"Valid\""
+										}
+									},
+									{
+										"name": "Var_INC2",
+										"type": "SetVariable",
+										"dependsOn": [
+											{
+												"activity": "Var_Valid",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "Valid",
+											"value": {
+												"value": "@activity('LKP_Orders').output.count",
+												"type": "Expression"
+											}
+										}
+									}
+								],
+								"ifTrueActivities": [
+									{
+										"name": "Var_Junk",
+										"type": "SetVariable",
+										"dependsOn": [],
+										"policy": {
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "Name",
+											"value": "\"Junk\""
+										}
+									},
+									{
+										"name": "Var_INC1",
+										"type": "SetVariable",
+										"dependsOn": [
+											{
+												"activity": "Var_Junk",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "Junk",
+											"value": {
+												"value": "@activity('LKP_Orders').output.count",
+												"type": "Expression"
+											}
+										}
+									}
+								]
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"Valid": {
+				"type": "Integer"
+			},
+			"Junk": {
+				"type": "Integer"
+			},
+			"Name": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "QA"
+		},
+		"annotations": []
+	}
+}
