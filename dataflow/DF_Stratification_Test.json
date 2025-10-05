@@ -1,0 +1,74 @@
+{
+	"name": "DF_Stratification_Test",
+	"properties": {
+		"folder": {
+			"name": "Module_Practice/Testing"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "TgtOrders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "sinkInvalidOrdersRec"
+				}
+			],
+			"transformations": [
+				{
+					"name": "split1"
+				},
+				{
+					"name": "split2"
+				},
+				{
+					"name": "split3"
+				},
+				{
+					"name": "joinNewOldRec"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          OrderID as integer,",
+				"          CustomerID as integer,",
+				"          ProductID as integer,",
+				"          OrderDate as date,",
+				"          Amount as integer,",
+				"          Order_type as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TgtOrders",
+				"TgtOrders split(OrderDate>addDays(OrderDate, -12),",
+				"     OrderDate<addDays(OrderDate, -12),",
+				"     disjoint: true) ~> split1@(New, Old)",
+				"split1@New split(Order_type!='Recent',",
+				"     disjoint: false) ~> split2@(NewRecCheck)",
+				"split1@Old split(Order_type!='Old',",
+				"     disjoint: false) ~> split3@(OldRecCheck)",
+				"split2@NewRecCheck, split3@OldRecCheck join(split2@OrderID == split3@OrderID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinNewOldRec",
+				"joinNewOldRec sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Invalid_Orders_Rec'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkInvalidOrdersRec"
+			]
+		}
+	}
+}
