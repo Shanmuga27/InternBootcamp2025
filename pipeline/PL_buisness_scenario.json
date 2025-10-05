@@ -37,8 +37,80 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "LKP_buisness_scenario_not_matched",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "DF_buisness_scene_check",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680/workshop_tgt",
+							"file": "dim_customers_buisness_scene_not_match.csv"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "set_scenario_not_matched",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_buisness_scenario_not_matched",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "scenario_not_matched",
+					"value": {
+						"value": "@activity('LKP_buisness_scenario_not_matched').output.count",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"variables": {
+			"scenario_not_matched": {
+				"type": "Integer"
+			}
+		},
 		"folder": {
 			"name": "QA workshop"
 		},

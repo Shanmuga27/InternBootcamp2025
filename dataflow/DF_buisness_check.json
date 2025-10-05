@@ -46,7 +46,7 @@
 				"          runid as string,",
 				"          customer_key as short,",
 				"          customer_name as string,",
-				"          isActive as boolean,",
+				"          isActive as string,",
 				"          start_date as timestamp,",
 				"          end_date as string",
 				"     ),",
@@ -56,7 +56,7 @@
 				"SRCdimOrders window(over(customer_id),",
 				"     desc(start_date, true),",
 				"     r_n = rowNumber()) ~> rowNumber",
-				"rowNumber split(r_n==1 && isActive == 'Y',",
+				"rowNumber split(r_n==1 && isActive != 'Y',",
 				"     disjoint: false) ~> activeRecords@(isActiveCheck)",
 				"activeRecords@isActiveCheck sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -69,8 +69,10 @@
 				"          rating as string,",
 				"          members as string",
 				"     ),",
+				"     partitionFileNames:['dim_customers_buisness_scene_not_match.csv'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SNKdimOrdersbuisnessscenenotmatch"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKdimOrdersbuisnessscenenotmatch"
 			]
 		}
 	}
