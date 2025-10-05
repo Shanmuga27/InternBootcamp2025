@@ -16,7 +16,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "DS_Blob_1680",
+						"referenceName": "DS_blob_excel_IN1680",
 						"type": "DatasetReference"
 					},
 					"name": "SRCsrcLocations"
@@ -24,24 +24,82 @@
 			],
 			"sinks": [
 				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
 					"name": "SNKmismatchlocations"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "split1"
+				},
+				{
+					"name": "rightTgtLocationsSrcLocations"
+				},
+				{
+					"name": "selectPrefix"
+				},
+				{
+					"name": "selecttgt"
+				}
+			],
 			"scriptLines": [
+				"parameters{",
+				"     file as string",
+				"}",
 				"source(output(",
-				"          anime_id as string,",
-				"          name as string,",
-				"          genre as string,",
-				"          type as string,",
-				"          episodes as string,",
-				"          rating as string,",
-				"          members as string",
+				"          Location_Key as short,",
+				"          Location_Id as short,",
+				"          Name as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          State as string,",
+				"          Zipcode as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SRCtgtlocations",
 				"source(output(",
+				"          Location_Key as short,",
+				"          Location_Id as short,",
+				"          Name as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          State as string,",
+				"          Zipcode as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCsrcLocations",
+				"rightTgtLocationsSrcLocations split(Name!=srcName  || City!=srcCity || Country!=srcCountry || State!=srcState || Zipcode!=srcZipcode,",
+				"     disjoint: false) ~> split1@(mismatchCheck)",
+				"SRCtgtlocations, selectPrefix join(Location_Id == srcLocation_Id,",
+				"     joinType:'right',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> rightTgtLocationsSrcLocations",
+				"SRCsrcLocations select(mapColumn(",
+				"          each(match(true()),",
+				"               'src'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectPrefix",
+				"split1@mismatchCheck select(mapColumn(",
+				"          Location_Key,",
+				"          Location_Id,",
+				"          Name,",
+				"          City,",
+				"          Country,",
+				"          State,",
+				"          Zipcode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selecttgt",
+				"selecttgt sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
 				"          anime_id as string,",
 				"          name as string,",
 				"          genre as string,",
@@ -50,13 +108,10 @@
 				"          rating as string,",
 				"          members as string",
 				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> SRCsrcLocations",
-				"SRCtgtlocations sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
+				"     partitionFileNames:[($file)],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SNKmismatchlocations"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKmismatchlocations"
 			]
 		}
 	}

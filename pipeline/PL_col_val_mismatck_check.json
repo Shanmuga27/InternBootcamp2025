@@ -15,14 +15,120 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_mismatch_check",
+						"type": "DataFlowReference",
+						"parameters": {
+							"file": {
+								"value": "'@{pipeline().parameters.file}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"SRCtgtlocations": {
+								"container": "boootcamp25",
+								"folder": "IN1680/workshop_tgt",
+								"file": "Locations.csv"
+							},
+							"SRCsrcLocations": {
+								"container": "boootcamp25",
+								"folder": "IN1680/workshop",
+								"file": "Locations.xlsx",
+								"sheetindex": 0
+							},
+							"SNKmismatchlocations": {
+								"container": "boootcamp25",
+								"folder": "IN1680/workshop_tgt",
+								"file": "Locations_mismatch.csv"
+							}
+						}
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "LKP_mismatch",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "DF_mismatch_check",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680/workshop_tgt",
+							"file": "Locations_mismatch.csv"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "set_mismatch_count",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_mismatch",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "mismatch_count",
+					"value": {
+						"value": "@activity('LKP_mismatch').output.count",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"parameters": {
+			"file": {
+				"type": "string",
+				"defaultValue": "Locations_mismatch.csv"
+			}
+		},
+		"variables": {
+			"mismatch_count": {
+				"type": "Integer"
+			}
+		},
 		"folder": {
 			"name": "QA workshop"
 		},
