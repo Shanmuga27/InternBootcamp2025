@@ -1,0 +1,122 @@
+{
+	"name": "PL_Metadata",
+	"properties": {
+		"activities": [
+			{
+				"name": "If_RowCount",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Metadata_src_products",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Metadata_tgt_products",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('src count'), variables('tgt count'))",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Variable_count_not_matches",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "result",
+								"value": "\"Count not equal\""
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Variable_count_Matches",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "result",
+								"value": {
+									"value": "\"Equal count\"",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Metadata_src_products",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"fieldList": [],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "Metadata_tgt_products",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": []
+			}
+		],
+		"variables": {
+			"src count": {
+				"type": "Integer"
+			},
+			"tgt count": {
+				"type": "Integer"
+			},
+			"result": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "QA"
+		},
+		"annotations": []
+	}
+}

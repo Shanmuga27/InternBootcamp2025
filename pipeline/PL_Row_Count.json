@@ -1,0 +1,202 @@
+{
+	"name": "PL_Row_Count",
+	"properties": {
+		"activities": [
+			{
+				"name": "LKP_Src_Products",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Practice/Source Files",
+							"PR_Filename": "products.csv",
+							"PR_Container": "boootcamp25"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "LKP_tgt_products",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Practice/Target/tgt",
+							"PR_Filename": "dim_products",
+							"PR_Container": "boootcamp25"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Variable_Src_Count",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_Src_Products",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "src count",
+					"value": {
+						"value": "@activity('LKP_Src_Products').output.count",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Variable_tgt_count",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_tgt_products",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "tgt count",
+					"value": {
+						"value": "@activity('LKP_tgt_products').output.count",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "If_RowCount",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Variable_Src_Count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Variable_tgt_count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('src count'), variables('tgt count'))",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Variable_count_not_matches",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "result",
+								"value": "\"Count not equal\""
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Variable_count_Matches",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "result",
+								"value": {
+									"value": "\"Equal count\"",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"src count": {
+				"type": "Integer"
+			},
+			"tgt count": {
+				"type": "Integer"
+			},
+			"result": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "QA"
+		},
+		"annotations": []
+	}
+}
