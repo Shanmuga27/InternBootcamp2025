@@ -1,0 +1,116 @@
+{
+	"name": "PL_BS",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_isactiveCheck",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_BS_activeCheck",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCProducts": {
+								"PR_Directory": "IN1684/Practice/Target/tgt",
+								"PR_Filename": "dim_products"
+							},
+							"SNKProducts": {
+								"PR_Directory": "IN1684/Practice/QA",
+								"PR_Filename": "isactivecheck"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "LKP_Active_Count",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "DF_isactiveCheck",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Practice/QA",
+							"PR_Filename": "isactivecheck"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Var_Inactive_Count",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_Active_Count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Duplicate Count",
+					"value": {
+						"value": "@activity('LKP_Active_Count').output.count",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"Inactive Count": {
+				"type": "Integer"
+			}
+		},
+		"folder": {
+			"name": "QA"
+		},
+		"annotations": []
+	}
+}

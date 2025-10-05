@@ -1,0 +1,62 @@
+{
+	"name": "DF_BS_activeCheck",
+	"properties": {
+		"folder": {
+			"name": "QA"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCProducts"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SNKProducts"
+				}
+			],
+			"transformations": [
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          product_id as short,",
+				"          product_key as short,",
+				"          product_name as string,",
+				"          category as string,",
+				"          price as integer,",
+				"          isActive as integer,",
+				"          start_date as date,",
+				"          end_date as string,",
+				"          {created date} as string,",
+				"          {created by} as string,",
+				"          {updated date} as string,",
+				"          {updated by} as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCProducts",
+				"SRCProducts split(isActive ==0 || isNull(isActive),",
+				"     disjoint: false) ~> split1@(isactivecheck)",
+				"split1@isactivecheck sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['isactivecheck'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKProducts"
+			]
+		}
+	}
+}
