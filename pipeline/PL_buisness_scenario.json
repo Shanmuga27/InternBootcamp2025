@@ -1,0 +1,47 @@
+{
+	"name": "PL_buisness_scenario",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_buisness_scene_check",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_buisness_check",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCdimOrders": {
+								"container": "boootcamp25",
+								"folder": "IN1680/mocksrc",
+								"file": "dim_customers.csv"
+							},
+							"SNKdimOrdersbuisnessscenenotmatch": {
+								"container": "boootcamp25",
+								"folder": "IN1680/workshop_tgt",
+								"file": "dim_customers_buisness_scene_not_match.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "QA workshop"
+		},
+		"annotations": []
+	}
+}

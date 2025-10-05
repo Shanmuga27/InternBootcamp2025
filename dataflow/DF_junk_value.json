@@ -46,7 +46,7 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SRCDimOrders",
-				"SRCDimOrders split(order_amount != 0 ||  !in(['Completed' ,'Pending'  ,'Cancelled'], status) ,",
+				"SRCDimOrders split(order_amount <=  0 ||  status != 'Completed' && status != 'Pending' && status != 'Cancelled',",
 				"     disjoint: false) ~> split1@(junkcondition)",
 				"split1@junkcondition sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
