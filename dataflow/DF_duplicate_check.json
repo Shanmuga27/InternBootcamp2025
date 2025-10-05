@@ -1,5 +1,5 @@
 {
-	"name": "DF_distinct_check",
+	"name": "DF_duplicate_check",
 	"properties": {
 		"folder": {
 			"name": "QA workshop"
@@ -8,6 +8,10 @@
 		"typeProperties": {
 			"sources": [
 				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
 					"name": "SRCtgtlocation"
 				}
 			],
@@ -20,11 +24,36 @@
 					"name": "SNKtgtLocations"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "rowNumber"
+				},
+				{
+					"name": "split1"
+				}
+			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> SRCtgtlocation",
-				"SRCtgtlocation sink(allowSchemaDrift: true,",
+				"parameters{",
+				"     file as string",
+				"}",
+				"source(output(",
+				"          Location_Key as short,",
+				"          Location_Id as short,",
+				"          Name as string,",
+				"          City as string,",
+				"          Country as string,",
+				"          State as string,",
+				"          Zipcode as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCtgtlocation",
+				"SRCtgtlocation window(over(Location_Id),",
+				"     asc(Location_Id, true),",
+				"     r_n = rowNumber()) ~> rowNumber",
+				"rowNumber split(r_n>1,",
+				"     disjoint: false) ~> split1@(duplicates)",
+				"split1@duplicates sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          anime_id as string,",
@@ -35,8 +64,10 @@
 				"          rating as string,",
 				"          members as string",
 				"     ),",
+				"     partitionFileNames:[($file)],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SNKtgtLocations"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKtgtLocations"
 			]
 		}
 	}

@@ -1,5 +1,5 @@
 {
-	"name": "PL_Distinct_count",
+	"name": "PL_Duplicate_count",
 	"properties": {
 		"activities": [
 			{
@@ -16,13 +16,24 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DF_distinct_check",
+						"referenceName": "DF_duplicate_check",
 						"type": "DataFlowReference",
+						"parameters": {
+							"file": {
+								"value": "'@{pipeline().parameters.file}'",
+								"type": "Expression"
+							}
+						},
 						"datasetParameters": {
-							"SNKtgtLocations": {
+							"SRCtgtlocation": {
 								"container": "boootcamp25",
 								"folder": "IN1680/workshop_tgt",
 								"file": "Locations.csv"
+							},
+							"SNKtgtLocations": {
+								"container": "boootcamp25",
+								"folder": "IN1680/workshop_tgt",
+								"file": "Locations_duplicate.csv"
 							}
 						}
 					},
@@ -32,8 +43,86 @@
 					},
 					"traceLevel": "Fine"
 				}
+			},
+			{
+				"name": "LKP_duplicates",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "DF_distinct_location_count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"folder": "IN1680/workshop_tgt",
+							"file": "Locations_duplicate.csv"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "set_duplicate_count",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_duplicates",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "duplicate_count",
+					"value": {
+						"value": "@activity('LKP_duplicates').output.count",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"parameters": {
+			"file": {
+				"type": "string",
+				"defaultValue": "Locations_duplicate.csv"
+			}
+		},
+		"variables": {
+			"duplicate_count": {
+				"type": "Integer"
+			}
+		},
 		"folder": {
 			"name": "QA workshop"
 		},
