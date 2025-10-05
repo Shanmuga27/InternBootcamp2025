@@ -23,13 +23,11 @@
 						"datasetParameters": {
 							"SRCProducts": {
 								"PR_Directory": "Target/IN1684/STG",
-								"PR_Filename": "stg_products_IN1684",
-								"PR_Container": "adf-mock-sep2025"
+								"PR_Filename": "stg_products_IN1684"
 							},
 							"SNKDimProducts": {
 								"PR_Directory": "Target/IN1684/TGT",
-								"PR_Filename": "Dim_products_IN1684",
-								"PR_Container": "adf-mock-sep2025"
+								"PR_Filename": "Dim_products_IN1684"
 							}
 						}
 					},

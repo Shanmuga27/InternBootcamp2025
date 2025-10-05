@@ -31,8 +31,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"PR_Directory": "IN1684/Practice/Source Files",
-							"PR_Filename": "products.csv",
-							"PR_Container": "boootcamp25"
+							"PR_Filename": "products.csv"
 						}
 					},
 					"firstRowOnly": false

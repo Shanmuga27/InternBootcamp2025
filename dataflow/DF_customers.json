@@ -243,7 +243,7 @@
 				"          SRC_LastName,",
 				"          customer_name,",
 				"          SRC_Email,",
-				"          SRC_Country = split1@upsert@SRC_Country,",
+				"          SRC_Country = {split1@upsert@SRC_Country},",
 				"          isActive,",
 				"          start_date,",
 				"          end_date,",

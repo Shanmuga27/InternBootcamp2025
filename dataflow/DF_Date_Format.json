@@ -8,6 +8,10 @@
 		"typeProperties": {
 			"sources": [
 				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
 					"name": "SRCorders"
 				}
 			],
@@ -17,22 +21,25 @@
 						"referenceName": "DS_Blob_IN1684",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "SNKOrderDate"
 				}
 			],
 			"transformations": [
 				{
-					"name": "filter1"
+					"name": "filterOrderdateFormat"
 				}
 			],
 			"scriptLines": [
 				"source(allowSchemaDrift: false,",
-				"     validateSchema: false) ~> SRCorders",
-				"SRCorders filter(ERROR_FUNCTION('')) ~> filter1",
-				"filter1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCorders",
+				"SRCorders filter(ERROR_FUNCTION('')) ~> filterOrderdateFormat",
+				"filterOrderdateFormat sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['orderdate'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKOrderDate"
 			]
 		}
 	}

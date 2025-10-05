@@ -21,18 +21,15 @@
 						"datasetParameters": {
 							"SRCcustomers": {
 								"PR_Directory": "IN1684/Practice/Target/stg",
-								"PR_Filename": "stg_customers",
-								"PR_Container": "boootcamp25"
+								"PR_Filename": "stg_customers"
 							},
 							"SRCDimCustomers": {
 								"PR_Directory": "IN1684/Practice/Target/tgt",
-								"PR_Filename": "dim_customers",
-								"PR_Container": "boootcamp25"
+								"PR_Filename": "dim_customers"
 							},
 							"SNKTgtCustomers": {
 								"PR_Directory": "IN1684/Practice/Target/tgt",
-								"PR_Filename": "dim_customers",
-								"PR_Container": "boootcamp25"
+								"PR_Filename": "dim_customers"
 							}
 						}
 					},

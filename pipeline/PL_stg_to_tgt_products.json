@@ -21,13 +21,11 @@
 						"datasetParameters": {
 							"SRCProducts": {
 								"PR_Directory": "IN1684/Practice/Target/stg",
-								"PR_Filename": "stg_products",
-								"PR_Container": "boootcamp25"
+								"PR_Filename": "stg_products"
 							},
 							"SNKdimProducts": {
 								"PR_Directory": "IN1684/Practice/Target/tgt",
-								"PR_Filename": "dim_products",
-								"PR_Container": "boootcamp25"
+								"PR_Filename": "dim_products"
 							}
 						}
 					},

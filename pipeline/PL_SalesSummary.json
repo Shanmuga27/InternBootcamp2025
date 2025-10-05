@@ -21,28 +21,23 @@
 						"datasetParameters": {
 							"SRCCustomers": {
 								"PR_Directory": "IN1684/Practice/Target/tgt",
-								"PR_Filename": "dim_customers",
-								"PR_Container": "boootcamp25"
+								"PR_Filename": "dim_customers"
 							},
 							"SRCProducts": {
 								"PR_Directory": "IN1684/Practice/Target/tgt",
-								"PR_Filename": "dim_products",
-								"PR_Container": "boootcamp25"
+								"PR_Filename": "dim_products"
 							},
 							"SRCOrders": {
 								"PR_Directory": "IN1684/Practice/Target/tgt",
-								"PR_Filename": "fact_orders",
-								"PR_Container": "boootcamp25"
+								"PR_Filename": "fact_orders"
 							},
 							"SRCOrderDetails": {
 								"PR_Directory": "IN1684/Practice/Target/tgt",
-								"PR_Filename": "fact_orderdetails",
-								"PR_Container": "boootcamp25"
+								"PR_Filename": "fact_orderdetails"
 							},
 							"SNKSalesSummary": {
 								"PR_Directory": "IN1684/Practice/Target/tgt",
-								"PR_Filename": "fact_SalesSummary",
-								"PR_Container": "boootcamp25"
+								"PR_Filename": "fact_SalesSummary"
 							}
 						}
 					},

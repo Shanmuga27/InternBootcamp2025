@@ -80,8 +80,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"PR_Directory": "IN1684/Practice/Source Files",
-							"PR_Filename": "products.csv",
-							"PR_Container": "boootcamp25"
+							"PR_Filename": "products.csv"
 						}
 					},
 					"fieldList": [
@@ -114,8 +113,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"PR_Directory": "IN1684/Practice/Target/tgt",
-							"PR_Filename": "dim_products",
-							"PR_Container": "boootcamp25"
+							"PR_Filename": "dim_products"
 						}
 					},
 					"fieldList": [

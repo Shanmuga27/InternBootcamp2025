@@ -21,13 +21,11 @@
 						"datasetParameters": {
 							"SRCtgtProducts": {
 								"PR_Directory": "IN1684/Practice/Target/tgt",
-								"PR_Filename": "dim_products",
-								"PR_Container": "boootcamp25"
+								"PR_Filename": "dim_products"
 							},
 							"SNKtgtproducts": {
 								"PR_Directory": "IN1684/Practice/QA",
-								"PR_Filename": "tgtproducts",
-								"PR_Container": "boootcamp25"
+								"PR_Filename": "tgtproducts"
 							}
 						}
 					},
@@ -98,8 +96,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"PR_Directory": "IN1684/Practice/QA",
-							"PR_Filename": "tgtproducts",
-							"PR_Container": "boootcamp25"
+							"PR_Filename": "tgtproducts"
 						}
 					},
 					"firstRowOnly": false
