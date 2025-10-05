@@ -20,7 +20,9 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"SrcCustomers": {
-								"container": "boootcamp25"
+								"container": "boootcamp25",
+								"directory": "IN1677/mock_test_practice/src",
+								"file": "customers"
 							},
 							"DimCustomers": {
 								"container": "boootcamp25",
@@ -42,7 +44,7 @@
 				}
 			},
 			{
-				"name": "Lookup1",
+				"name": "LKP_InvalidCustomersTrans",
 				"type": "Lookup",
 				"dependsOn": [
 					{
@@ -74,11 +76,73 @@
 					},
 					"dataset": {
 						"referenceName": "DS_Blob_IN1677_Tgt",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"directory": "IN1677/mock_test_practice/test",
+							"file": "InValidCustomersTransformation"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "If Condition",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "LKP_InvalidCustomersTrans",
+						"dependencyConditions": [
+							"Succeeded"
+						]
 					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(activity('LKP_InvalidCustomersTrans').output.count,0 )",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "VarNotMatch",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "result",
+								"value": false
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "VarMatch",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "result",
+								"value": true
+							}
+						}
+					]
 				}
 			}
 		],
+		"variables": {
+			"result": {
+				"type": "Boolean"
+			}
+		},
 		"folder": {
 			"name": "Practice/Testing"
 		},
