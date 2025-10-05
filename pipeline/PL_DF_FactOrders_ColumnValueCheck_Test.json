@@ -147,16 +147,36 @@
 						"value": "@equals(activity('LKP_Src_Orders').output.count,activity('ValidFactOrders').output.count )",
 						"type": "Expression"
 					},
-					"ifTrueActivities": [
+					"ifFalseActivities": [
 						{
-							"name": "Set variable1",
+							"name": "Var_Not_Match",
 							"type": "SetVariable",
 							"dependsOn": [],
 							"policy": {
 								"secureOutput": false,
 								"secureInput": false
 							},
-							"userProperties": []
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "res",
+								"value": false
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Var_Match",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "res",
+								"value": true
+							}
 						}
 					]
 				}
