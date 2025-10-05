@@ -22,19 +22,24 @@
 					"name": "DimCustomers"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "sinkValidCustomers"
+				}
+			],
 			"transformations": [
 				{
-					"name": "derivedColumn1"
+					"name": "derivedFullName"
 				},
 				{
 					"name": "join2"
 				},
 				{
-					"name": "filter1"
-				},
-				{
-					"name": "filter2"
+					"name": "filterNames"
 				}
 			],
 			"scriptLines": [
@@ -69,14 +74,19 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> DimCustomers",
-				"SrcCustomers derive(FullName = concat(FirstName,' ', LastName)) ~> derivedColumn1",
-				"DimCustomers, SrcCustomers join(customer_id == CustomerID,",
+				"SrcCustomers derive(FullName = concat(FirstName,' ', LastName)) ~> derivedFullName",
+				"DimCustomers, derivedFullName join(customer_id == CustomerID,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join2",
-				"filter2 filter(ERROR_FUNCTION('')) ~> filter1",
-				"join2 filter(ERROR_FUNCTION('')) ~> filter2"
+				"join2 filter(customer_name==FullName) ~> filterNames",
+				"filterNames sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['ValidCustomerTransformations'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkValidCustomers"
 			]
 		}
 	}
