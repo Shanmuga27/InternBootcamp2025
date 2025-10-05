@@ -31,33 +31,54 @@
 					"name": "SNKInvalidRecords"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "rightdimordersFactOrders"
+				},
+				{
+					"name": "invalidrecords"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
-				"          anime_id as string,",
-				"          name as string,",
-				"          genre as string,",
-				"          type as string,",
-				"          episodes as string,",
-				"          rating as string,",
-				"          members as string",
+				"          order_id as short,",
+				"          customer_id as short,",
+				"          order_amount as short,",
+				"          order_date as timestamp,",
+				"          status as string,",
+				"          {created date} as timestamp,",
+				"          {created by } as string,",
+				"          {updated date} as timestamp,",
+				"          {updated by} as string,",
+				"          { runid} as string,",
+				"          order_key as short",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SRCdimorders",
 				"source(output(",
-				"          anime_id as string,",
-				"          name as string,",
-				"          genre as string,",
-				"          type as string,",
-				"          episodes as string,",
-				"          rating as string,",
-				"          members as string",
+				"          orderdetail_id as short,",
+				"          order_id as short,",
+				"          product_id as short,",
+				"          quantity as short,",
+				"          {created date} as string,",
+				"          {created by } as string,",
+				"          {updated date} as string,",
+				"          {updated by} as string,",
+				"          { runid} as string,",
+				"          {orderdetail_key     } as short",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SRCFactOrders",
-				"SRCdimorders sink(allowSchemaDrift: true,",
+				"SRCdimorders, SRCFactOrders join(SRCdimorders@order_id == SRCFactOrders@order_id,",
+				"     joinType:'right',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> rightdimordersFactOrders",
+				"rightdimordersFactOrders split(isNull(SRCFactOrders@order_id),",
+				"     disjoint: false) ~> invalidrecords@(Invalid)",
+				"invalidrecords@Invalid sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          anime_id as string,",
@@ -68,8 +89,10 @@
 				"          rating as string,",
 				"          members as string",
 				"     ),",
+				"     partitionFileNames:['RIInvalidRecords.csv'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SNKInvalidRecords"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKInvalidRecords"
 			]
 		}
 	}
