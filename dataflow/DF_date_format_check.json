@@ -1,0 +1,66 @@
+{
+	"name": "DF_date_format_check",
+	"properties": {
+		"folder": {
+			"name": "QA workshop"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCdimOrders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKmismatchFormatData"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"parameters{",
+				"     file as string",
+				"}",
+				"source(output(",
+				"          order_id as short,",
+				"          customer_id as short,",
+				"          order_amount as short,",
+				"          order_date as timestamp,",
+				"          status as string,",
+				"          {created date} as timestamp,",
+				"          {created by } as string,",
+				"          {updated date} as timestamp,",
+				"          {updated by} as string,",
+				"          { runid} as string,",
+				"          order_key as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCdimOrders",
+				"SRCdimOrders sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          anime_id as string,",
+				"          name as string,",
+				"          genre as string,",
+				"          type as string,",
+				"          episodes as string,",
+				"          rating as string,",
+				"          members as string",
+				"     ),",
+				"     partitionFileNames:[($file)],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKmismatchFormatData"
+			]
+		}
+	}
+}
