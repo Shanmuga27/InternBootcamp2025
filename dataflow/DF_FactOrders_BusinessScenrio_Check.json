@@ -1,0 +1,57 @@
+{
+	"name": "DF_FactOrders_BusinessScenrio_Check",
+	"properties": {
+		"folder": {
+			"name": "Module_Practice/Testing"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference"
+					},
+					"name": "SrcCustomers"
+				},
+				{
+					"name": "DimCustomers"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "join2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          OrderDetailID as integer,",
+				"          OrderID as integer,",
+				"          ProductID as integer,",
+				"          Quantity as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcCustomers",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false) ~> DimCustomers",
+				"SrcCustomers derive() ~> derivedColumn1",
+				"join2 join(joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"DimCustomers join(joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2"
+			]
+		}
+	}
+}
