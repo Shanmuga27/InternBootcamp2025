@@ -26,15 +26,29 @@
 			],
 			"transformations": [
 				{
-					"name": "filterOrderdateFormat"
+					"name": "DataFormat"
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: false,",
+				"source(output(",
+				"          order_id as short,",
+				"          order_key as short,",
+				"          customer_id as short,",
+				"          order_amount as short,",
+				"          order_date as string,",
+				"          status as string,",
+				"          {created date} as date,",
+				"          {created by} as string,",
+				"          {updated date} as date,",
+				"          {updated by} as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: false,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> SRCorders",
-				"SRCorders filter(ERROR_FUNCTION('')) ~> filterOrderdateFormat",
-				"filterOrderdateFormat sink(allowSchemaDrift: true,",
+				"SRCorders filter(isNull(toTimestamp(trim(order_date), 'yyyy-MM-dd'))\r",
+				") ~> DataFormat",
+				"DataFormat sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['orderdate'],",
 				"     skipDuplicateMapInputs: true,",
