@@ -1,0 +1,39 @@
+{
+	"name": "DF_Date_Format",
+	"properties": {
+		"folder": {
+			"name": "QA"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "SRCorders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: false,",
+				"     validateSchema: false) ~> SRCorders",
+				"SRCorders filter(ERROR_FUNCTION('')) ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}

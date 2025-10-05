@@ -57,7 +57,7 @@
 				"typeProperties": {
 					"variableName": "null count",
 					"value": {
-						"value": "@activity('LKP_null_count').output",
+						"value": "@activity('LKP_null_count').output.count",
 						"type": "Expression"
 					}
 				}
