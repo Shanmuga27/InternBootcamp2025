@@ -1,0 +1,143 @@
+{
+	"name": "PL_DF_Stratification_Test",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Stratification_Test",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Stratification_Test",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"TgtOrders": {
+								"container": "boootcamp25",
+								"directory": "IN1677/tgt_orders",
+								"file": "AllOrders_Unioned_IN1677.csv"
+							},
+							"sinkInvalidOrdersRec": {
+								"container": "boootcamp25",
+								"directory": "IN1677/tgt_orders/test",
+								"file": "Invalid_Orders_Stratification_Rec"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "LKP_Invalid_Orders_Stratification_Rec",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "DF_Stratification_Test",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_IN1677_Tgt",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "boootcamp25",
+							"directory": "IN1677/tgt_orders/test",
+							"file": "Invalid_Orders_Stratification_Rec"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "If Condition",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "LKP_Invalid_Orders_Stratification_Rec",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(activity('LKP_Invalid_Orders_Stratification_Rec').output.count, 0)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Var_Invalid",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Result",
+								"value": false
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Var_Valid",
+							"description": "True",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": []
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"Result": {
+				"type": "Boolean"
+			}
+		},
+		"folder": {
+			"name": "Practice/Testing"
+		},
+		"annotations": []
+	}
+}

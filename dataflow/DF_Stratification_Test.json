@@ -58,7 +58,7 @@
 				"NewRecCheck, OldRecCheck union(byName: true)~> unionNewOldRec",
 				"unionNewOldRec sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     partitionFileNames:['Invalid_Orders_Rec'],",
+				"     partitionFileNames:['Invalid_Orders_Stratification_Rec'],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sinkInvalidOrdersRec"
