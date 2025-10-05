@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "If_RowCount",
+				"name": "If_Metadata_Col_Count",
 				"type": "IfCondition",
 				"dependsOn": [
 					{
@@ -22,12 +22,12 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@equals(variables('src count'), variables('tgt count'))",
+						"value": "@equals(activity('Metadata_src_products').output.columnCount,activity('Metadata_tgt_products').output.columnCount )",
 						"type": "Expression"
 					},
 					"ifFalseActivities": [
 						{
-							"name": "Variable_count_not_matches",
+							"name": "Variable_Col_count_not_matches",
 							"type": "SetVariable",
 							"dependsOn": [],
 							"policy": {
@@ -37,13 +37,13 @@
 							"userProperties": [],
 							"typeProperties": {
 								"variableName": "result",
-								"value": "\"Count not equal\""
+								"value": "\"Column Count not equal\""
 							}
 						}
 					],
 					"ifTrueActivities": [
 						{
-							"name": "Variable_count_Matches",
+							"name": "Variable_Col_count_Matches",
 							"type": "SetVariable",
 							"dependsOn": [],
 							"policy": {
@@ -54,7 +54,7 @@
 							"typeProperties": {
 								"variableName": "result",
 								"value": {
-									"value": "\"Equal count\"",
+									"value": "\"Equal columnCount\"",
 									"type": "Expression"
 								}
 							}
@@ -77,9 +77,16 @@
 				"typeProperties": {
 					"dataset": {
 						"referenceName": "DS_Blob_IN1684",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Practice/Source Files",
+							"PR_Filename": "products.csv",
+							"PR_Container": "boootcamp25"
+						}
 					},
-					"fieldList": [],
+					"fieldList": [
+						"columnCount"
+					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
 						"enablePartitionDiscovery": false
@@ -100,16 +107,31 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Practice/Target/tgt",
+							"PR_Filename": "dim_products",
+							"PR_Container": "boootcamp25"
+						}
+					},
+					"fieldList": [
+						"columnCount"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
 			}
 		],
 		"variables": {
-			"src count": {
-				"type": "Integer"
-			},
-			"tgt count": {
-				"type": "Integer"
-			},
 			"result": {
 				"type": "String"
 			}
