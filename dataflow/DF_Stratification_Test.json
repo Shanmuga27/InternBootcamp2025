@@ -29,13 +29,13 @@
 					"name": "split1"
 				},
 				{
-					"name": "split2"
+					"name": "NewRecCheck"
 				},
 				{
-					"name": "split3"
+					"name": "OldRecCheck"
 				},
 				{
-					"name": "joinNewOldRec"
+					"name": "unionNewOldRec"
 				}
 			],
 			"scriptLines": [
@@ -53,16 +53,10 @@
 				"TgtOrders split(OrderDate>addDays(OrderDate, -12),",
 				"     OrderDate<addDays(OrderDate, -12),",
 				"     disjoint: true) ~> split1@(New, Old)",
-				"split1@New split(Order_type!='Recent',",
-				"     disjoint: false) ~> split2@(NewRecCheck)",
-				"split1@Old split(Order_type!='Old',",
-				"     disjoint: false) ~> split3@(OldRecCheck)",
-				"split2@NewRecCheck, split3@OldRecCheck join(split2@OrderID == split3@OrderID,",
-				"     joinType:'inner',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> joinNewOldRec",
-				"joinNewOldRec sink(allowSchemaDrift: true,",
+				"split1@New filter(Order_type!='Recent') ~> NewRecCheck",
+				"split1@Old filter(Order_type!='Old') ~> OldRecCheck",
+				"NewRecCheck, OldRecCheck union(byName: true)~> unionNewOldRec",
+				"unionNewOldRec sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['Invalid_Orders_Rec'],",
 				"     skipDuplicateMapInputs: true,",
