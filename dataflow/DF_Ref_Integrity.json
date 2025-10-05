@@ -1,0 +1,90 @@
+{
+	"name": "DF_Ref_Integrity",
+	"properties": {
+		"folder": {
+			"name": "QA"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCOrders"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SRCfactOrders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference"
+					},
+					"name": "SNKOrders"
+				}
+			],
+			"transformations": [
+				{
+					"name": "rightSRCOrdersSrcFactOrders"
+				},
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          OrderID as short,",
+				"          CustomerID as short,",
+				"          OrderAmount as short,",
+				"          OrderDate as date,",
+				"          Status as string,",
+				"          {created date} as string,",
+				"          {created by} as string,",
+				"          {updated date} as string,",
+				"          {updated by} as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCOrders",
+				"source(output(",
+				"          order_id as short,",
+				"          order_key as short,",
+				"          customer_id as short,",
+				"          order_amount as short,",
+				"          order_date as date,",
+				"          status as string,",
+				"          {created date} as date,",
+				"          {created by} as string,",
+				"          {updated date} as date,",
+				"          {updated by} as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCfactOrders",
+				"SRCOrders, SRCfactOrders join(OrderID == order_id,",
+				"     joinType:'right',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> rightSRCOrdersSrcFactOrders",
+				"rightSRCOrdersSrcFactOrders split(isNull(order_id),",
+				"     disjoint: false) ~> split1@(Invalid)",
+				"split1@Invalid sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['refintegrity'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKOrders"
+			]
+		}
+	}
+}
