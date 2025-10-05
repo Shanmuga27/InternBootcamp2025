@@ -1,0 +1,59 @@
+{
+	"name": "PL_null_check",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_tgt_customers_null_check",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_null_check",
+						"type": "DataFlowReference",
+						"parameters": {
+							"file": {
+								"value": "'@{pipeline().parameters.file}'",
+								"type": "Expression"
+							}
+						},
+						"datasetParameters": {
+							"srctgtlocations": {
+								"container": "boootcamp25",
+								"folder": "IN1680/workshop_tgt",
+								"file": "Locations.csv"
+							},
+							"SNKtgtnulcustomers": {
+								"container": "boootcamp25",
+								"folder": "IN1680/workshop_tgt",
+								"file": "Location_null.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"file": {
+				"type": "string",
+				"defaultValue": "Location_null.csv"
+			}
+		},
+		"folder": {
+			"name": "QA workshop"
+		},
+		"annotations": []
+	}
+}
