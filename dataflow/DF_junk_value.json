@@ -1,0 +1,69 @@
+{
+	"name": "DF_junk_value",
+	"properties": {
+		"folder": {
+			"name": "QA workshop"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "SRCDimOrders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Blob_1680",
+						"type": "DatasetReference"
+					},
+					"name": "SNKDimOrdersJunkData"
+				}
+			],
+			"transformations": [
+				{
+					"name": "split1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          order_id as short,",
+				"          customer_id as short,",
+				"          order_amount as short,",
+				"          order_date as timestamp,",
+				"          status as string,",
+				"          {created date} as timestamp,",
+				"          {created by } as string,",
+				"          {updated date} as timestamp,",
+				"          {updated by} as string,",
+				"          { runid} as string,",
+				"          order_key as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SRCDimOrders",
+				"SRCDimOrders split(order_amount != 0 ||  !in(['Completed' ,'Pending'  ,'Cancelled'], status) ,",
+				"     disjoint: false) ~> split1@(junkcondition)",
+				"split1@junkcondition sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          anime_id as string,",
+				"          name as string,",
+				"          genre as string,",
+				"          type as string,",
+				"          episodes as string,",
+				"          rating as string,",
+				"          members as string",
+				"     ),",
+				"     partitionFileNames:['dim_orders_junk_data.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> SNKDimOrdersJunkData"
+			]
+		}
+	}
+}
