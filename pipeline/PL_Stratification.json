@@ -1,0 +1,116 @@
+{
+	"name": "PL_Stratification",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_Stratification",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Stratification",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcOrders": {
+								"PR_Directory": "IN1684/Practice/Target/tgt",
+								"PR_Filename": "fact_orders"
+							},
+							"SNKOrders": {
+								"PR_Directory": "IN1684/Practice/QA",
+								"PR_Filename": "Stratification"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "LKP_Stratification_match_count",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "DF_Stratification",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_Blob_IN1684",
+						"type": "DatasetReference",
+						"parameters": {
+							"PR_Directory": "IN1684/Practice/QA",
+							"PR_Filename": "Stratification"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Variable_Stratification_match",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LKP_Stratification_match_count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Stratification Match",
+					"value": {
+						"value": "@activity('LKP_Stratification_match_count').output.count",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"Stratification Match": {
+				"type": "Integer"
+			}
+		},
+		"folder": {
+			"name": "QA"
+		},
+		"annotations": []
+	}
+}
