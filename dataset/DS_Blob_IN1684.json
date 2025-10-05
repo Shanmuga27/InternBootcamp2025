@@ -29,10 +29,7 @@
 					"value": "@dataset().PR_Directory",
 					"type": "Expression"
 				},
-				"container": {
-					"value": "@dataset().PR_Container",
-					"type": "Expression"
-				}
+				"container": "boootcamp25"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
