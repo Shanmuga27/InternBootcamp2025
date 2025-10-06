@@ -1,0 +1,145 @@
+{
+	"name": "pipeline1",
+	"properties": {
+		"activities": [
+			{
+				"name": "GetSourceRows",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "SetSourceRowCount",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "GetSourceRows",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "sourceRowCount",
+					"value": {
+						"value": "@length(activity('GetSourceRows').output.value)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "GetTargetRows",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "SetSourceRowCount",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "SetTargetRowCount",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "GetTargetRows",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "targetRowCount",
+					"value": {
+						"value": "@length(activity('GetTargetRows').output.value)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "CompareCounts",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "SetTargetRowCount",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('sourceRowCount'), variables('targetRowCount'))",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "FailOnMismatch",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": {
+									"value": "'Row count mismatch. Source: ' + string(variables('sourceRowCount')) + ', Target: ' + string(variables('targetRowCount'))",
+									"type": "Expression"
+								}
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "SuccessLog",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"sourceRowCount": {
+				"type": "Int"
+			},
+			"targetRowCount": {
+				"type": "Int"
+			}
+		},
+		"annotations": []
+	}
+}
