@@ -1,0 +1,149 @@
+{
+	"name": "pipeline2",
+	"properties": {
+		"activities": [
+			{
+				"name": "GetSourceMetadata",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"fieldList": [
+						"structure"
+					]
+				}
+			},
+			{
+				"name": "SetSourceSchema",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "GetSourceMetadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "sourceSchema",
+					"value": {
+						"value": "@activity('GetSourceMetadata').output.structure",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "GetTargetMetadata",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "SetSourceSchema",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"fieldList": [
+						"structure"
+					]
+				}
+			},
+			{
+				"name": "SetTargetSchema",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "GetTargetMetadata",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "targetSchema",
+					"value": {
+						"value": "@activity('GetTargetMetadata').output.structure",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "CompareSchemas",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "SetTargetSchema",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(string(variables('sourceSchema')), string(variables('targetSchema')))",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "FailMismatch",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": {
+									"value": "Metadata mismatch between source and target.",
+									"type": "Expression"
+								}
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "LogMatch",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"sourceSchema": {
+				"type": "Array"
+			},
+			"targetSchema": {
+				"type": "Array"
+			}
+		},
+		"annotations": []
+	}
+}
