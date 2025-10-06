@@ -1,0 +1,113 @@
+{
+	"name": "PL_CLC",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_ColumnCheck",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_DateFormat",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SrcOrders": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/mock_staging",
+								"FileName": "stg_orders.csv"
+							},
+							"SinkOrderDate": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/mock_target",
+								"FileName": "tgt_formatorderdate.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Lookup",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "DF_ColumnCheck",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"ContainerName": "boootcamp25",
+							"FolderName": "IN1675/mock_target",
+							"FileName": "tgt_formatorderdate.csv"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Variable_CLC",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Lookup",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "NullCount",
+					"value": 0
+				}
+			}
+		],
+		"variables": {
+			"NullCount": {
+				"type": "Integer"
+			}
+		},
+		"annotations": []
+	}
+}

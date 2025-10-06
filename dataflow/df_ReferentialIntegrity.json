@@ -1,0 +1,87 @@
+{
+	"name": "df_ReferentialIntegrity",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SrcOrders"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "TgtOrders"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference"
+					},
+					"name": "SinkStratificationCheck"
+				}
+			],
+			"transformations": [
+				{
+					"name": "aggregate1"
+				},
+				{
+					"name": "aggregate2"
+				},
+				{
+					"name": "union"
+				},
+				{
+					"name": "derivedColumn"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          OrderID as short,",
+				"          CustomerID as short,",
+				"          OrderAmount as short,",
+				"          OrderDate as date,",
+				"          Status as string,",
+				"          Created_Date as string,",
+				"          Created_by as string,",
+				"          Updated_date as string,",
+				"          Updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcOrders",
+				"source(output(",
+				"          OrderID as short,",
+				"          CustomerID as short,",
+				"          OrderAmount as short,",
+				"          OrderDate as date,",
+				"          Status as string,",
+				"          Created_Date as string,",
+				"          Created_by as string,",
+				"          Updated_date as string,",
+				"          Updated_by as string,",
+				"          runid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> TgtOrders",
+				"SrcOrders aggregate(OrderAmount = sum(OrderAmount)) ~> aggregate1",
+				"TgtOrders aggregate(OrderAmount = sum(OrderAmount)) ~> aggregate2",
+				"aggregate1, aggregate2 union(byName: true)~> union",
+				"union derive(status = iif(OrderAmount == OrderAmount, 'Match', 'Mismatch')) ~> derivedColumn",
+				"derivedColumn sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SinkStratificationCheck"
+			]
+		}
+	}
+}
