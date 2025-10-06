@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "DF_DupCheck",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -51,8 +51,10 @@
 				"     disjoint: false) ~> split1@(Count)",
 				"split1@Count sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['Tgt_Dup_Customer.csv'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> DuplicateRecords"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> DuplicateRecords"
 			]
 		}
 	}

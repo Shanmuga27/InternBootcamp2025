@@ -1,0 +1,113 @@
+{
+	"name": "PL_Dup_Check",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_DupCheck",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_DupCheck",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"TgtCustomers": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/mock_staging",
+								"FileName": "Stg_customer.csv"
+							},
+							"DuplicateRecords": {
+								"ContainerName": "boootcamp25",
+								"FolderName": "IN1675/mock_target",
+								"FileName": "Tgt_Dup_Customer.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "Lookup_count",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "DF_DupCheck",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DS_CSV_IN1675",
+						"type": "DatasetReference",
+						"parameters": {
+							"ContainerName": "boootcamp25",
+							"FolderName": "IN1675/mock_target",
+							"FileName": "Tgt_Dup_Customer.csv"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Dup_Value_Count",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Lookup_count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "DupCount",
+					"value": 0
+				}
+			}
+		],
+		"variables": {
+			"DupCount": {
+				"type": "Integer"
+			}
+		},
+		"annotations": []
+	}
+}
