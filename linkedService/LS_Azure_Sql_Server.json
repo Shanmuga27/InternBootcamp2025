@@ -6,12 +6,12 @@
 		"type": "AzureSqlDatabase",
 		"typeProperties": {
 			"server": "sqlserverbootcamp2024.database.windows.net",
-			"database": "internbootcamp2025",
+			"database": "Trainer",
 			"encrypt": "mandatory",
-			"trustServerCertificate": false,
+			"trustServerCertificate": true,
 			"authenticationType": "SQL",
-			"userName": "sqladmin",
-			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDQwMkI4NzI4LTc1RTktNDQ2My1BRkUxLTEzNTg1MjQxRkM4NF8wMDhiMjY0MS1hZmRmLTRiYWMtOTk4NS0xOWY2ZjYzMDNkMjQiDQp9"
+			"userName": "SS_PMahendi",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDQwMkI4NzI4LTc1RTktNDQ2My1BRkUxLTEzNTg1MjQxRkM4NF83OGQyY2I3Ny02NDY4LTQzMTItODNmNS00OGY2YTU3ZThlZjEiDQp9"
 		}
 	}
 }
