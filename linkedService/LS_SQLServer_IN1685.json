@@ -5,13 +5,13 @@
 		"annotations": [],
 		"type": "SqlServer",
 		"typeProperties": {
-			"server": "systechtraining.database.windows.net",
-			"database": "Trainer",
+			"server": "SSIC-SQL-01",
+			"database": "ADF_Training",
 			"encrypt": "mandatory",
 			"trustServerCertificate": true,
 			"authenticationType": "SQL",
-			"userName": "SS_RRamesh",
-			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIxMjVhNzA3NC1hY2I5LTQ5MmEtODUwNi1jYjQ5NTNkYjVhNzEiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+			"userName": "I2025_RRamesh",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJhNTc0OGUyZC03ZWY1LTQzZTctYWVjMS0xNGJmNjgwZDkzOWUiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
 		},
 		"connectVia": {
 			"referenceName": "SHIR-OnPrem",
